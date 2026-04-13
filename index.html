@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التسجيل</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body { font-family: sans-serif; background:#f1f5f9; }
+.input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; }
+.btn { background:#1e293b; color:white; padding:12px; width:100%; border-radius:10px; }
+</style>
+</head>
+
+<body class="p-5">
+
+<h2 class="text-xl mb-4">استمارة التسجيل</h2>
+
+<form id="form" class="space-y-3">
+
+<input class="input" name="name" placeholder="الاسم الكامل" required>
+<input class="input" name="phone" placeholder="رقم الهاتف" required>
+
+<input type="file" name="file1" required>
+
+<button class="btn">إرسال</button>
+
+</form>
+
+<p id="msg"></p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "PUT YOUR KEY",
+  authDomain: "PUT YOUR DOMAIN",
+  projectId: "PUT YOUR ID",
+  storageBucket: "PUT YOUR BUCKET"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+const form = document.getElementById("form");
+const msg = document.getElementById("msg");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = form.name.value;
+  const phone = form.phone.value;
+  const file = form.file1.files[0];
+
+  try {
+    const fileRef = ref(storage, "files/" + file.name);
+    await uploadBytes(fileRef, file);
+    const url = await getDownloadURL(fileRef);
+
+    await addDoc(collection(db, "students"), {
+      name,
+      phone,
+      file: url
+    });
+
+    msg.innerText = "تم الإرسال ✅";
+
+  } catch (err) {
+    msg.innerText = "خطأ ❌";
+  }
+});
+</script>
+
+</body>
+</html>
