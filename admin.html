@@ -98,7 +98,7 @@ async function loadData() {
 
   const querySnapshot = await getDocs(collection(db, "students"));
 
-  // 🔥 العداد (مهم جدًا)
+  // 📊 العداد
   countEl.innerText = "عدد الطلبات: " + querySnapshot.size;
 
   if (querySnapshot.empty) {
@@ -126,6 +126,9 @@ function renderData(data) {
       <div class="card">
         <p><b>👤 الاسم:</b> ${d.name}</p>
         <p><b>📞 الهاتف:</b> ${d.phone}</p>
+
+        ${d.image ? `<img src="${d.image}" style="width:120px;margin-top:10px;border-radius:10px;">` : ""}
+
         <button class="btn-delete" onclick="deleteItem('${d.id}')">
           حذف ❌
         </button>
