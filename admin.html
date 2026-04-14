@@ -8,21 +8,52 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body { font-family: sans-serif; background:#f1f5f9; }
-.card { background:white; padding:15px; border-radius:10px; margin-bottom:10px; }
-.btn-delete { color:red; margin-top:10px; }
+body { font-family: 'Tajawal', sans-serif; background:#eef2f7; }
+
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.card {
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.05);
+  margin-bottom:10px;
+}
+
+.btn-delete {
+  background:#dc2626;
+  color:white;
+  padding:6px 10px;
+  border-radius:6px;
+  margin-top:10px;
+}
+
+.logout {
+  background:#1e293b;
+  color:white;
+  padding:8px 12px;
+  border-radius:8px;
+}
 </style>
 </head>
 
 <body class="p-5">
 
-<h2 class="text-xl mb-4">📊 لوحة التحكم</h2>
+<div class="header">
+  <h2 class="text-xl font-bold">📊 لوحة التحكم</h2>
+  <button class="logout" onclick="logout()">تسجيل خروج</button>
+</div>
 
 <div id="data"></div>
 
 <script type="module">
 
-// 🔐 حماية الصفحة
+// 🔐 حماية
 if (localStorage.getItem("auth") !== "true") {
   window.location.href = "login.html";
 }
@@ -54,8 +85,8 @@ async function loadData() {
 
     container.innerHTML += `
       <div class="card">
-        <p><b>الاسم:</b> ${d.name}</p>
-        <p><b>الهاتف:</b> ${d.phone}</p>
+        <p><b>👤 الاسم:</b> ${d.name}</p>
+        <p><b>📞 الهاتف:</b> ${d.phone}</p>
         <button class="btn-delete" onclick="deleteItem('${docItem.id}')">
           حذف ❌
         </button>
@@ -68,6 +99,12 @@ async function loadData() {
 window.deleteItem = async (id) => {
   await deleteDoc(doc(db, "students", id));
   loadData();
+};
+
+// 🔐 تسجيل خروج
+window.logout = () => {
+  localStorage.removeItem("auth");
+  window.location.href = "login.html";
 };
 
 loadData();
