@@ -21,6 +21,12 @@ body { font-family: sans-serif; background:#f1f5f9; }
 <div id="data"></div>
 
 <script type="module">
+
+// 🔐 حماية الصفحة
+if (localStorage.getItem("auth") !== "true") {
+  window.location.href = "login.html";
+}
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
@@ -58,13 +64,14 @@ async function loadData() {
   });
 }
 
-// دالة الحذف
+// ❌ حذف
 window.deleteItem = async (id) => {
   await deleteDoc(doc(db, "students", id));
-  loadData(); // تحديث البيانات بدون ريفرش
+  loadData();
 };
 
 loadData();
+
 </script>
 
 </body>
