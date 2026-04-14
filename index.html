@@ -11,29 +11,28 @@
 <style>
 body { font-family:'Tajawal', sans-serif; background:#f0f4f8; margin:0; }
 
-/* ✨ Header احترافي */
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: white;
-  transition: 0.3s;
-  border-bottom: 4px solid #1e295a;
+/* 🔥 HEADER بانر احترافي */
+.hero {
+  width:100%;
+  height:180px;
+  position:relative;
+  overflow:hidden;
 }
 
-.header.scrolled {
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-  padding: 10px 0;
+.hero img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
-/* ✨ شعار */
-.logo {
-  height: 110px;
-  transition: 0.3s;
-}
-
-.header.scrolled .logo {
-  height: 80px;
+/* ✨ طبقة احترافية */
+.overlay {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: linear-gradient(to right, rgba(30,41,90,0.8), rgba(142,26,30,0.5));
 }
 
 /* ✨ عناصر */
@@ -72,12 +71,11 @@ body { font-family:'Tajawal', sans-serif; background:#f0f4f8; margin:0; }
 
 <body>
 
-<!-- 🔥 HEADER الفخم -->
-<header id="header" class="header">
-  <div class="flex justify-center items-center py-6">
-    <img src="logo.png" class="logo">
-  </div>
-</header>
+<!-- 🔥 بانر الشعار FULL WIDTH -->
+<div class="hero">
+  <img src="logo.png">
+  <div class="overlay"></div>
+</div>
 
 <!-- الفورم -->
 <div class="max-w-2xl mx-auto mt-10 px-4">
@@ -130,7 +128,9 @@ body { font-family:'Tajawal', sans-serif; background:#f0f4f8; margin:0; }
 
 <div class="bg-blue-50 p-4 rounded-xl text-center">
 <p class="font-bold mb-2">💳 رسوم التسجيل 20$</p>
+
 <img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px;margin:auto">
+
 <input id="transfer" class="input mt-3" placeholder="رقم عملية التحويل">
 </div>
 
@@ -210,15 +210,9 @@ window.send = async () => {
     personal: personalUrl
   });
 
-  msg.innerText = "✅ تم الإرسال بنجاح 🎉";
+  window.location.href = "success.html";
 
 };
-
-/* ✨ تأثير عند النزول */
-window.addEventListener("scroll", () => {
-  const header = document.getElementById("header");
-  header.classList.toggle("scrolled", window.scrollY > 50);
-});
 
 </script>
 
