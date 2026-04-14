@@ -3,31 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>التسجيل</title>
+<title>SPU Registration</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body { font-family: sans-serif; background:#f1f5f9; }
+body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
+.color-sp { color:#1e295a; }
+.btn { background:#1e295a; color:white; padding:14px; border-radius:12px; width:100%; }
+.btn:hover { background:#8e1a1e; }
 .input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; }
-.btn { background:#1e293b; color:white; padding:12px; width:100%; border-radius:10px; }
 </style>
 </head>
 
-<body class="p-5">
+<body>
 
-<h2 class="text-xl mb-4">استمارة التسجيل</h2>
+<header class="bg-white shadow p-4 flex justify-between">
+<h1 class="text-2xl font-bold color-sp">SPU</h1>
+<span class="color-sp">الجامعة السورية الخاصة</span>
+</header>
 
-<form id="form" class="space-y-3">
+<main class="max-w-xl mx-auto p-6">
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+<h2 class="text-xl font-bold mb-6 color-sp text-center">
+استمارة التسجيل الإلكتروني
+</h2>
+
+<form id="form" class="space-y-4">
 
 <input class="input" name="name" placeholder="الاسم الكامل" required>
 <input class="input" name="phone" placeholder="رقم الهاتف" required>
 
-<button class="btn">إرسال</button>
+<button class="btn">إرسال الطلب</button>
 
 </form>
 
-<p id="msg"></p>
+<p id="msg" class="text-center mt-4"></p>
+
+</div>
+
+</main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
@@ -55,16 +72,10 @@ form.addEventListener("submit", async (e) => {
   const phone = form.phone.value;
 
   try {
-    await addDoc(collection(db, "students"), {
-      name,
-      phone
-    });
-
+    await addDoc(collection(db, "students"), { name, phone });
     msg.innerText = "تم الإرسال ✅";
     form.reset();
-
   } catch (err) {
-    console.error(err);
     msg.innerText = "خطأ ❌";
   }
 });
