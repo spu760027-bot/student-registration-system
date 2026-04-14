@@ -3,80 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل طالب</title>
+<title>بوابة التسجيل الإلكتروني | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-body { background:#0f172a; color:white; font-family:sans-serif; }
+body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
 
-.card {
-  max-width:450px;
-  margin:40px auto;
-  background:#1e293b;
-  padding:20px;
-  border-radius:16px;
-}
+.color-sp { color:#1e295a; }
+.color-u { color:#8e1a1e; }
 
 .input {
   width:100%;
   padding:10px;
-  margin-bottom:10px;
-  border-radius:8px;
-  border:none;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
 }
 
 .btn {
-  background:#22c55e;
+  background:#1e295a;
+  color:white;
+  padding:15px;
+  border-radius:12px;
   width:100%;
-  padding:12px;
-  border-radius:10px;
-  font-weight:bold;
 }
 
-.label { font-size:14px; margin-bottom:5px; display:block; }
+.card {
+  background:white;
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
 </style>
 </head>
 
 <body>
 
+<header class="bg-white border-b-4 border-[#1e295a] p-5">
+  <h1 class="text-3xl font-bold">
+    <span class="color-sp">SP</span><span class="color-u">U</span>
+  </h1>
+</header>
+
+<div class="max-w-2xl mx-auto mt-10">
+
 <div class="card">
 
-<h2 class="text-center text-xl mb-4">📋 تسجيل طالب</h2>
+<h2 class="text-center text-xl font-bold color-sp mb-6">
+استمارة التسجيل الإلكتروني 2026
+</h2>
 
-<input id="name" class="input" placeholder="الاسم الكامل">
-<input id="phone" class="input" placeholder="رقم الهاتف">
+<!-- بيانات -->
+<input id="name" class="input mb-3" placeholder="الاسم الكامل">
+<input id="national" class="input mb-3" placeholder="الرقم الوطني">
+<input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<label class="label">📄 صورة الشهادة الثانوية</label>
-<input type="file" id="cert" class="input">
+<select id="major" class="input mb-4">
+<option>اختر الكلية</option>
+<option>الطب</option>
+<option>الصيدلة</option>
+<option>IT</option>
+</select>
 
-<label class="label">🪪 صورة الهوية</label>
-<input type="file" id="idimg" class="input">
+<!-- صور -->
+<h3 class="font-bold mb-2">📁 رفع الملفات</h3>
 
-<label class="label">👤 صورة شخصية</label>
-<input type="file" id="personal" class="input">
+<input type="file" id="cert" class="input mb-2">
+<input type="file" id="idimg" class="input mb-2">
+<input type="file" id="personal" class="input mb-4">
 
-<!-- QR -->
-<div style="text-align:center;margin:15px 0;">
-  <p style="margin-bottom:10px;">💳 قم بالدفع عبر هذا الكود</p>
+<!-- الدفع -->
+<div class="bg-blue-50 p-4 rounded-xl text-center">
 
-  <img 
-    src="https://i.ibb.co/JWtdDy1m/qr.png"
-    style="width:200px;border-radius:12px;margin:auto;"
-  >
+<p class="mb-2 font-bold">💳 رسوم التسجيل 20$</p>
 
-  <p style="margin-top:10px;color:#94a3b8;font-size:13px;">
-    بعد الدفع قم برفع الصور وإرسال الطلب
-  </p>
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px;margin:auto">
 
-  <p style="color:yellow;font-size:12px;">
-    ⚠️ تأكد من الدفع قبل الإرسال
-  </p>
+<input id="transfer" class="input mt-3" placeholder="رقم عملية التحويل">
+
 </div>
 
-<button class="btn" onclick="send()">إرسال</button>
+<button class="btn mt-5" onclick="send()">إرسال</button>
 
-<p id="msg" style="text-align:center;margin-top:10px;"></p>
+<p id="msg" class="text-center mt-3"></p>
+
+</div>
 
 </div>
 
@@ -101,8 +113,8 @@ async function uploadImage(file){
   formData.append("image", file);
 
   const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-    method: "POST",
-    body: formData
+    method:"POST",
+    body:formData
   });
 
   const data = await res.json();
@@ -112,7 +124,10 @@ async function uploadImage(file){
 window.send = async () => {
 
   const name = document.getElementById("name").value;
+  const national = document.getElementById("national").value;
   const phone = document.getElementById("phone").value;
+  const major = document.getElementById("major").value;
+  const transfer = document.getElementById("transfer").value;
 
   const cert = document.getElementById("cert").files[0];
   const idimg = document.getElementById("idimg").files[0];
@@ -131,7 +146,10 @@ window.send = async () => {
 
   await addDoc(collection(db, "students"), {
     name,
+    national,
     phone,
+    major,
+    transfer,
     cert: certUrl,
     id: idUrl,
     personal: personalUrl
