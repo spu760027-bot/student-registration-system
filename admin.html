@@ -67,7 +67,7 @@ body { font-family: 'Tajawal', sans-serif; background:#eef2f7; }
 
 <script type="module">
 
-// 🔐 حماية
+// 🔐 حماية الصفحة
 if (localStorage.getItem("auth") !== "true") {
   window.location.href = "login.html";
 }
@@ -98,7 +98,7 @@ async function loadData() {
 
   const querySnapshot = await getDocs(collection(db, "students"));
 
-  // 📊 عداد الطلبات
+  // 🔥 العداد (مهم جدًا)
   countEl.innerText = "عدد الطلبات: " + querySnapshot.size;
 
   if (querySnapshot.empty) {
