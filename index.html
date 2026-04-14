@@ -3,52 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPU Registration</title>
+<title>تسجيل طالب</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
-.color-sp { color:#1e295a; }
-.btn { background:#1e295a; color:white; padding:14px; border-radius:12px; width:100%; }
-.btn:hover { background:#8e1a1e; }
-.input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; }
+body { font-family:sans-serif; background:#f1f5f9; }
+.box { max-width:400px; margin:50px auto; background:white; padding:20px; border-radius:12px; }
+.input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; margin-bottom:10px; }
+.btn { background:#1e293b; color:white; padding:10px; width:100%; border-radius:8px; }
 </style>
 </head>
 
 <body>
 
-<header class="bg-white shadow p-4 flex justify-between">
-<h1 class="text-2xl font-bold color-sp">SPU</h1>
-<span class="color-sp">الجامعة السورية الخاصة</span>
-</header>
+<div class="box">
 
-<main class="max-w-xl mx-auto p-6">
+<h2 class="text-center mb-4">📋 تسجيل طالب</h2>
 
-<div class="bg-white p-6 rounded-xl shadow">
+<input id="name" class="input" placeholder="الاسم">
+<input id="phone" class="input" placeholder="الهاتف">
+<input id="image" type="file" class="input">
 
-<h2 class="text-xl font-bold mb-6 color-sp text-center">
-استمارة التسجيل الإلكتروني
-</h2>
+<button class="btn" onclick="send()">إرسال</button>
 
-<form id="form" class="space-y-4">
-
-<input class="input" name="name" placeholder="الاسم الكامل" required>
-<input class="input" name="phone" placeholder="رقم الهاتف" required>
-
-<button class="btn">إرسال الطلب</button>
-
-</form>
-
-<p id="msg" class="text-center mt-4"></p>
+<p id="msg" class="text-center mt-3"></p>
 
 </div>
 
-</main>
-
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
@@ -62,23 +48,48 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const form = document.getElementById("form");
-const msg = document.getElementById("msg");
+window.send = async () => {
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const file = document.getElementById("image").files[0];
 
-  const name = form.name.value;
-  const phone = form.phone.value;
-
-  try {
-    await addDoc(collection(db, "students"), { name, phone });
-    msg.innerText = "تم الإرسال ✅";
-    form.reset();
-  } catch (err) {
-    msg.innerText = "خطأ ❌";
+  if (!name || !phone) {
+    alert("املأ البيانات");
+    return;
   }
-});
+
+  if (!file) {
+    alert("اختر صورة");
+    return;
+  }
+
+  document.getElementById("msg").innerText = "جاري الرفع... ⏳";
+
+  const apiKey = "bfa4cc0d29fb46535a67fd3dbe8de3bc";
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  const imageUrl = data.data.url;
+
+  await addDoc(collection(db, "students"), {
+    name,
+    phone,
+    image: imageUrl
+  });
+
+  document.getElementById("msg").innerText = "تم الإرسال ✅";
+
+};
+
 </script>
 
 </body>
