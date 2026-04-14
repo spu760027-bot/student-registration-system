@@ -3,84 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم</title>
+<title>لوحة التحكم | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body { background:#0f172a; color:white; font-family:sans-serif; }
+body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
 
-.header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
-}
-
-.card {
+/* Sidebar */
+.sidebar {
+  width:250px;
   background:#1e293b;
+  color:white;
+  position:fixed;
+  height:100%;
+  padding:20px;
+}
+
+/* Content */
+.content {
+  margin-right:250px;
+  padding:20px;
+}
+
+/* Cards */
+.card {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* Student Card */
+.student {
+  background:white;
   padding:15px;
-  border-radius:16px;
-  margin-bottom:15px;
-}
-
-.images {
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:10px;
+  border-radius:12px;
   margin-top:10px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.05);
 }
 
-.images img {
-  width:100%;
-  height:90px;
+/* Image */
+.student img {
+  width:70px;
+  height:70px;
   object-fit:cover;
-  border-radius:10px;
-}
-
-.btn-delete {
-  background:#ef4444;
-  padding:6px 10px;
-  border-radius:6px;
-  margin-top:10px;
-}
-
-.logout {
-  background:#334155;
-  padding:8px 12px;
   border-radius:8px;
-}
-
-.search {
-  width:100%;
-  padding:10px;
-  margin-bottom:15px;
-  border-radius:8px;
-  border:none;
 }
 </style>
 </head>
 
-<body class="p-5">
+<body>
 
-<div class="header">
-  <div>
-    <h2 class="text-xl font-bold">📊 لوحة التحكم</h2>
-    <p id="count" style="color:gray;">عدد الطلبات: 0</p>
-  </div>
-  <button class="logout" onclick="logout()">تسجيل خروج</button>
+<!-- 🔥 Sidebar -->
+<div class="sidebar">
+  <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
+  
+  <p class="mb-3">📊 لوحة التحكم</p>
+  <p class="mb-3">👨‍🎓 الطلبات</p>
+  
+  <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded mt-5">
+    تسجيل خروج
+  </button>
 </div>
 
-<input id="search" class="search" placeholder="🔍 بحث بالاسم">
+<!-- 🔥 Content -->
+<div class="content">
 
-<div id="data"></div>
+<h1 class="text-2xl font-bold mb-5">📊 لوحة التحكم</h1>
+
+<!-- Stats -->
+<div class="grid grid-cols-2 gap-4 mb-5">
+  <div class="card">
+    <p>عدد الطلبات</p>
+    <h2 id="count" class="text-2xl font-bold">0</h2>
+  </div>
+
+  <div class="card">
+    <p>اليوم</p>
+    <h2 id="today" class="text-2xl font-bold">0</h2>
+  </div>
+</div>
+
+<!-- Search -->
+<input id="search" placeholder="🔍 ابحث عن اسم..." 
+class="w-full p-3 rounded border mb-4">
+
+<!-- Students -->
+<div id="list"></div>
+
+</div>
 
 <script type="module">
-
-// 🔐 حماية
-if (localStorage.getItem("auth") !== "true") {
-  window.location.href = "login.html";
-}
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
@@ -94,83 +108,69 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const container = document.getElementById("data");
-const searchInput = document.getElementById("search");
-const countEl = document.getElementById("count");
+let students = [];
 
-let allData = [];
+async function load(){
+  const querySnapshot = await getDocs(collection(db,"students"));
+  students = [];
 
-async function loadData() {
-  container.innerHTML = "";
+  querySnapshot.forEach(docSnap=>{
+    students.push({ id: docSnap.id, ...docSnap.data() });
+  });
 
-  const querySnapshot = await getDocs(collection(db, "students"));
-
-  countEl.innerText = "عدد الطلبات: " + querySnapshot.size;
-
-  if (querySnapshot.empty) {
-    container.innerHTML = "<p style='text-align:center'>لا يوجد طلبات 📭</p>";
-    return;
-  }
-
-  const docs = [];
-  querySnapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
-
-  allData = docs.reverse();
-  renderData(allData);
+  document.getElementById("count").innerText = students.length;
+  show(students);
 }
 
-function renderData(data) {
-  container.innerHTML = "";
+function show(data){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
 
-  if (data.length === 0) {
-    container.innerHTML = "<p style='text-align:center'>لا يوجد نتائج 🔍</p>";
-    return;
-  }
+  data.forEach(s=>{
+    list.innerHTML += `
+    <div class="student flex justify-between items-center">
 
-  data.forEach((d) => {
-    container.innerHTML += `
-      <div class="card">
-        <p><b>👤 ${d.name}</b></p>
-        <p>📞 ${d.phone}</p>
+      <div>
+        <p>👤 ${s.name}</p>
+        <p>📞 ${s.phone}</p>
+        <p>🎓 ${s.major}</p>
 
-        <div class="images">
-          ${d.cert ? `<img src="${d.cert}">` : ""}
-          ${d.id ? `<img src="${d.id}">` : ""}
-          ${d.personal ? `<img src="${d.personal}">` : ""}
+        <div class="flex gap-2 mt-2">
+          <img src="${s.cert}">
+          <img src="${s.id}">
+          <img src="${s.personal}">
         </div>
-
-        <button class="btn-delete" onclick="deleteItem('${d.id}')">
-          حذف ❌
-        </button>
       </div>
+
+      <button onclick="del('${s.id}')" 
+      class="bg-red-500 text-white px-3 py-2 rounded">
+        حذف ❌
+      </button>
+
+    </div>
     `;
   });
 }
 
-// ❌ حذف
-window.deleteItem = async (id) => {
-  await deleteDoc(doc(db, "students", id));
-  loadData();
+/* 🔍 بحث */
+document.getElementById("search").addEventListener("input", e=>{
+  const value = e.target.value.toLowerCase();
+  const filtered = students.filter(s => s.name.toLowerCase().includes(value));
+  show(filtered);
+});
+
+/* ❌ حذف */
+window.del = async (id)=>{
+  await deleteDoc(doc(db,"students",id));
+  load();
 };
 
-// 🔐 تسجيل خروج
-window.logout = () => {
-  localStorage.removeItem("auth");
+/* 🚪 تسجيل خروج */
+window.logout = ()=>{
   window.location.href = "login.html";
 };
 
-// 🔍 بحث
-searchInput.addEventListener("input", () => {
-  const value = searchInput.value.toLowerCase();
-
-  const filtered = allData.filter(item =>
-    item.name.toLowerCase().includes(value)
-  );
-
-  renderData(filtered);
-});
-
-loadData();
+load();
 
 </script>
 
