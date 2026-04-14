@@ -7,8 +7,14 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- 🔥 Chart.js -->
+<!-- Charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<!-- PDF -->
+<script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
 
 <style>
 body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
@@ -63,7 +69,18 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
 <!-- Content -->
 <div class="content">
 
-<h1 class="text-2xl font-bold mb-5">📊 Analytics Dashboard</h1>
+<h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
+
+<!-- 🔥 Export Buttons -->
+<div class="flex gap-3 mb-5">
+  <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">
+    تحميل Excel 📊
+  </button>
+
+  <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">
+    تحميل PDF 📄
+  </button>
+</div>
 
 <!-- Stats -->
 <div class="grid grid-cols-2 gap-4 mb-5">
@@ -141,7 +158,6 @@ function buildCharts(){
   const labels = Object.keys(majors);
   const data = Object.values(majors);
 
-  /* Bar */
   new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
@@ -150,7 +166,6 @@ function buildCharts(){
     }
   });
 
-  /* Pie */
   new Chart(document.getElementById("pieChart"), {
     type: "pie",
     data: {
@@ -190,21 +205,57 @@ function show(data){
   });
 }
 
-/* بحث */
+/* 🔍 Search */
 document.getElementById("search").addEventListener("input", e=>{
   const v = e.target.value.toLowerCase();
   const filtered = students.filter(s => s.name.toLowerCase().includes(v));
   show(filtered);
 });
 
-/* حذف */
+/* ❌ Delete */
 window.del = async (id)=>{
   await deleteDoc(doc(db,"students",id));
   load();
 };
 
+/* 🚪 Logout */
 window.logout = ()=>{
   window.location.href="login.html";
+};
+
+/* 📊 Export Excel */
+window.exportExcel = () => {
+  const data = students.map(s => ({
+    الاسم: s.name,
+    الهاتف: s.phone,
+    الكلية: s.major
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(wb, ws, "Students");
+
+  XLSX.writeFile(wb, "students.xlsx");
+};
+
+/* 📄 Export PDF */
+window.exportPDF = () => {
+
+  const doc = new jspdf.jsPDF();
+  let y = 10;
+
+  students.forEach((s, i) => {
+    doc.text(`${i+1}. ${s.name} - ${s.phone} - ${s.major}`, 10, y);
+    y += 10;
+
+    if (y > 280) {
+      doc.addPage();
+      y = 10;
+    }
+  });
+
+  doc.save("students.pdf");
 };
 
 load();
