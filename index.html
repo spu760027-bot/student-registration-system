@@ -11,9 +11,6 @@
 <style>
 body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
 
-.color-sp { color:#1e295a; }
-.color-u { color:#8e1a1e; }
-
 .input { width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:8px; }
 
 .file-label { font-weight:bold; margin-bottom:5px; display:block; }
@@ -21,6 +18,8 @@ body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
 .card { background:white; padding:25px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.1); }
 
 .btn { background:#1e295a; color:white; padding:15px; border-radius:10px; width:100%; }
+
+.btn:hover { background:#8e1a1e; }
 
 .preview img {
   width:90px;
@@ -34,31 +33,23 @@ body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
 
 <body>
 
-<!-- 🔥 الهيدر الرسمي -->
-<header class="bg-white border-b-4 border-[#1e295a] p-5">
-  <div class="flex items-center gap-4">
-    <h1 class="text-4xl font-black">
-      <span class="color-sp">S</span><span class="color-sp">P</span><span class="color-u">U</span>
-    </h1>
-    <div class="h-8 w-px bg-gray-300"></div>
-    <span class="text-lg font-bold color-sp">الجامعة السورية الخاصة</span>
-  </div>
+<!-- 🔥 الهيدر مع الشعار -->
+<header class="bg-white shadow-md p-4 flex justify-center">
+  <img src="logo.png" alt="SPU Logo" class="h-24 object-contain">
 </header>
 
 <!-- الفورم -->
 <div class="max-w-2xl mx-auto mt-10">
 <div class="card">
 
-<h2 class="text-xl font-bold text-center mb-6 color-sp">
+<h2 class="text-xl font-bold text-center mb-6" style="color:#1e295a;">
 استمارة التسجيل الإلكتروني - 2026
 </h2>
 
-<!-- بيانات -->
 <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
 <input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<!-- 🎯 الكليات -->
 <select id="major" class="input mb-5">
 <option value="">اختر الكلية المطلوبة</option>
 
@@ -82,7 +73,6 @@ body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
 
 </select>
 
-<!-- 📁 الملفات -->
 <h3 class="font-bold mb-3">📁 الوثائق</h3>
 
 <label class="file-label">📄 صورة الشهادة الثانوية</label>
@@ -97,7 +87,6 @@ body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
 <input type="file" id="personal" class="input mb-2" onchange="preview(this,'p3')">
 <div id="p3" class="preview mb-4"></div>
 
-<!-- 💳 الدفع -->
 <div class="bg-blue-50 p-4 rounded-xl text-center">
 <p class="font-bold mb-2">💳 رسوم التسجيل 20$</p>
 
