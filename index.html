@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
+body { font-family:'Tajawal', sans-serif; background:#f0f4f8; }
 
 .color-sp { color:#1e295a; }
 .color-u { color:#8e1a1e; }
@@ -54,31 +54,48 @@ body { font-family: 'Tajawal', sans-serif; background:#f0f4f8; }
 استمارة التسجيل الإلكتروني 2026
 </h2>
 
-<!-- بيانات -->
 <input id="name" class="input mb-3" placeholder="الاسم الكامل">
 <input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<select id="major" class="input mb-4">
-<option>اختر الكلية</option>
-<option>الطب</option>
-<option>الصيدلة</option>
-<option>IT</option>
+<!-- 🎯 اختيار الكلية الاحترافي -->
+<select id="major" class="input mb-4" required>
+  <option value="" disabled selected>اختر الكلية المطلوبة</option>
+
+  <optgroup label="الكليات الطبية">
+    <option>الطب البشري</option>
+    <option>طب الأسنان</option>
+    <option>الصيدلة</option>
+  </optgroup>
+
+  <optgroup label="الكليات الهندسية">
+    <option>هندسة المعلوماتية والاتصالات</option>
+    <option>هندسة الذكاء الاصطناعي</option>
+    <option>الهندسة المدنية</option>
+    <option>الهندسة المعمارية</option>
+    <option>هندسة البترول</option>
+  </optgroup>
+
+  <optgroup label="الكليات الإدارية">
+    <option>إدارة الأعمال</option>
+  </optgroup>
 </select>
 
-<!-- صور -->
+<!-- 📁 رفع الملفات -->
 <h3 class="font-bold mb-2">📁 رفع الملفات</h3>
 
 <input type="file" id="cert" class="input mb-2">
 <input type="file" id="idimg" class="input mb-2">
 <input type="file" id="personal" class="input mb-4">
 
-<!-- الدفع -->
+<!-- 💳 الدفع -->
 <div class="bg-blue-50 p-4 rounded-xl text-center">
 
 <p class="mb-2 font-bold">💳 رسوم التسجيل 20$</p>
 
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px;margin:auto">
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:200px;margin:auto;border-radius:10px;">
+
+<p class="text-sm mt-2">امسح الكود للدفع</p>
 
 <input id="transfer" class="input mt-3" placeholder="رقم عملية التحويل">
 
@@ -133,7 +150,7 @@ window.send = async () => {
   const idimg = document.getElementById("idimg").files[0];
   const personal = document.getElementById("personal").files[0];
 
-  if (!name || !phone || !cert || !idimg || !personal) {
+  if (!name || !phone || !cert || !idimg || !personal || !major) {
     alert("املأ كل الحقول");
     return;
   }
