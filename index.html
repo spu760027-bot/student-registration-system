@@ -8,26 +8,75 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body { font-family:sans-serif; background:#f1f5f9; }
-.box { max-width:400px; margin:50px auto; background:white; padding:20px; border-radius:12px; }
-.input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; margin-bottom:10px; }
-.btn { background:#1e293b; color:white; padding:10px; width:100%; border-radius:8px; }
+body { background:#0f172a; color:white; font-family:sans-serif; }
+
+.card {
+  max-width:450px;
+  margin:40px auto;
+  background:#1e293b;
+  padding:20px;
+  border-radius:16px;
+}
+
+.input {
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:8px;
+  border:none;
+}
+
+.btn {
+  background:#22c55e;
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.label { font-size:14px; margin-bottom:5px; display:block; }
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="card">
 
-<h2 class="text-center mb-4">📋 تسجيل طالب</h2>
+<h2 class="text-center text-xl mb-4">📋 تسجيل طالب</h2>
 
-<input id="name" class="input" placeholder="الاسم">
-<input id="phone" class="input" placeholder="الهاتف">
-<input id="image" type="file" class="input">
+<input id="name" class="input" placeholder="الاسم الكامل">
+<input id="phone" class="input" placeholder="رقم الهاتف">
+
+<label class="label">📄 صورة الشهادة الثانوية</label>
+<input type="file" id="cert" class="input">
+
+<label class="label">🪪 صورة الهوية</label>
+<input type="file" id="idimg" class="input">
+
+<label class="label">👤 صورة شخصية</label>
+<input type="file" id="personal" class="input">
+
+<!-- QR -->
+<div style="text-align:center;margin:15px 0;">
+  <p style="margin-bottom:10px;">💳 قم بالدفع عبر هذا الكود</p>
+
+  <img 
+    src="https://i.ibb.co/3y0Wb0p/qr-example.png"
+    style="width:180px;border-radius:10px;margin:auto;"
+  >
+
+  <p style="margin-top:10px;color:#94a3b8;font-size:13px;">
+    بعد الدفع قم برفع الصور وإرسال الطلب
+  </p>
+
+  <p style="color:yellow;font-size:12px;">
+    ⚠️ تأكد من الدفع قبل الإرسال
+  </p>
+</div>
 
 <button class="btn" onclick="send()">إرسال</button>
 
-<p id="msg" class="text-center mt-3"></p>
+<p id="msg" style="text-align:center;margin-top:10px;"></p>
 
 </div>
 
@@ -40,34 +89,15 @@ const firebaseConfig = {
   apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
   authDomain: "student-system-13431.firebaseapp.com",
   projectId: "student-system-13431",
-  storageBucket: "student-system-13431.firebasestorage.app",
-  messagingSenderId: "752390660616",
-  appId: "1:752390660616:web:72651eb2d96f30b45ee7bd"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-window.send = async () => {
+// 🔥 API ImgBB
+const apiKey = "bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const file = document.getElementById("image").files[0];
-
-  if (!name || !phone) {
-    alert("املأ البيانات");
-    return;
-  }
-
-  if (!file) {
-    alert("اختر صورة");
-    return;
-  }
-
-  document.getElementById("msg").innerText = "جاري الرفع... ⏳";
-
-  const apiKey = "bfa4cc0d29fb46535a67fd3dbe8de3bc";
-
+async function uploadImage(file){
   const formData = new FormData();
   formData.append("image", file);
 
@@ -77,16 +107,38 @@ window.send = async () => {
   });
 
   const data = await res.json();
+  return data.data.url;
+}
 
-  const imageUrl = data.data.url;
+window.send = async () => {
+
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+
+  const cert = document.getElementById("cert").files[0];
+  const idimg = document.getElementById("idimg").files[0];
+  const personal = document.getElementById("personal").files[0];
+
+  if (!name || !phone || !cert || !idimg || !personal) {
+    alert("املأ كل الحقول");
+    return;
+  }
+
+  document.getElementById("msg").innerText = "جاري الرفع... ⏳";
+
+  const certUrl = await uploadImage(cert);
+  const idUrl = await uploadImage(idimg);
+  const personalUrl = await uploadImage(personal);
 
   await addDoc(collection(db, "students"), {
     name,
     phone,
-    image: imageUrl
+    cert: certUrl,
+    id: idUrl,
+    personal: personalUrl
   });
 
-  document.getElementById("msg").innerText = "تم الإرسال ✅";
+  document.getElementById("msg").innerText = "تم الإرسال بنجاح ✅";
 
 };
 
