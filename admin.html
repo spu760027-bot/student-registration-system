@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body { font-family: sans-serif; background:#f1f5f9; }
+.card { background:white; padding:15px; border-radius:10px; margin-bottom:10px; }
+</style>
+</head>
+
+<body class="p-5">
+
+<h2 class="text-xl mb-4">📊 لوحة التحكم</h2>
+
+<div id="data"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+  authDomain: "student-system-13431.firebaseapp.com",
+  projectId: "student-system-13431",
+  storageBucket: "student-system-13431.firebasestorage.app",
+  messagingSenderId: "752390660616",
+  appId: "1:752390660616:web:72651eb2d96f30b45ee7bd"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const container = document.getElementById("data");
+
+async function loadData() {
+  const querySnapshot = await getDocs(collection(db, "students"));
+
+  querySnapshot.forEach((doc) => {
+    const d = doc.data();
+
+    container.innerHTML += `
+      <div class="card">
+        <p><b>الاسم:</b> ${d.name}</p>
+        <p><b>الهاتف:</b> ${d.phone}</p>
+      </div>
+    `;
+  });
+}
+
+loadData();
+</script>
+
+</body>
+</html>
