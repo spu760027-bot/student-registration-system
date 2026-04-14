@@ -8,7 +8,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body { font-family: 'Tajawal', sans-serif; background:#eef2f7; }
+body { background:#0f172a; color:white; font-family:sans-serif; }
 
 .header {
   display:flex;
@@ -18,24 +18,35 @@ body { font-family: 'Tajawal', sans-serif; background:#eef2f7; }
 }
 
 .card {
-  background:white;
+  background:#1e293b;
   padding:15px;
-  border-radius:12px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.05);
-  margin-bottom:10px;
+  border-radius:16px;
+  margin-bottom:15px;
+}
+
+.images {
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:10px;
+  margin-top:10px;
+}
+
+.images img {
+  width:100%;
+  height:90px;
+  object-fit:cover;
+  border-radius:10px;
 }
 
 .btn-delete {
-  background:#dc2626;
-  color:white;
+  background:#ef4444;
   padding:6px 10px;
   border-radius:6px;
   margin-top:10px;
 }
 
 .logout {
-  background:#1e293b;
-  color:white;
+  background:#334155;
   padding:8px 12px;
   border-radius:8px;
 }
@@ -45,7 +56,7 @@ body { font-family: 'Tajawal', sans-serif; background:#eef2f7; }
   padding:10px;
   margin-bottom:15px;
   border-radius:8px;
-  border:1px solid #ccc;
+  border:none;
 }
 </style>
 </head>
@@ -54,20 +65,19 @@ body { font-family: 'Tajawal', sans-serif; background:#eef2f7; }
 
 <div class="header">
   <div>
-    <p style="color:gray;">نظام إدارة الطلبات - SPU</p>
     <h2 class="text-xl font-bold">📊 لوحة التحكم</h2>
-    <p id="count" style="margin-top:5px;color:gray;">عدد الطلبات: 0</p>
+    <p id="count" style="color:gray;">عدد الطلبات: 0</p>
   </div>
   <button class="logout" onclick="logout()">تسجيل خروج</button>
 </div>
 
-<input id="search" class="search" placeholder="🔍 ابحث عن اسم...">
+<input id="search" class="search" placeholder="🔍 بحث بالاسم">
 
 <div id="data"></div>
 
 <script type="module">
 
-// 🔐 حماية الصفحة
+// 🔐 حماية
 if (localStorage.getItem("auth") !== "true") {
   window.location.href = "login.html";
 }
@@ -79,9 +89,6 @@ const firebaseConfig = {
   apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
   authDomain: "student-system-13431.firebaseapp.com",
   projectId: "student-system-13431",
-  storageBucket: "student-system-13431.firebasestorage.app",
-  messagingSenderId: "752390660616",
-  appId: "1:752390660616:web:72651eb2d96f30b45ee7bd"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -98,11 +105,10 @@ async function loadData() {
 
   const querySnapshot = await getDocs(collection(db, "students"));
 
-  // 📊 العداد
   countEl.innerText = "عدد الطلبات: " + querySnapshot.size;
 
   if (querySnapshot.empty) {
-    container.innerHTML = "<p style='text-align:center'>لا يوجد طلبات بعد 📭</p>";
+    container.innerHTML = "<p style='text-align:center'>لا يوجد طلبات 📭</p>";
     return;
   }
 
@@ -124,10 +130,14 @@ function renderData(data) {
   data.forEach((d) => {
     container.innerHTML += `
       <div class="card">
-        <p><b>👤 الاسم:</b> ${d.name}</p>
-        <p><b>📞 الهاتف:</b> ${d.phone}</p>
+        <p><b>👤 ${d.name}</b></p>
+        <p>📞 ${d.phone}</p>
 
-        ${d.image ? `<img src="${d.image}" style="width:120px;margin-top:10px;border-radius:10px;">` : ""}
+        <div class="images">
+          ${d.cert ? `<img src="${d.cert}">` : ""}
+          ${d.id ? `<img src="${d.id}">` : ""}
+          ${d.personal ? `<img src="${d.personal}">` : ""}
+        </div>
 
         <button class="btn-delete" onclick="deleteItem('${d.id}')">
           حذف ❌
@@ -149,7 +159,7 @@ window.logout = () => {
   window.location.href = "login.html";
 };
 
-// 🔍 البحث
+// 🔍 بحث
 searchInput.addEventListener("input", () => {
   const value = searchInput.value.toLowerCase();
 
