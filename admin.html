@@ -3,14 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم | SPU</title>
+<title>Dashboard | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
+
+<!-- 🔥 Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
 
-/* Sidebar */
 .sidebar {
   width:250px;
   background:#1e293b;
@@ -20,13 +22,11 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
   padding:20px;
 }
 
-/* Content */
 .content {
   margin-right:250px;
   padding:20px;
 }
 
-/* Cards */
 .card {
   background:white;
   padding:20px;
@@ -34,7 +34,6 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
   box-shadow:0 5px 20px rgba(0,0,0,0.05);
 }
 
-/* Student Card */
 .student {
   background:white;
   padding:15px;
@@ -43,34 +42,28 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
   box-shadow:0 3px 10px rgba(0,0,0,0.05);
 }
 
-/* Image */
 .student img {
-  width:70px;
-  height:70px;
-  object-fit:cover;
+  width:60px;
+  height:60px;
   border-radius:8px;
+  object-fit:cover;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 Sidebar -->
+<!-- Sidebar -->
 <div class="sidebar">
   <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
-  
-  <p class="mb-3">📊 لوحة التحكم</p>
-  <p class="mb-3">👨‍🎓 الطلبات</p>
-  
-  <button onclick="logout()" class="bg-red-500 px-4 py-2 rounded mt-5">
-    تسجيل خروج
-  </button>
+  <p>📊 Dashboard</p>
+  <button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
 </div>
 
-<!-- 🔥 Content -->
+<!-- Content -->
 <div class="content">
 
-<h1 class="text-2xl font-bold mb-5">📊 لوحة التحكم</h1>
+<h1 class="text-2xl font-bold mb-5">📊 Analytics Dashboard</h1>
 
 <!-- Stats -->
 <div class="grid grid-cols-2 gap-4 mb-5">
@@ -80,16 +73,26 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
   </div>
 
   <div class="card">
-    <p>اليوم</p>
-    <h2 id="today" class="text-2xl font-bold">0</h2>
+    <p>عدد الكليات</p>
+    <h2 id="majorsCount" class="text-2xl font-bold">0</h2>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+  <div class="card">
+    <canvas id="barChart"></canvas>
+  </div>
+
+  <div class="card">
+    <canvas id="pieChart"></canvas>
   </div>
 </div>
 
 <!-- Search -->
-<input id="search" placeholder="🔍 ابحث عن اسم..." 
-class="w-full p-3 rounded border mb-4">
+<input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
 
-<!-- Students -->
+<!-- List -->
 <div id="list"></div>
 
 </div>
@@ -111,17 +114,53 @@ const db = getFirestore(app);
 let students = [];
 
 async function load(){
-  const querySnapshot = await getDocs(collection(db,"students"));
+  const snapshot = await getDocs(collection(db,"students"));
   students = [];
 
-  querySnapshot.forEach(docSnap=>{
-    students.push({ id: docSnap.id, ...docSnap.data() });
+  snapshot.forEach(d=>{
+    students.push({ id:d.id, ...d.data() });
   });
 
   document.getElementById("count").innerText = students.length;
+
+  buildCharts();
   show(students);
 }
 
+/* 🔥 Charts */
+function buildCharts(){
+
+  const majors = {};
+
+  students.forEach(s=>{
+    majors[s.major] = (majors[s.major] || 0) + 1;
+  });
+
+  document.getElementById("majorsCount").innerText = Object.keys(majors).length;
+
+  const labels = Object.keys(majors);
+  const data = Object.values(majors);
+
+  /* Bar */
+  new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{ label: "عدد الطلاب", data }]
+    }
+  });
+
+  /* Pie */
+  new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels,
+      datasets: [{ data }]
+    }
+  });
+}
+
+/* عرض */
 function show(data){
   const list = document.getElementById("list");
   list.innerHTML = "";
@@ -142,8 +181,7 @@ function show(data){
         </div>
       </div>
 
-      <button onclick="del('${s.id}')" 
-      class="bg-red-500 text-white px-3 py-2 rounded">
+      <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">
         حذف ❌
       </button>
 
@@ -152,22 +190,21 @@ function show(data){
   });
 }
 
-/* 🔍 بحث */
+/* بحث */
 document.getElementById("search").addEventListener("input", e=>{
-  const value = e.target.value.toLowerCase();
-  const filtered = students.filter(s => s.name.toLowerCase().includes(value));
+  const v = e.target.value.toLowerCase();
+  const filtered = students.filter(s => s.name.toLowerCase().includes(v));
   show(filtered);
 });
 
-/* ❌ حذف */
+/* حذف */
 window.del = async (id)=>{
   await deleteDoc(doc(db,"students",id));
   load();
 };
 
-/* 🚪 تسجيل خروج */
 window.logout = ()=>{
-  window.location.href = "login.html";
+  window.location.href="login.html";
 };
 
 load();
