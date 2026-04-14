@@ -11,18 +11,12 @@
 <style>
 body { font-family:'Tajawal', sans-serif; background:#f0f4f8; }
 
-.input { width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:10px; }
-
-.btn {
-  background:#1e295a;
-  color:white;
-  padding:15px;
-  border-radius:12px;
+.input {
   width:100%;
-  transition:0.3s;
+  padding:10px;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
 }
-
-.btn:disabled { background:gray; }
 
 .card {
   background:white;
@@ -31,11 +25,36 @@ body { font-family:'Tajawal', sans-serif; background:#f0f4f8; }
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-.preview img {
-  width:80px;
-  height:80px;
+.preview-box {
+  position:relative;
+  display:inline-block;
+}
+
+.preview-box img {
+  width:90px;
+  height:90px;
   object-fit:cover;
   border-radius:10px;
+}
+
+.remove-btn {
+  position:absolute;
+  top:-5px;
+  left:-5px;
+  background:red;
+  color:white;
+  border-radius:50%;
+  width:20px;
+  height:20px;
+  font-size:12px;
+}
+
+.btn {
+  background:#1e295a;
+  color:white;
+  padding:15px;
+  border-radius:12px;
+  width:100%;
 }
 </style>
 </head>
@@ -43,7 +62,6 @@ body { font-family:'Tajawal', sans-serif; background:#f0f4f8; }
 <body>
 
 <div class="max-w-2xl mx-auto mt-10">
-
 <div class="card">
 
 <h2 class="text-center text-xl font-bold mb-6">
@@ -53,42 +71,36 @@ body { font-family:'Tajawal', sans-serif; background:#f0f4f8; }
 <input id="name" class="input mb-3" placeholder="الاسم الكامل">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<select id="major" class="input mb-4">
-<option value="">اختر الكلية</option>
-<option>الطب البشري</option>
-<option>طب الأسنان</option>
-<option>الصيدلة</option>
-<option>الهندسة المعلوماتية</option>
-<option>الهندسة المدنية</option>
-<option>الهندسة المعمارية</option>
-<option>إدارة الأعمال</option>
-</select>
+<!-- الصور -->
+<h3 class="font-bold mb-3">📁 رفع الوثائق</h3>
 
-<!-- صور -->
-<h3 class="font-bold mb-2">📁 رفع الملفات</h3>
+<label class="font-bold text-sm">📄 صورة الشهادة الثانوية</label>
+<p class="text-xs text-red-500 mb-1">⚠️ صورة واضحة فقط</p>
+<input type="file" id="cert" class="input mb-2" onchange="preview(this,'p1','cert')">
+<div id="p1"></div>
 
-<input type="file" id="cert" class="input mb-2" onchange="preview(this,'p1')">
-<div id="p1" class="preview mb-2"></div>
+<label class="font-bold text-sm">🪪 صورة الهوية الشخصية</label>
+<p class="text-xs text-red-500 mb-1">⚠️ الوجهين واضحين</p>
+<input type="file" id="idimg" class="input mb-2" onchange="preview(this,'p2','idimg')">
+<div id="p2"></div>
 
-<input type="file" id="idimg" class="input mb-2" onchange="preview(this,'p2')">
-<div id="p2" class="preview mb-2"></div>
-
-<input type="file" id="personal" class="input mb-2" onchange="preview(this,'p3')">
-<div id="p3" class="preview mb-3"></div>
+<label class="font-bold text-sm">👤 صورة شخصية</label>
+<p class="text-xs text-red-500 mb-1">⚠️ خلفية واضحة</p>
+<input type="file" id="personal" class="input mb-2" onchange="preview(this,'p3','personal')">
+<div id="p3"></div>
 
 <!-- QR -->
-<div class="bg-blue-50 p-4 text-center rounded-xl">
+<div class="bg-blue-50 p-4 mt-4 text-center rounded-xl">
 <p>💳 رسوم التسجيل 20$</p>
 <img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:200px;margin:auto;">
 <input id="transfer" class="input mt-3" placeholder="رقم عملية التحويل">
 </div>
 
-<button id="btn" class="btn mt-5" onclick="send()">إرسال</button>
+<button class="btn mt-5" onclick="send()">إرسال</button>
 
 <p id="msg" class="text-center mt-3"></p>
 
 </div>
-
 </div>
 
 <script type="module">
@@ -120,34 +132,44 @@ async function uploadImage(file){
   return data.data.url;
 }
 
-window.preview = (input, id) => {
+// 👀 preview + حذف
+window.preview = (input, id, inputId) => {
   const file = input.files[0];
   if (!file) return;
 
   const url = URL.createObjectURL(file);
-  document.getElementById(id).innerHTML = `<img src="${url}">`;
+
+  document.getElementById(id).innerHTML = `
+    <div class="preview-box">
+      <img src="${url}">
+      <button class="remove-btn" onclick="removeImage('${id}','${inputId}')">×</button>
+    </div>
+  `;
 };
 
+window.removeImage = (previewId, inputId) => {
+  document.getElementById(previewId).innerHTML = "";
+  document.getElementById(inputId).value = "";
+};
+
+// 🚀 إرسال
 window.send = async () => {
 
-  const btn = document.getElementById("btn");
   const msg = document.getElementById("msg");
 
   const name = document.getElementById("name").value;
   const phone = document.getElementById("phone").value;
-  const major = document.getElementById("major").value;
 
   const cert = document.getElementById("cert").files[0];
   const idimg = document.getElementById("idimg").files[0];
   const personal = document.getElementById("personal").files[0];
 
-  if (!name || !phone || !major || !cert || !idimg || !personal) {
+  if (!name || !phone || !cert || !idimg || !personal) {
     msg.innerText = "❌ تأكد من تعبئة كل الحقول";
     return;
   }
 
-  btn.disabled = true;
-  btn.innerText = "⏳ جاري الإرسال...";
+  msg.innerText = "⏳ جاري الرفع...";
 
   const certUrl = await uploadImage(cert);
   const idUrl = await uploadImage(idimg);
@@ -156,14 +178,12 @@ window.send = async () => {
   await addDoc(collection(db, "students"), {
     name,
     phone,
-    major,
     cert: certUrl,
     id: idUrl,
     personal: personalUrl
   });
 
-  btn.innerText = "✅ تم الإرسال";
-  msg.innerText = "تم إرسال الطلب بنجاح 🎉";
+  msg.innerText = "✅ تم الإرسال بنجاح 🎉";
 
 };
 
