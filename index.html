@@ -11,15 +11,7 @@
 <style>
 body { font-family:'Tajawal', sans-serif; background:#f0f4f8; }
 
-.color-sp { color:#1e295a; }
-.color-u { color:#8e1a1e; }
-
-.input {
-  width:100%;
-  padding:10px;
-  border:1px solid #cbd5e1;
-  border-radius:10px;
-}
+.input { width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:10px; }
 
 .btn {
   background:#1e295a;
@@ -27,7 +19,10 @@ body { font-family:'Tajawal', sans-serif; background:#f0f4f8; }
   padding:15px;
   border-radius:12px;
   width:100%;
+  transition:0.3s;
 }
+
+.btn:disabled { background:gray; }
 
 .card {
   background:white;
@@ -35,73 +30,60 @@ body { font-family:'Tajawal', sans-serif; background:#f0f4f8; }
   border-radius:16px;
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
+
+.preview img {
+  width:80px;
+  height:80px;
+  object-fit:cover;
+  border-radius:10px;
+}
 </style>
 </head>
 
 <body>
 
-<header class="bg-white border-b-4 border-[#1e295a] p-5">
-  <h1 class="text-3xl font-bold">
-    <span class="color-sp">SP</span><span class="color-u">U</span>
-  </h1>
-</header>
-
 <div class="max-w-2xl mx-auto mt-10">
 
 <div class="card">
 
-<h2 class="text-center text-xl font-bold color-sp mb-6">
-استمارة التسجيل الإلكتروني 2026
+<h2 class="text-center text-xl font-bold mb-6">
+📋 استمارة التسجيل الإلكتروني 2026
 </h2>
 
 <input id="name" class="input mb-3" placeholder="الاسم الكامل">
-<input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<!-- 🎯 اختيار الكلية الاحترافي -->
-<select id="major" class="input mb-4" required>
-  <option value="" disabled selected>اختر الكلية المطلوبة</option>
-
-  <optgroup label="الكليات الطبية">
-    <option>الطب البشري</option>
-    <option>طب الأسنان</option>
-    <option>الصيدلة</option>
-  </optgroup>
-
-  <optgroup label="الكليات الهندسية">
-    <option>هندسة المعلوماتية والاتصالات</option>
-    <option>هندسة الذكاء الاصطناعي</option>
-    <option>الهندسة المدنية</option>
-    <option>الهندسة المعمارية</option>
-    <option>هندسة البترول</option>
-  </optgroup>
-
-  <optgroup label="الكليات الإدارية">
-    <option>إدارة الأعمال</option>
-  </optgroup>
+<select id="major" class="input mb-4">
+<option value="">اختر الكلية</option>
+<option>الطب البشري</option>
+<option>طب الأسنان</option>
+<option>الصيدلة</option>
+<option>الهندسة المعلوماتية</option>
+<option>الهندسة المدنية</option>
+<option>الهندسة المعمارية</option>
+<option>إدارة الأعمال</option>
 </select>
 
-<!-- 📁 رفع الملفات -->
+<!-- صور -->
 <h3 class="font-bold mb-2">📁 رفع الملفات</h3>
 
-<input type="file" id="cert" class="input mb-2">
-<input type="file" id="idimg" class="input mb-2">
-<input type="file" id="personal" class="input mb-4">
+<input type="file" id="cert" class="input mb-2" onchange="preview(this,'p1')">
+<div id="p1" class="preview mb-2"></div>
 
-<!-- 💳 الدفع -->
-<div class="bg-blue-50 p-4 rounded-xl text-center">
+<input type="file" id="idimg" class="input mb-2" onchange="preview(this,'p2')">
+<div id="p2" class="preview mb-2"></div>
 
-<p class="mb-2 font-bold">💳 رسوم التسجيل 20$</p>
+<input type="file" id="personal" class="input mb-2" onchange="preview(this,'p3')">
+<div id="p3" class="preview mb-3"></div>
 
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:200px;margin:auto;border-radius:10px;">
-
-<p class="text-sm mt-2">امسح الكود للدفع</p>
-
+<!-- QR -->
+<div class="bg-blue-50 p-4 text-center rounded-xl">
+<p>💳 رسوم التسجيل 20$</p>
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:200px;margin:auto;">
 <input id="transfer" class="input mt-3" placeholder="رقم عملية التحويل">
-
 </div>
 
-<button class="btn mt-5" onclick="send()">إرسال</button>
+<button id="btn" class="btn mt-5" onclick="send()">إرسال</button>
 
 <p id="msg" class="text-center mt-3"></p>
 
@@ -138,24 +120,34 @@ async function uploadImage(file){
   return data.data.url;
 }
 
+window.preview = (input, id) => {
+  const file = input.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+  document.getElementById(id).innerHTML = `<img src="${url}">`;
+};
+
 window.send = async () => {
 
+  const btn = document.getElementById("btn");
+  const msg = document.getElementById("msg");
+
   const name = document.getElementById("name").value;
-  const national = document.getElementById("national").value;
   const phone = document.getElementById("phone").value;
   const major = document.getElementById("major").value;
-  const transfer = document.getElementById("transfer").value;
 
   const cert = document.getElementById("cert").files[0];
   const idimg = document.getElementById("idimg").files[0];
   const personal = document.getElementById("personal").files[0];
 
-  if (!name || !phone || !cert || !idimg || !personal || !major) {
-    alert("املأ كل الحقول");
+  if (!name || !phone || !major || !cert || !idimg || !personal) {
+    msg.innerText = "❌ تأكد من تعبئة كل الحقول";
     return;
   }
 
-  document.getElementById("msg").innerText = "جاري الرفع... ⏳";
+  btn.disabled = true;
+  btn.innerText = "⏳ جاري الإرسال...";
 
   const certUrl = await uploadImage(cert);
   const idUrl = await uploadImage(idimg);
@@ -163,16 +155,15 @@ window.send = async () => {
 
   await addDoc(collection(db, "students"), {
     name,
-    national,
     phone,
     major,
-    transfer,
     cert: certUrl,
     id: idUrl,
     personal: personalUrl
   });
 
-  document.getElementById("msg").innerText = "تم الإرسال بنجاح ✅";
+  btn.innerText = "✅ تم الإرسال";
+  msg.innerText = "تم إرسال الطلب بنجاح 🎉";
 
 };
 
