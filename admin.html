@@ -10,6 +10,7 @@
 <style>
 body { font-family: sans-serif; background:#f1f5f9; }
 .card { background:white; padding:15px; border-radius:10px; margin-bottom:10px; }
+.btn-delete { color:red; margin-top:10px; }
 </style>
 </head>
 
@@ -21,7 +22,7 @@ body { font-family: sans-serif; background:#f1f5f9; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
@@ -38,19 +39,30 @@ const db = getFirestore(app);
 const container = document.getElementById("data");
 
 async function loadData() {
+  container.innerHTML = "";
+
   const querySnapshot = await getDocs(collection(db, "students"));
 
-  querySnapshot.forEach((doc) => {
-    const d = doc.data();
+  querySnapshot.forEach((docItem) => {
+    const d = docItem.data();
 
     container.innerHTML += `
       <div class="card">
         <p><b>الاسم:</b> ${d.name}</p>
         <p><b>الهاتف:</b> ${d.phone}</p>
+        <button class="btn-delete" onclick="deleteItem('${docItem.id}')">
+          حذف ❌
+        </button>
       </div>
     `;
   });
 }
+
+// دالة الحذف
+window.deleteItem = async (id) => {
+  await deleteDoc(doc(db, "students", id));
+  loadData(); // تحديث البيانات بدون ريفرش
+};
 
 loadData();
 </script>
