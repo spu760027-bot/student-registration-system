@@ -56,6 +56,7 @@ body { font-family: 'Tajawal', sans-serif; background:#eef2f7; }
   <div>
     <p style="color:gray;">نظام إدارة الطلبات - SPU</p>
     <h2 class="text-xl font-bold">📊 لوحة التحكم</h2>
+    <p id="count" style="margin-top:5px;color:gray;">عدد الطلبات: 0</p>
   </div>
   <button class="logout" onclick="logout()">تسجيل خروج</button>
 </div>
@@ -88,6 +89,7 @@ const db = getFirestore(app);
 
 const container = document.getElementById("data");
 const searchInput = document.getElementById("search");
+const countEl = document.getElementById("count");
 
 let allData = [];
 
@@ -95,6 +97,9 @@ async function loadData() {
   container.innerHTML = "";
 
   const querySnapshot = await getDocs(collection(db, "students"));
+
+  // 📊 عداد الطلبات
+  countEl.innerText = "عدد الطلبات: " + querySnapshot.size;
 
   if (querySnapshot.empty) {
     container.innerHTML = "<p style='text-align:center'>لا يوجد طلبات بعد 📭</p>";
