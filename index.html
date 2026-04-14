@@ -1,7 +1,37 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التسجيل</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body { font-family: sans-serif; background:#f1f5f9; }
+.input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; }
+.btn { background:#1e293b; color:white; padding:12px; width:100%; border-radius:10px; }
+</style>
+</head>
+
+<body class="p-5">
+
+<h2 class="text-xl mb-4">استمارة التسجيل</h2>
+
+<form id="form" class="space-y-3">
+
+<input class="input" name="name" placeholder="الاسم الكامل" required>
+<input class="input" name="phone" placeholder="رقم الهاتف" required>
+
+<button class="btn">إرسال</button>
+
+</form>
+
+<p id="msg"></p>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
@@ -14,9 +44,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
-// ===== كود الفورم =====
 const form = document.getElementById("form");
 const msg = document.getElementById("msg");
 
@@ -25,20 +53,15 @@ form.addEventListener("submit", async (e) => {
 
   const name = form.name.value;
   const phone = form.phone.value;
-  const file = form.file1.files[0];
 
   try {
-    const fileRef = ref(storage, "files/" + file.name);
-    await uploadBytes(fileRef, file);
-    const url = await getDownloadURL(fileRef);
-
     await addDoc(collection(db, "students"), {
       name,
-      phone,
-      file: url
+      phone
     });
 
     msg.innerText = "تم الإرسال ✅";
+    form.reset();
 
   } catch (err) {
     console.error(err);
@@ -46,3 +69,6 @@ form.addEventListener("submit", async (e) => {
   }
 });
 </script>
+
+</body>
+</html>
