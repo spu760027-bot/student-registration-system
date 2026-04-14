@@ -12,6 +12,7 @@ body { background:#f1f5f9; font-family:sans-serif; }
 .box { background:white; padding:20px; border-radius:12px; max-width:400px; margin:100px auto; }
 .input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; margin-bottom:10px; }
 .btn { background:#1e293b; color:white; padding:10px; width:100%; border-radius:8px; }
+.btn:hover { background:#8e1a1e; }
 </style>
 </head>
 
@@ -31,6 +32,10 @@ body { background:#f1f5f9; font-family:sans-serif; }
 </div>
 
 <script>
+
+// 🔥 مهم: حذف تسجيل الدخول القديم
+localStorage.removeItem("auth");
+
 function login() {
   const user = document.getElementById("user").value;
   const pass = document.getElementById("pass").value;
@@ -42,6 +47,7 @@ function login() {
     document.getElementById("msg").innerText = "بيانات خاطئة ❌";
   }
 }
+
 </script>
 
 </body>
