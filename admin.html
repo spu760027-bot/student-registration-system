@@ -71,7 +71,7 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
 
 <h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
-<!-- 🔥 Export Buttons -->
+<!-- Export -->
 <div class="flex gap-3 mb-5">
   <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">
     تحميل Excel 📊
@@ -119,6 +119,9 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
+/* 🔐 Auth */
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
   authDomain: "student-system-13431.firebaseapp.com",
@@ -127,6 +130,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+/* 🔐 حماية الصفحة */
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  }
+});
 
 let students = [];
 
@@ -144,7 +155,7 @@ async function load(){
   show(students);
 }
 
-/* 🔥 Charts */
+/* Charts */
 function buildCharts(){
 
   const majors = {};
@@ -205,25 +216,26 @@ function show(data){
   });
 }
 
-/* 🔍 Search */
+/* Search */
 document.getElementById("search").addEventListener("input", e=>{
   const v = e.target.value.toLowerCase();
   const filtered = students.filter(s => s.name.toLowerCase().includes(v));
   show(filtered);
 });
 
-/* ❌ Delete */
+/* Delete */
 window.del = async (id)=>{
   await deleteDoc(doc(db,"students",id));
   load();
 };
 
-/* 🚪 Logout */
-window.logout = ()=>{
+/* Logout */
+window.logout = async ()=>{
+  await signOut(auth);
   window.location.href="login.html";
 };
 
-/* 📊 Export Excel */
+/* Excel */
 window.exportExcel = () => {
   const data = students.map(s => ({
     الاسم: s.name,
@@ -239,7 +251,7 @@ window.exportExcel = () => {
   XLSX.writeFile(wb, "students.xlsx");
 };
 
-/* 📄 Export PDF */
+/* PDF */
 window.exportPDF = () => {
 
   const doc = new jspdf.jsPDF();
