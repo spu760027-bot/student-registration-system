@@ -19,6 +19,9 @@
 <style>
 body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
 
+/* نخفي الصفحة بالبداية */
+body { display:none; }
+
 .sidebar {
   width:250px;
   background:#1e293b;
@@ -118,8 +121,6 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-
-/* 🔐 Auth */
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -132,9 +133,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* 🔐 حماية الصفحة */
+/* 🔐 حماية + حل مشكلة الطرد */
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
+  if (user) {
+    document.body.style.display = "block"; // يظهر الصفحة
+    load();
+  } else {
     window.location.href = "login.html";
   }
 });
@@ -269,8 +273,6 @@ window.exportPDF = () => {
 
   doc.save("students.pdf");
 };
-
-load();
 
 </script>
 
