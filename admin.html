@@ -85,21 +85,21 @@ z-index:999;
 <div id="toast"></div>
 
 <div id="modal">
-<img id="modalImg" style="max-width:90%;max-height:90%;">
+  <img id="modalImg" style="max-width:90%;max-height:90%;border-radius:10px;">
 </div>
 
 <div class="sidebar">
-<h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
-<p>📊 Dashboard PRO</p>
-<button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
+  <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
+  <p>📊 Dashboard PRO</p>
+  <button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
 </div>
 
 <div class="content">
 
 <h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
-<!-- Tabs -->
 <div class="flex gap-2 mb-4 flex-wrap">
+
 <button onclick="filterStatus('all', this)" class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active">
 الكل (<span id="cAll">0</span>)
 </button>
@@ -115,43 +115,38 @@ z-index:999;
 <button onclick="filterStatus('pending', this)" class="tab bg-yellow-500 text-white px-4 py-2 rounded">
 قيد المراجعة (<span id="cPending">0</span>)
 </button>
+
 </div>
 
-<!-- Export -->
 <div class="flex gap-3 mb-5">
-<button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">Excel 📊</button>
-<button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">PDF 📄</button>
+  <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">Excel 📊</button>
+  <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">PDF 📄</button>
 </div>
 
-<!-- Stats -->
 <div class="grid grid-cols-2 gap-4 mb-5">
-<div class="card">
-<p>عدد الطلبات</p>
-<h2 id="count" class="text-2xl font-bold">0</h2>
+  <div class="card">
+    <p>عدد الطلبات</p>
+    <h2 id="count" class="text-2xl font-bold">0</h2>
+  </div>
+
+  <div class="card">
+    <p>عدد الكليات</p>
+    <h2 id="majorsCount" class="text-2xl font-bold">0</h2>
+  </div>
 </div>
 
-<div class="card">
-<p>عدد الكليات</p>
-<h2 id="majorsCount" class="text-2xl font-bold">0</h2>
-</div>
-</div>
-
-<!-- نسبة القبول -->
 <div class="card mb-5">
-<p>نسبة القبول</p>
-<h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
+  <p>نسبة القبول</p>
+  <h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
 </div>
 
-<!-- Charts -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-<div class="card"><canvas id="barChart"></canvas></div>
-<div class="card"><canvas id="pieChart"></canvas></div>
+  <div class="card"><canvas id="barChart"></canvas></div>
+  <div class="card"><canvas id="pieChart"></canvas></div>
 </div>
 
-<!-- Search -->
 <input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
 
-<!-- List -->
 <div id="list"></div>
 
 </div>
@@ -163,167 +158,207 @@ import { getFirestore, collection, onSnapshot, deleteDoc, doc, updateDoc } from 
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
-authDomain:"student-system-13431.firebaseapp.com",
-projectId:"student-system-13431"
+  apiKey:"AIzaSyDYZC...",
+  authDomain:"student-system-13431.firebaseapp.com",
+  projectId:"student-system-13431"
 });
 
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let students=[];
-let currentFilter="all";
+let students = [];
+let currentFilter = "all";
 let barChart, pieChart;
 
-/* Toast */
 function toast(msg){
-const t=document.getElementById("toast");
-t.innerText=msg;
-t.style.opacity=1;
-setTimeout(()=>t.style.opacity=0,3000);
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.opacity = 1;
+  setTimeout(()=> t.style.opacity = 0, 3000);
 }
 
-/* Auth */
-onAuthStateChanged(auth,(user)=>{
-if(user){
-document.body.style.display="block";
-startLive();
-}else{
-location.href="login.html";
-}
+onAuthStateChanged(auth, (user)=>{
+  if(user){
+    document.body.style.display="block";
+    startLive();
+  } else {
+    window.location.href="login.html";
+  }
 });
 
-/* Live */
 function startLive(){
-onSnapshot(collection(db,"students"),(snap)=>{
-students=[];
-snap.forEach(d=>students.push({id:d.id,...d.data()}));
+  onSnapshot(collection(db,"students"), snapshot=>{
+    students=[];
+    snapshot.forEach(d=>{
+      students.push({id:d.id, ...d.data()});
+    });
 
-count.innerText=students.length;
-
-buildCharts();
-updateCounters();
-applyFilters();
-});
+    document.getElementById("count").innerText = students.length;
+    buildCharts();
+    updateCounters();
+    applyFilters();
+  });
 }
 
-/* Counters */
 function updateCounters(){
-let approved=0,rejected=0,pending=0;
+  let approved=0,rejected=0,pending=0;
 
-students.forEach(s=>{
-if(!s.status || s.status.includes("قيد")) pending++;
-else if(s.status.includes("مقبول")) approved++;
-else if(s.status.includes("مرفوض")) rejected++;
-});
+  students.forEach(s=>{
+    if(!s.status || s.status.includes("قيد")) pending++;
+    else if(s.status.includes("مقبول")) approved++;
+    else if(s.status.includes("مرفوض")) rejected++;
+  });
 
-cAll.innerText=students.length;
-cApproved.innerText=approved;
-cRejected.innerText=rejected;
-cPending.innerText=pending;
+  document.getElementById("cAll").innerText = students.length;
+  document.getElementById("cApproved").innerText = approved;
+  document.getElementById("cRejected").innerText = rejected;
+  document.getElementById("cPending").innerText = pending;
 
-acceptRate.innerText = students.length ? Math.round((approved/students.length)*100)+"%" : "0%";
+  const rate = students.length ? Math.round((approved/students.length)*100) : 0;
+  document.getElementById("acceptRate").innerText = rate + "%";
 }
 
-/* Charts */
 function buildCharts(){
-const majors={};
-students.forEach(s=>majors[s.major]=(majors[s.major]||0)+1);
+  const majors={};
 
-majorsCount.innerText=Object.keys(majors).length;
+  students.forEach(s=>{
+    majors[s.major]=(majors[s.major]||0)+1;
+  });
 
-const labels=Object.keys(majors);
-const data=Object.values(majors);
+  document.getElementById("majorsCount").innerText = Object.keys(majors).length;
 
-if(barChart) barChart.destroy();
-if(pieChart) pieChart.destroy();
+  const labels=Object.keys(majors);
+  const data=Object.values(majors);
 
-barChart=new Chart(document.getElementById("barChart"),{
-type:"bar",
-data:{labels,datasets:[{label:"عدد الطلاب",data}]}
-});
+  if(barChart) barChart.destroy();
+  if(pieChart) pieChart.destroy();
 
-pieChart=new Chart(document.getElementById("pieChart"),{
-type:"pie",
-data:{labels,datasets:[{data}]}
-});
+  barChart=new Chart(document.getElementById("barChart"),{
+    type:"bar",
+    data:{labels,datasets:[{label:"عدد الطلاب",data}]}
+  });
+
+  pieChart=new Chart(document.getElementById("pieChart"),{
+    type:"pie",
+    data:{labels,datasets:[{data}]}
+  });
 }
 
-/* Filter */
 window.filterStatus=(type,el)=>{
-currentFilter=type;
-
-document.querySelectorAll(".tab").forEach(b=>b.classList.remove("tab-active"));
-if(el) el.classList.add("tab-active");
-
-applyFilters();
+  currentFilter=type;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("tab-active"));
+  if(el) el.classList.add("tab-active");
+  applyFilters();
 };
 
 function applyFilters(){
-let filtered=[...students];
+  let filtered=[...students];
 
-if(currentFilter==="approved") filtered=filtered.filter(s=>s.status?.includes("مقبول"));
-if(currentFilter==="rejected") filtered=filtered.filter(s=>s.status?.includes("مرفوض"));
-if(currentFilter==="pending") filtered=filtered.filter(s=>!s.status || s.status.includes("قيد"));
+  if(currentFilter==="approved")
+    filtered=filtered.filter(s=>(s.status||"").includes("مقبول"));
 
-const q=search.value.toLowerCase();
-if(q) filtered=filtered.filter(s=>s.name.toLowerCase().includes(q));
+  if(currentFilter==="rejected")
+    filtered=filtered.filter(s=>(s.status||"").includes("مرفوض"));
 
-show(filtered);
+  if(currentFilter==="pending")
+    filtered=filtered.filter(s=>!s.status || s.status.includes("قيد"));
+
+  const search=document.getElementById("search").value.toLowerCase();
+  if(search)
+    filtered=filtered.filter(s=> (s.name||"").toLowerCase().includes(search));
+
+  show(filtered);
 }
 
-/* Show */
+function fixURL(url){
+  if(!url) return "";
+  return url.replace(/([^:]\/)\/+/g, "$1");
+}
+
 function show(data){
-list.innerHTML="";
+  const list=document.getElementById("list");
+  list.innerHTML="";
 
-data.forEach(s=>{
-list.innerHTML+=`
-<div class="student flex justify-between items-center">
+  data.forEach(s=>{
+    list.innerHTML += `
+    <div class="student flex justify-between items-center">
 
-<div>
-<p>👤 ${s.name}</p>
-<p>📞 ${s.phone}</p>
-<p>🎓 ${s.major}</p>
-<p>📊 ${s.status||"⏳ قيد المراجعة"}</p>
+      <div>
+        <p>👤 ${s.name}</p>
+        <p>📞 ${s.phone}</p>
+        <p>🎓 ${s.major}</p>
 
-<div class="flex gap-2 mt-2">
-<img src="${s.cert}" onclick="openImg('${s.cert}')">
-<img src="${s.id}" onclick="openImg('${s.id}')">
-<img src="${s.personal}" onclick="openImg('${s.personal}')">
-</div>
+        <p><b>${s.status || "⏳ قيد المراجعة"}</b></p>
 
-<div class="mt-2 flex gap-2">
-<button onclick="updateStatus('${s.id}','✅ مقبول')" class="bg-green-600 text-white px-2 py-1 rounded">قبول</button>
-<button onclick="updateStatus('${s.id}','❌ مرفوض')" class="bg-red-600 text-white px-2 py-1 rounded">رفض</button>
-<button onclick="updateStatus('${s.id}','⏳ قيد المراجعة')" class="bg-yellow-500 text-white px-2 py-1 rounded">مراجعة</button>
-</div>
-</div>
+        <div class="flex gap-2 mt-2">
+          <img src="${fixURL(s.cert)}" onclick="openImg('${fixURL(s.cert)}')">
+          <img src="${fixURL(s.id)}" onclick="openImg('${fixURL(s.id)}')">
+          <img src="${fixURL(s.personal)}" onclick="openImg('${fixURL(s.personal)}')">
+        </div>
 
-<button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف</button>
+        <div class="mt-2 flex gap-2">
+          <button onclick="updateStatus('${s.id}','✅ مقبول')" class="bg-green-600 text-white px-3 py-1 rounded">قبول</button>
+          <button onclick="updateStatus('${s.id}','❌ مرفوض')" class="bg-red-600 text-white px-3 py-1 rounded">رفض</button>
+          <button onclick="updateStatus('${s.id}','⏳ قيد المراجعة')" class="bg-yellow-500 text-white px-3 py-1 rounded">مراجعة</button>
+        </div>
 
-</div>
-`;
-});
+      </div>
+
+      <button onclick="delStudent('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف ❌</button>
+
+    </div>
+    `;
+  });
 }
 
-/* 🔥 DELETE FIXED */
-window.del = async(id)=>{
-if(!confirm("متأكد من الحذف؟")) return;
-
-try {
-await deleteDoc(doc(db,"students",id));
-toast("✅ تم الحذف");
-} catch(e){
-console.error(e);
-alert("❌ " + e.message);
-}
+window.openImg=(src)=>{
+  document.getElementById("modal").style.display="flex";
+  document.getElementById("modalImg").src=src;
 };
 
-/* Update */
-window.updateStatus = async(id,status)=>{
-await updateDoc(doc(db,"students",id),{status});
-toast("تم التحديث");
+document.getElementById("modal").onclick=()=>{
+  document.getElementById("modal").style.display="none";
 };
 
-/* Image */
-window.openImg=(src
+document.getElementById("search").addEventListener("input",applyFilters);
+
+window.updateStatus=async(id,status)=>{
+  await updateDoc(doc(db,"students",id),{status});
+  toast("تم التحديث");
+};
+
+window.delStudent=async(id)=>{
+  if(confirm("هل أنت متأكد من الحذف؟")){
+    await deleteDoc(doc(db,"students",id));
+    toast("تم الحذف");
+  }
+};
+
+window.logout=async()=>{
+  await signOut(auth);
+  window.location.href="login.html";
+};
+
+window.exportExcel=()=>{
+  const ws=XLSX.utils.json_to_sheet(students);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"data");
+  XLSX.writeFile(wb,"students.xlsx");
+};
+
+window.exportPDF=()=>{
+  const pdf=new jspdf.jsPDF();
+  let y=10;
+
+  students.forEach((s,i)=>{
+    pdf.text(`${i+1} ${s.name}`,10,y);
+    y+=10;
+  });
+
+  pdf.save("students.pdf");
+};
+
+</script>
+
+</body>
+</html>
