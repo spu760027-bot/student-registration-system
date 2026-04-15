@@ -20,17 +20,27 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
 .tab-active { outline:3px solid #00000020; }
 
 #toast {
-position:fixed; top:20px; left:20px;
-background:#1e293b; color:white;
-padding:12px 20px; border-radius:10px;
-opacity:0; transition:.4s;
+position:fixed;
+top:20px;
+left:20px;
+background:#1e293b;
+color:white;
+padding:12px 20px;
+border-radius:10px;
+opacity:0;
+transition:0.4s;
+z-index:9999;
 }
 
 #modal {
-position:fixed; top:0;left:0;
+position:fixed;
+top:0;left:0;
 width:100%;height:100%;
 background:rgba(0,0,0,0.8);
-display:none; justify-content:center; align-items:center;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
 }
 </style>
 </head>
@@ -40,13 +50,13 @@ display:none; justify-content:center; align-items:center;
 <div id="toast"></div>
 
 <div id="modal">
-  <img id="modalImg" style="max-width:90%;max-height:90%;">
+  <img id="modalImg" style="max-width:90%;max-height:90%;border-radius:10px;">
 </div>
 
 <div class="sidebar">
   <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
   <p>📊 Dashboard PRO</p>
-  <button id="logoutBtn" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
+  <button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
 </div>
 
 <div class="content">
@@ -54,30 +64,50 @@ display:none; justify-content:center; align-items:center;
 <h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
 <div class="flex gap-2 mb-4 flex-wrap">
-<button class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active" data-filter="all">الكل (<span id="cAll">0</span>)</button>
-<button class="tab bg-green-600 text-white px-4 py-2 rounded" data-filter="approved">مقبول (<span id="cApproved">0</span>)</button>
-<button class="tab bg-red-600 text-white px-4 py-2 rounded" data-filter="rejected">مرفوض (<span id="cRejected">0</span>)</button>
-<button class="tab bg-yellow-500 text-white px-4 py-2 rounded" data-filter="pending">قيد المراجعة (<span id="cPending">0</span>)</button>
+
+<button onclick="filterStatus('all', this)" class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active">
+الكل (<span id="cAll">0</span>)
+</button>
+
+<button onclick="filterStatus('approved', this)" class="tab bg-green-600 text-white px-4 py-2 rounded">
+مقبول (<span id="cApproved">0</span>)
+</button>
+
+<button onclick="filterStatus('rejected', this)" class="tab bg-red-600 text-white px-4 py-2 rounded">
+مرفوض (<span id="cRejected">0</span>)
+</button>
+
+<button onclick="filterStatus('pending', this)" class="tab bg-yellow-500 text-white px-4 py-2 rounded">
+قيد المراجعة (<span id="cPending">0</span>)
+</button>
+
 </div>
 
 <div class="flex gap-3 mb-5">
-<button id="excelBtn" class="bg-green-600 text-white px-4 py-2 rounded">Excel 📊</button>
-<button id="pdfBtn" class="bg-blue-600 text-white px-4 py-2 rounded">PDF 📄</button>
+  <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">Excel 📊</button>
+  <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">PDF 📄</button>
 </div>
 
 <div class="grid grid-cols-2 gap-4 mb-5">
-<div class="card"><p>عدد الطلبات</p><h2 id="count">0</h2></div>
-<div class="card"><p>عدد الكليات</p><h2 id="majorsCount">0</h2></div>
+  <div class="card">
+    <p>عدد الطلبات</p>
+    <h2 id="count" class="text-2xl font-bold">0</h2>
+  </div>
+
+  <div class="card">
+    <p>عدد الكليات</p>
+    <h2 id="majorsCount" class="text-2xl font-bold">0</h2>
+  </div>
 </div>
 
 <div class="card mb-5">
-<p>نسبة القبول</p>
-<h2 id="acceptRate">0%</h2>
+  <p>نسبة القبول</p>
+  <h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-<div class="card"><canvas id="barChart"></canvas></div>
-<div class="card"><canvas id="pieChart"></canvas></div>
+  <div class="card"><canvas id="barChart"></canvas></div>
+  <div class="card"><canvas id="pieChart"></canvas></div>
 </div>
 
 <input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
@@ -92,171 +122,240 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/fireba
 import { getFirestore, collection, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
-const app = initializeApp({
-apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
-authDomain:"student-system-13431.firebaseapp.com",
-projectId:"student-system-13431"
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+  authDomain: "student-system-13431.firebaseapp.com",
+  projectId: "student-system-13431",
+};
 
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 let students = [];
 let currentFilter = "all";
+let barChart, pieChart;
 
 /* Toast */
 function toast(msg){
-const t=document.getElementById("toast");
-t.innerText=msg;
-t.style.opacity=1;
-setTimeout(()=>t.style.opacity=0,3000);
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.opacity = 1;
+  setTimeout(()=> t.style.opacity = 0, 3000);
 }
 
-/* Auth */
-onAuthStateChanged(auth,(user)=>{
-if(user){
-document.body.style.display="block";
-start();
-}else{
-location.href="login.html";
-}
-});
-
-/* Live */
-function start(){
-onSnapshot(collection(db,"students"),(snap)=>{
-students=[];
-snap.forEach(d=>students.push({id:d.id,...d.data()}));
-render();
-});
-}
-
-/* Render */
-function render(){
-
-// counters
-let approved=0,rejected=0,pending=0;
-students.forEach(s=>{
-if(!s.status||s.status.includes("قيد")) pending++;
-else if(s.status.includes("مقبول")) approved++;
-else rejected++;
-});
-
-cAll.innerText=students.length;
-cApproved.innerText=approved;
-cRejected.innerText=rejected;
-cPending.innerText=pending;
-count.innerText=students.length;
-acceptRate.innerText = students.length?Math.round(approved/students.length*100)+"%":"0%";
-
-// filter
-let data=[...students];
-if(currentFilter==="approved") data=data.filter(s=>s.status?.includes("مقبول"));
-if(currentFilter==="rejected") data=data.filter(s=>s.status?.includes("مرفوض"));
-if(currentFilter==="pending") data=data.filter(s=>!s.status||s.status.includes("قيد"));
-
-const val=search.value.toLowerCase();
-if(val) data=data.filter(s=>s.name.toLowerCase().includes(val));
-
-list.innerHTML="";
-data.forEach(s=>{
-list.innerHTML+=`
-<div class="student flex justify-between items-center">
-<div>
-<p>👤 ${s.name}</p>
-<p>📞 ${s.phone}</p>
-<p>🎓 ${s.major}</p>
-<p>📊 ${s.status||"⏳ قيد المراجعة"}</p>
-
-<div class="flex gap-2 mt-2">
-<img src="${s.cert}" class="img">
-<img src="${s.id}" class="img">
-<img src="${s.personal}" class="img">
-</div>
-
-<div class="mt-2 flex gap-2">
-<button class="approve" data-id="${s.id}">قبول</button>
-<button class="reject" data-id="${s.id}">رفض</button>
-<button class="pending" data-id="${s.id}">مراجعة</button>
-</div>
-</div>
-
-<button class="delete" data-id="${s.id}">حذف</button>
-</div>
-`;
-});
-
-// attach events
-document.querySelectorAll(".approve").forEach(b=>{
-b.onclick=()=>updateStatus(b.dataset.id,"✅ مقبول");
-});
-
-document.querySelectorAll(".reject").forEach(b=>{
-b.onclick=()=>updateStatus(b.dataset.id,"❌ مرفوض");
-});
-
-document.querySelectorAll(".pending").forEach(b=>{
-b.onclick=()=>updateStatus(b.dataset.id,"⏳ قيد المراجعة");
-});
-
-document.querySelectorAll(".delete").forEach(b=>{
-b.onclick=()=>delStudent(b.dataset.id);
-});
-
-document.querySelectorAll(".img").forEach(img=>{
-img.onclick=()=>{modal.style.display="flex";modalImg.src=img.src};
-});
-
-}
-
-/* Actions */
-async function updateStatus(id,status){
-await updateDoc(doc(db,"students",id),{status});
-toast("تم التحديث");
-}
-
-async function delStudent(id){
-if(!confirm("متأكد؟"))return;
-await deleteDoc(doc(db,"students",id));
-toast("تم الحذف");
-}
-
-/* UI */
-search.oninput=render;
-
-document.querySelectorAll(".tab").forEach(b=>{
-b.onclick=()=>{
-document.querySelectorAll(".tab").forEach(x=>x.classList.remove("tab-active"));
-b.classList.add("tab-active");
-currentFilter=b.dataset.filter;
-render();
-};
-});
-
-document.getElementById("logoutBtn").onclick=async()=>{
-await signOut(auth);
-location.href="login.html";
+/* 🔥 الحل هنا */
+window.updateStatus = async function(id, status){
+  try {
+    await updateDoc(doc(db,"students",id), { status });
+    toast("تم التحديث ✅");
+  } catch(e){
+    console.error(e);
+    alert("❌ فشل التحديث (Rules أو Login)");
+  }
 };
 
-document.getElementById("excelBtn").onclick=()=>{
-const data=students.map(s=>({name:s.name,phone:s.phone,major:s.major,status:s.status}));
-const ws=XLSX.utils.json_to_sheet(data);
-const wb=XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(wb,ws,"Students");
-XLSX.writeFile(wb,"students.xlsx");
+window.del = async function(id){
+  if(!confirm("متأكد من الحذف؟")) return;
+
+  try {
+    await deleteDoc(doc(db,"students",id));
+    toast("تم الحذف ✅");
+  } catch(e){
+    console.error(e);
+    alert("❌ فشل الحذف (Rules أو Login)");
+  }
 };
 
-document.getElementById("pdfBtn").onclick=()=>{
-const { jsPDF }=window.jspdf;
-const pdf=new jsPDF();
-let y=10;
-students.forEach(s=>{
-pdf.text(`${s.name}`,10,y);
-y+=10;
+/* حماية */
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.body.style.display = "block";
+    startLive();
+  } else {
+    setTimeout(()=>{
+      if(!auth.currentUser){
+        window.location.href = "login.html";
+      }
+    },1000);
+  }
 });
-pdf.save("students.pdf");
+
+/* LIVE */
+function startLive(){
+  onSnapshot(collection(db, "students"), (snapshot) => {
+
+    students = [];
+
+    snapshot.forEach(d=>{
+      students.push({ id:d.id, ...d.data() });
+    });
+
+    document.getElementById("count").innerText = students.length;
+
+    buildCharts();
+    updateCounters();
+    applyFilters();
+
+  });
+}
+
+/* Counters */
+function updateCounters(){
+
+  let approved = 0;
+  let rejected = 0;
+  let pending = 0;
+
+  students.forEach(s=>{
+    if (!s.status || s.status.includes("قيد")) pending++;
+    else if (s.status.includes("مقبول")) approved++;
+    else if (s.status.includes("مرفوض")) rejected++;
+  });
+
+  document.getElementById("cAll").innerText = students.length;
+  document.getElementById("cApproved").innerText = approved;
+  document.getElementById("cRejected").innerText = rejected;
+  document.getElementById("cPending").innerText = pending;
+
+  const rate = students.length ? Math.round((approved / students.length) * 100) : 0;
+  document.getElementById("acceptRate").innerText = rate + "%";
+}
+
+/* Charts */
+function buildCharts(){
+
+  const majors = {};
+
+  students.forEach(s=>{
+    majors[s.major] = (majors[s.major] || 0) + 1;
+  });
+
+  document.getElementById("majorsCount").innerText = Object.keys(majors).length;
+
+  const labels = Object.keys(majors);
+  const data = Object.values(majors);
+
+  if (barChart) barChart.destroy();
+  if (pieChart) pieChart.destroy();
+
+  barChart = new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: { labels, datasets: [{ label: "عدد الطلاب", data }] }
+  });
+
+  pieChart = new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: { labels, datasets: [{ data }] }
+  });
+}
+
+/* Filter */
+window.filterStatus = (type, el)=>{
+  currentFilter = type;
+
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("tab-active"));
+  if (el) el.classList.add("tab-active");
+
+  applyFilters();
+};
+
+function applyFilters(){
+
+  let filtered = [...students];
+
+  if (currentFilter === "approved")
+    filtered = filtered.filter(s => (s.status || "").includes("مقبول"));
+
+  if (currentFilter === "rejected")
+    filtered = filtered.filter(s => (s.status || "").includes("مرفوض"));
+
+  if (currentFilter === "pending")
+    filtered = filtered.filter(s => !s.status || s.status.includes("قيد"));
+
+  const searchVal = document.getElementById("search").value.toLowerCase();
+
+  if (searchVal)
+    filtered = filtered.filter(s => s.name.toLowerCase().includes(searchVal));
+
+  show(filtered);
+}
+
+/* Show */
+function show(data){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  data.forEach(s=>{
+    list.innerHTML += `
+    <div class="student flex justify-between items-center">
+
+      <div>
+        <p>👤 ${s.name}</p>
+        <p>📞 ${s.phone}</p>
+        <p>🎓 ${s.major}</p>
+        <p>📊 <b>${s.status || "⏳ قيد المراجعة"}</b></p>
+
+        <div class="flex gap-2 mt-2">
+          <img src="${s.cert}">
+          <img src="${s.id}">
+          <img src="${s.personal}">
+        </div>
+
+        <div class="mt-2 flex gap-2">
+          <button onclick="updateStatus('${s.id}','✅ مقبول')" class="bg-green-600 text-white px-3 py-1 rounded">قبول</button>
+          <button onclick="updateStatus('${s.id}','❌ مرفوض')" class="bg-red-600 text-white px-3 py-1 rounded">رفض</button>
+          <button onclick="updateStatus('${s.id}','⏳ قيد المراجعة')" class="bg-yellow-500 text-white px-3 py-1 rounded">مراجعة</button>
+        </div>
+
+      </div>
+
+      <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف ❌</button>
+
+    </div>
+    `;
+  });
+}
+
+/* Search */
+document.getElementById("search").addEventListener("input", applyFilters);
+
+/* Logout */
+window.logout = async ()=>{
+  await signOut(auth);
+  window.location.href="login.html";
+};
+
+/* Excel */
+window.exportExcel = () => {
+  const data = students.map(s => ({
+    الاسم: s.name,
+    الهاتف: s.phone,
+    الكلية: s.major,
+    الحالة: s.status
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Students");
+  XLSX.writeFile(wb, "students.xlsx");
+};
+
+/* PDF */
+window.exportPDF = () => {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+  let y = 10;
+
+  students.forEach((s, i) => {
+    pdf.text(`${i+1}. ${s.name} - ${s.phone}`, 10, y);
+    y += 10;
+  });
+
+  pdf.save("students.pdf");
 };
 
 </script>
+
 </body>
-</html>
+  </html>
