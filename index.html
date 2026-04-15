@@ -9,127 +9,40 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-  font-family:'Tajawal', sans-serif;
-  background:#f0f4f8;
-  margin:0;
-  padding-top:80px;
-}
+body {font-family:'Tajawal';background:#f0f4f8;margin:0;padding-top:80px;}
 
-/* 🔥 NAVBAR */
-.navbar {
-  backdrop-filter: blur(12px);
-  background: rgba(0,0,0,0.6);
-}
+.navbar {backdrop-filter: blur(12px);background: rgba(0,0,0,0.6);}
 
-/* 🔥 LOADER */
-#loader {
-  position:fixed;
-  width:100%;
-  height:100%;
-  background:#0f172a;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-.spinner {
-  width:50px;
-  height:50px;
-  border:5px solid #334155;
-  border-top:5px solid #fff;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin { to { transform:rotate(360deg); } }
+#loader {position:fixed;width:100%;height:100%;background:#0f172a;display:flex;justify-content:center;align-items:center;z-index:9999;}
+.spinner {width:50px;height:50px;border:5px solid #334155;border-top:5px solid #fff;border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin {to { transform:rotate(360deg); }}
 
-/* HERO */
-.hero { height:320px; position:relative; overflow:hidden; }
-.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); transition:.5s; }
+.hero {height:320px;position:relative;overflow:hidden;}
+.hero img {width:100%;height:100%;object-fit:cover;filter:brightness(.6);transition:.5s;}
 
-.overlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.4);
-}
+.overlay {position:absolute;width:100%;height:100%;background:rgba(0,0,0,.4);}
 
-.hero-content {
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-color:white;
-}
+.hero-content {position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:white;}
 
-/* CARD */
-.card {
-background:white;
-padding:25px;
-border-radius:16px;
-box-shadow:0 10px 30px rgba(0,0,0,0.1);
-transition:.4s;
-}
-.card:hover {
-transform:translateY(-8px) scale(1.02);
-}
+.card {background:white;padding:25px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.1);transition:.4s;}
+.card:hover {transform:translateY(-8px) scale(1.02);}
 
-/* INPUT */
-.input {
-width:100%;
-padding:12px;
-border:1px solid #cbd5e1;
-border-radius:10px;
-}
+.input {width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;}
 
-/* BUTTON */
-.btn {
-background:#1e295a;
-color:white;
-padding:15px;
-border-radius:10px;
-width:100%;
-}
+.btn {background:#1e295a;color:white;padding:15px;border-radius:10px;width:100%;}
 
-/* PREVIEW */
-.preview img {
-width:90px;
-height:90px;
-border-radius:10px;
-}
+.preview img {width:90px;height:90px;border-radius:10px;}
 
-/* TOAST */
-#toast {
-position:fixed;
-top:20px;
-right:20px;
-background:#1e295a;
-color:white;
-padding:12px;
-border-radius:10px;
-opacity:0;
-transition:.3s;
-}
+#toast {position:fixed;top:20px;right:20px;background:#1e295a;color:white;padding:12px;border-radius:10px;opacity:0;transition:.3s;}
 
-/* FADE */
-.fade {
-opacity:0;
-transform:translateY(30px);
-transition:.8s;
-}
-.fade.show {
-opacity:1;
-transform:translateY(0);
-}
+.fade {opacity:0;transform:translateY(30px);transition:.8s;}
+.fade.show {opacity:1;transform:translateY(0);}
 </style>
 </head>
 
 <body>
 
-<!-- LOADER -->
 <div id="loader"><div class="spinner"></div></div>
-
 <div id="toast"></div>
 
 <!-- NAVBAR -->
@@ -181,34 +94,12 @@ transform:translateY(0);
 <p>📅 سنة التأسيس</p>
 </div>
 <div class="card fade">
-<h2 class="text-4xl font-bold text-[#1e295a]" data-count="3000">0</h2>
+<h2 class="text-4xl font-bold text-[#1e295a]" data-count="5000">0</h2>
 <p>👨‍🎓 عدد الطلاب</p>
 </div>
 <div class="card fade">
 <h2 class="text-4xl font-bold text-[#1e295a]" data-count="6">0</h2>
 <p>🎓 عدد الكليات</p>
-</div>
-</div>
-
-<!-- WHY -->
-<div class="max-w-6xl mx-auto mt-16 px-4 text-center">
-<h2 class="text-3xl font-bold mb-8 fade">لماذا SPU؟</h2>
-<div class="grid md:grid-cols-3 gap-6">
-
-<div class="card fade"><h3>🎓 تعليم متطور</h3></div>
-<div class="card fade"><h3>💼 فرص عمل</h3></div>
-<div class="card fade"><h3>🌍 بيئة عالمية</h3></div>
-
-</div>
-</div>
-
-<!-- GALLERY -->
-<div class="max-w-6xl mx-auto mt-16 px-4">
-<h2 class="text-2xl text-center mb-6 fade">📸 الحياة الجامعية</h2>
-<div class="grid md:grid-cols-3 gap-4">
-<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded fade">
-<img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded fade">
-<img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded fade">
 </div>
 </div>
 
@@ -220,19 +111,14 @@ transform:translateY(0);
 
 <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
 <input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
-<input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
 <select id="major" class="input mb-5">
-<option value="">اختر الكلية</option>
 <option>الطب البشري</option>
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
-<option>هندسة المعلوماتية والاتصالات</option>
-<option>هندسة الذكاء الاصطناعي</option>
-<option>الهندسة المدنية</option>
-<option>الهندسة المعمارية</option>
-<option>هندسة البترول</option>
+<option>هندسة المعلوماتية</option>
+<option>الهندسة البترولية</option>
 <option>إدارة الأعمال</option>
 </select>
 
@@ -249,8 +135,12 @@ transform:translateY(0);
 
 <div class="bg-blue-50 p-4 text-center mt-4">
 <p>💳 500$</p>
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:150px">
-<input id="transfer" class="input mt-2">
+
+<div class="flex justify-center">
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" class="w-40 rounded shadow">
+</div>
+
+<input id="transfer" class="input mt-2" placeholder="رقم التحويل">
 </div>
 
 <button class="btn mt-5" onclick="send()">إرسال</button>
@@ -285,17 +175,14 @@ window.upload = async(input,key)=>{
 const file=input.files[0];
 if(!file)return;
 
-document.getElementById(key+"Preview").innerHTML=`<img src="${URL.createObjectURL(file)}" width="80">`;
+document.getElementById(key+"Preview").innerHTML=`<img src="${URL.createObjectURL(file)}" class="w-20 h-20 rounded shadow">`;
 
 const fd=new FormData();
 fd.append("image",file);
 
-const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
-method:"POST",
-body:fd
-});
-
+const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{method:"POST",body:fd});
 const data=await res.json();
+
 uploaded[key]=data.data.url;
 };
 
@@ -310,6 +197,11 @@ toast("❌ عبي كل الحقول");
 return;
 }
 
+if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
+toast("❌ ارفع كل الصور");
+return;
+}
+
 await addDoc(collection(db,"students"),{
 name,email,phone,major,
 cert:uploaded.cert,
@@ -319,6 +211,8 @@ status:"قيد المراجعة"
 });
 
 toast("✅ تم الإرسال");
+
+setTimeout(()=>window.location.href="success.html",1500);
 };
 
 window.toggleMenu=()=>{
@@ -333,6 +227,25 @@ document.getElementById("form").scrollIntoView({behavior:"smooth"});
 window.addEventListener("load",()=>{
 setTimeout(()=>document.getElementById("loader").style.display="none",800);
 });
+
+/* COUNTER */
+function animateCounter(el){
+const target = +el.getAttribute("data-count");
+let count = 0;
+const step = target / 50;
+
+function update(){
+count += step;
+if(count < target){
+el.innerText = Math.floor(count);
+requestAnimationFrame(update);
+}else{
+el.innerText = target;
+}
+}
+update();
+}
+document.querySelectorAll("[data-count]").forEach(animateCounter);
 
 /* FADE */
 const observer=new IntersectionObserver(entries=>{
