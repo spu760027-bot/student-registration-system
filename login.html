@@ -47,7 +47,7 @@ body {
   <input id="email" class="input" placeholder="Email">
   <input id="password" type="password" class="input" placeholder="Password">
 
-  <button class="btn" onclick="login()">دخول</button>
+  <button id="loginBtn" class="btn">دخول</button>
 
   <p id="msg" class="text-center mt-3 text-red-500"></p>
 </div>
@@ -55,10 +55,15 @@ body {
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } 
-from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  setPersistence, 
+  browserLocalPersistence,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
-/* Firebase Config */
+/* Firebase */
 const firebaseConfig = {
   apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
   authDomain: "student-system-13431.firebaseapp.com",
@@ -68,26 +73,46 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-/* 🔐 تسجيل الدخول (مع حفظ الجلسة) */
-window.login = async () => {
+/* 🔥 إذا مسجل دخول بالفعل → روح للأدمن مباشرة */
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.location.href = "admin.html";
+  }
+});
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+/* 🔐 تسجيل الدخول */
+document.getElementById("loginBtn").addEventListener("click", async () => {
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
   const msg = document.getElementById("msg");
+
+  if (!email || !password) {
+    msg.innerText = "❌ عبي كل الحقول";
+    return;
+  }
 
   try {
 
-    // 🔥 هذا أهم سطر (يحل المشكلة)
+    // 🔥 تثبيت الجلسة (مهم جداً)
     await setPersistence(auth, browserLocalPersistence);
 
     await signInWithEmailAndPassword(auth, email, password);
 
-    window.location.href = "admin.html";
+    msg.style.color = "green";
+    msg.innerText = "✅ تم تسجيل الدخول";
+
+    setTimeout(()=>{
+      window.location.href = "admin.html";
+    }, 500);
 
   } catch (e) {
-    msg.innerText = "❌ تأكد من الإيميل وكلمة السر";
+    console.error(e);
+    msg.style.color = "red";
+    msg.innerText = "❌ الإيميل أو كلمة السر غلط";
   }
-};
+
+});
 
 </script>
 
