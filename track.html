@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تتبع الطلب</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body {
+  background:#1e295a;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  font-family:'Tajawal';
+}
+.card {
+  background:white;
+  color:#1e293b;
+  padding:30px;
+  border-radius:15px;
+  width:320px;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2 class="text-xl font-bold mb-4">📋 تتبع طلبك</h2>
+
+<input id="id" class="w-full p-2 border rounded mb-3" placeholder="أدخل رقم الطلب">
+
+<button onclick="check()" class="bg-blue-600 text-white px-4 py-2 rounded">
+تحقق
+</button>
+
+<p id="result" class="mt-4 font-bold"></p>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSy...",
+  authDomain: "student-system-13431.firebaseapp.com",
+  projectId: "student-system-13431",
+});
+
+const db = getFirestore(app);
+
+/* Auto fill */
+const saved = localStorage.getItem("requestId");
+if (saved) document.getElementById("id").value = saved;
+
+window.check = async () => {
+
+  const id = document.getElementById("id").value;
+  const result = document.getElementById("result");
+
+  if (!id) {
+    result.innerText = "❌ أدخل رقم الطلب";
+    return;
+  }
+
+  const ref = doc(db, "students", id);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    result.innerText = "❌ الطلب غير موجود";
+    return;
+  }
+
+  const data = snap.data();
+
+  result.innerText = "📊 الحالة: " + data.status;
+
+};
+
+</script>
+
+</body>
+</html>
