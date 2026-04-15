@@ -12,26 +12,52 @@
 
 <style>
 body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
+
 .sidebar { width:250px; background:#1e293b; color:white; position:fixed; height:100%; padding:20px; }
 .content { margin-right:250px; padding:20px; }
+
 .card { background:white; padding:20px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.05); }
-.student { background:white; padding:15px; border-radius:12px; margin-top:10px; box-shadow:0 3px 10px rgba(0,0,0,0.05); }
-.student img { width:60px; height:60px; border-radius:8px; object-fit:cover; cursor:pointer; }
+
+.student {
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  margin-top:10px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.05);
+}
+
+.student img {
+  width:60px;
+  height:60px;
+  border-radius:8px;
+  object-fit:cover;
+  cursor:pointer;
+}
+
 .tab-active { outline:3px solid #00000020; }
 
 #toast {
-position:fixed; top:20px; left:20px;
-background:#1e293b; color:white;
-padding:12px 20px; border-radius:10px;
-opacity:0; transition:0.4s; z-index:9999;
+position:fixed;
+top:20px;
+left:20px;
+background:#1e293b;
+color:white;
+padding:12px 20px;
+border-radius:10px;
+opacity:0;
+transition:0.4s;
+z-index:9999;
 }
 
 #modal {
-position:fixed; top:0; left:0;
-width:100%; height:100%;
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
 background:rgba(0,0,0,0.8);
-display:none; justify-content:center;
-align-items:center; z-index:999;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
 }
 </style>
 </head>
@@ -55,48 +81,30 @@ align-items:center; z-index:999;
 <h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
 <div class="flex gap-2 mb-4 flex-wrap">
-<button onclick="filterStatus('all', this)" class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active">
-الكل (<span id="cAll">0</span>)
-</button>
-
-<button onclick="filterStatus('approved', this)" class="tab bg-green-600 text-white px-4 py-2 rounded">
-مقبول (<span id="cApproved">0</span>)
-</button>
-
-<button onclick="filterStatus('rejected', this)" class="tab bg-red-600 text-white px-4 py-2 rounded">
-مرفوض (<span id="cRejected">0</span>)
-</button>
-
-<button onclick="filterStatus('pending', this)" class="tab bg-yellow-500 text-white px-4 py-2 rounded">
-قيد المراجعة (<span id="cPending">0</span>)
-</button>
+<button onclick="filterStatus('all', this)" class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active">الكل (<span id="cAll">0</span>)</button>
+<button onclick="filterStatus('approved', this)" class="tab bg-green-600 text-white px-4 py-2 rounded">مقبول (<span id="cApproved">0</span>)</button>
+<button onclick="filterStatus('rejected', this)" class="tab bg-red-600 text-white px-4 py-2 rounded">مرفوض (<span id="cRejected">0</span>)</button>
+<button onclick="filterStatus('pending', this)" class="tab bg-yellow-500 text-white px-4 py-2 rounded">قيد المراجعة (<span id="cPending">0</span>)</button>
 </div>
 
 <div class="flex gap-3 mb-5">
-  <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">Excel 📊</button>
-  <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">PDF 📄</button>
+<button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">Excel 📊</button>
+<button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">PDF 📄</button>
 </div>
 
 <div class="grid grid-cols-2 gap-4 mb-5">
-  <div class="card">
-    <p>عدد الطلبات</p>
-    <h2 id="count" class="text-2xl font-bold">0</h2>
-  </div>
-
-  <div class="card">
-    <p>عدد الكليات</p>
-    <h2 id="majorsCount" class="text-2xl font-bold">0</h2>
-  </div>
+<div class="card"><p>عدد الطلبات</p><h2 id="count" class="text-2xl font-bold">0</h2></div>
+<div class="card"><p>عدد الكليات</p><h2 id="majorsCount" class="text-2xl font-bold">0</h2></div>
 </div>
 
 <div class="card mb-5">
-  <p>نسبة القبول</p>
-  <h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
+<p>نسبة القبول</p>
+<h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-  <div class="card"><canvas id="barChart"></canvas></div>
-  <div class="card"><canvas id="pieChart"></canvas></div>
+<div class="card"><canvas id="barChart"></canvas></div>
+<div class="card"><canvas id="pieChart"></canvas></div>
 </div>
 
 <input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
@@ -108,7 +116,7 @@ align-items:center; z-index:999;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
@@ -119,141 +127,187 @@ const app = initializeApp({
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-setPersistence(auth, browserLocalPersistence);
-
 let students = [];
 let currentFilter = "all";
+let barChart, pieChart;
 
-/* 🔐 تسجيل دخول */
+/* FIX URL */
+function fixUrl(url){
+  if(!url) return "";
+  return url.replace(/([^:]\/)\/+/g, "$1");
+}
+
+/* Toast */
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.opacity = 1;
+  setTimeout(()=> t.style.opacity = 0, 3000);
+}
+
+/* Auth */
 onAuthStateChanged(auth, (user)=>{
-  setTimeout(()=>{
-    if(user){
-      document.body.style.display="block";
-      startLive();
-    }else{
-      window.location.href="login.html";
-    }
-  },500);
+  if(user){
+    document.body.style.display="block";
+    startLive();
+  } else {
+    window.location.href="login.html";
+  }
 });
 
-/* 🔥 LIVE */
+/* Live */
 function startLive(){
-  onSnapshot(collection(db,"students"), snap=>{
+  onSnapshot(collection(db,"students"), snapshot=>{
     students=[];
-    snap.forEach(d=>students.push({id:d.id,...d.data()}));
-    updateAll();
+    snapshot.forEach(d=> students.push({id:d.id,...d.data()}));
+    document.getElementById("count").innerText = students.length;
+    buildCharts();
+    updateCounters();
+    applyFilters();
   });
 }
 
-/* تحديث */
-function updateAll(){
-  let approved=0,rejected=0,pending=0,majors={};
+/* Counters */
+function updateCounters(){
+  let approved=0,rejected=0,pending=0;
 
   students.forEach(s=>{
-    majors[s.major]=(majors[s.major]||0)+1;
-    if((s.status||"").includes("مقبول")) approved++;
-    else if((s.status||"").includes("مرفوض")) rejected++;
-    else pending++;
+    if (!s.status || s.status.includes("قيد")) pending++;
+    else if (s.status.includes("مقبول")) approved++;
+    else if (s.status.includes("مرفوض")) rejected++;
   });
 
-  document.getElementById("count").innerText=students.length;
-  document.getElementById("majorsCount").innerText=Object.keys(majors).length;
-  document.getElementById("cAll").innerText=students.length;
-  document.getElementById("cApproved").innerText=approved;
-  document.getElementById("cRejected").innerText=rejected;
-  document.getElementById("cPending").innerText=pending;
+  document.getElementById("cAll").innerText = students.length;
+  document.getElementById("cApproved").innerText = approved;
+  document.getElementById("cRejected").innerText = rejected;
+  document.getElementById("cPending").innerText = pending;
 
-  const rate = students.length ? Math.round((approved/students.length)*100):0;
-  document.getElementById("acceptRate").innerText=rate+"%";
-
-  show(students);
+  const rate = students.length ? Math.round((approved/students.length)*100) : 0;
+  document.getElementById("acceptRate").innerText = rate+"%";
 }
 
-/* عرض */
+/* Charts */
+function buildCharts(){
+  const majors={};
+  students.forEach(s=> majors[s.major]=(majors[s.major]||0)+1);
+
+  document.getElementById("majorsCount").innerText = Object.keys(majors).length;
+
+  if(barChart) barChart.destroy();
+  if(pieChart) pieChart.destroy();
+
+  barChart=new Chart(barChartEl(),{type:"bar",data:{labels:Object.keys(majors),datasets:[{data:Object.values(majors)}]}});
+  pieChart=new Chart(pieChartEl(),{type:"pie",data:{labels:Object.keys(majors),datasets:[{data:Object.values(majors)}]}});
+}
+
+function barChartEl(){ return document.getElementById("barChart"); }
+function pieChartEl(){ return document.getElementById("pieChart"); }
+
+/* Filter */
+window.filterStatus=(type,el)=>{
+  currentFilter=type;
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("tab-active"));
+  el.classList.add("tab-active");
+  applyFilters();
+};
+
+function applyFilters(){
+  let filtered=[...students];
+
+  if(currentFilter==="approved") filtered=filtered.filter(s=>s.status?.includes("مقبول"));
+  if(currentFilter==="rejected") filtered=filtered.filter(s=>s.status?.includes("مرفوض"));
+  if(currentFilter==="pending") filtered=filtered.filter(s=>!s.status || s.status.includes("قيد"));
+
+  const search=document.getElementById("search").value.toLowerCase();
+  if(search) filtered=filtered.filter(s=>s.name.toLowerCase().includes(search)||s.phone.includes(search));
+
+  show(filtered);
+}
+
+/* Show */
 function show(data){
   const list=document.getElementById("list");
   list.innerHTML="";
 
   data.forEach(s=>{
-    const div=document.createElement("div");
-    div.className="student flex justify-between items-center";
-
-    div.innerHTML=`
+    list.innerHTML+=`
+    <div class="student flex justify-between items-center">
       <div>
         <p>👤 ${s.name}</p>
         <p>📞 ${s.phone}</p>
         <p>🎓 ${s.major}</p>
-
-        <p><b>${s.status||"⏳ قيد المراجعة"}</b></p>
+        <p>📊 <b>${s.status||"⏳ قيد المراجعة"}</b></p>
 
         <div class="flex gap-2 mt-2">
-          <img src="${s.cert}">
-          <img src="${s.id}">
-          <img src="${s.personal}">
+          <img src="${fixUrl(s.cert)}" onclick="openImg('${fixUrl(s.cert)}')">
+          <img src="${fixUrl(s.id)}" onclick="openImg('${fixUrl(s.id)}')">
+          <img src="${fixUrl(s.personal)}" onclick="openImg('${fixUrl(s.personal)}')">
         </div>
 
         <div class="mt-2 flex gap-2">
-          <button class="accept bg-green-600 text-white px-3 py-1 rounded">قبول</button>
-          <button class="reject bg-red-600 text-white px-3 py-1 rounded">رفض</button>
-          <button class="pending bg-yellow-500 text-white px-3 py-1 rounded">مراجعة</button>
+          <button onclick="updateStatus('${s.id}','✅ مقبول')" class="bg-green-600 text-white px-3 py-1 rounded">قبول</button>
+          <button onclick="updateStatus('${s.id}','❌ مرفوض')" class="bg-red-600 text-white px-3 py-1 rounded">رفض</button>
         </div>
       </div>
 
-      <button class="delete bg-red-500 text-white px-3 py-2 rounded">حذف ❌</button>
-    `;
-
-    div.querySelector(".delete").onclick=()=>del(s.id);
-    div.querySelector(".accept").onclick=()=>updateStatus(s.id,"✅ مقبول");
-    div.querySelector(".reject").onclick=()=>updateStatus(s.id,"❌ مرفوض");
-    div.querySelector(".pending").onclick=()=>updateStatus(s.id,"⏳ قيد المراجعة");
-
-    const imgs=div.querySelectorAll("img");
-    imgs[0].onclick=()=>openImg(s.cert);
-    imgs[1].onclick=()=>openImg(s.id);
-    imgs[2].onclick=()=>openImg(s.personal);
-
-    list.appendChild(div);
+      <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف ❌</button>
+    </div>`;
   });
 }
 
-/* حذف */
+/* Delete */
 window.del = async(id)=>{
   if(!confirm("متأكد من الحذف؟")) return;
-
   try{
     await deleteDoc(doc(db,"students",id));
-    toast("🗑 تم الحذف");
+    toast("تم الحذف");
   }catch(e){
-    toast("❌ فشل الحذف");
     console.error(e);
+    toast("فشل الحذف");
   }
 };
 
-/* تعديل */
+/* Update */
 window.updateStatus = async(id,status)=>{
-  await updateDoc(doc(db,"students",id),{status});
+  try{
+    await updateDoc(doc(db,"students",id),{status});
+    toast("تم التحديث");
+  }catch(e){
+    toast("خطأ");
+  }
 };
 
-/* صور */
+/* Modal */
 window.openImg=(src)=>{
   document.getElementById("modal").style.display="flex";
   document.getElementById("modalImg").src=src;
 };
-document.getElementById("modal").onclick=()=>document.getElementById("modal").style.display="none";
+document.getElementById("modal").onclick=()=>modal.style.display="none";
 
-/* خروج */
-window.logout=async()=>{
-  await signOut(auth);
-  window.location.href="login.html";
+/* Logout */
+window.logout=async()=>{ await signOut(auth); location.href="login.html"; };
+
+/* Excel */
+window.exportExcel=()=>{
+  const ws=XLSX.utils.json_to_sheet(students);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Students");
+  XLSX.writeFile(wb,"students.xlsx");
 };
 
-/* Toast */
-function toast(msg){
-  const t=document.getElementById("toast");
-  t.innerText=msg;
-  t.style.opacity=1;
-  setTimeout(()=>t.style.opacity=0,3000);
-}
+/* PDF */
+window.exportPDF=()=>{
+  const { jsPDF } = window.jspdf;
+  const pdf=new jsPDF();
+  let y=10;
+  students.forEach((s,i)=>{
+    pdf.text(`${i+1}- ${s.name}`,10,y);
+    y+=10;
+  });
+  pdf.save("students.pdf");
+};
+
+document.getElementById("search").addEventListener("input",applyFilters);
 
 </script>
 
