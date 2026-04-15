@@ -16,13 +16,11 @@ body {
   padding-top:80px;
 }
 
-/* NAVBAR */
 .navbar {
   background:rgba(0,0,0,0.7);
   backdrop-filter:blur(10px);
 }
 
-/* HERO */
 .hero { height:320px; position:relative; overflow:hidden; }
 .hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); }
 
@@ -42,7 +40,6 @@ body {
   color:white;
 }
 
-/* CARD */
 .card {
   background:white;
   padding:25px;
@@ -50,7 +47,6 @@ body {
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* INPUT */
 .input {
   width:100%;
   padding:12px;
@@ -58,7 +54,6 @@ body {
   border-radius:10px;
 }
 
-/* BUTTON */
 .btn {
   background:#1e295a;
   color:white;
@@ -67,7 +62,6 @@ body {
   width:100%;
 }
 
-/* PREVIEW */
 .preview img {
   width:80px;
   height:80px;
@@ -75,7 +69,6 @@ body {
   margin:5px;
 }
 
-/* TOAST */
 #toast {
   position:fixed;
   top:20px;
@@ -94,7 +87,6 @@ body {
 
 <div id="toast"></div>
 
-<!-- NAVBAR -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
 
@@ -116,7 +108,6 @@ body {
 </div>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
 <img src="logo.png">
 <div class="overlay"></div>
@@ -130,7 +121,6 @@ body {
 </div>
 </div>
 
-<!-- STATS -->
 <div class="max-w-6xl mx-auto mt-12 px-4 grid md:grid-cols-3 gap-6 text-center">
 
 <div class="card">
@@ -150,7 +140,6 @@ body {
 
 </div>
 
-<!-- FORM -->
 <div id="form" class="max-w-2xl mx-auto mt-10 px-4">
 <div class="card">
 
@@ -188,7 +177,6 @@ body {
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
-<!-- PAYMENT -->
 <div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
 <p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
 
@@ -220,7 +208,6 @@ const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
 let uploaded={};
 
-/* TOAST */
 function toast(msg){
   const t=document.getElementById("toast");
   t.innerText=msg;
@@ -228,7 +215,6 @@ function toast(msg){
   setTimeout(()=>t.style.opacity=0,3000);
 }
 
-/* UPLOAD */
 window.upload = async(input,key)=>{
   const file=input.files[0];
   if(!file)return;
@@ -248,7 +234,6 @@ window.upload = async(input,key)=>{
   uploaded[key]=data.data.url;
 };
 
-/* SEND */
 window.send = async()=>{
 
   const name=document.getElementById("name").value;
@@ -271,7 +256,7 @@ window.send = async()=>{
   await addDoc(collection(db,"students"),{
     name,email,phone,major,
     cert:uploaded.cert,
-    id:uploaded.idimg,
+    idimg:uploaded.idimg,
     personal:uploaded.personal,
     status:"قيد المراجعة",
     date:new Date()
@@ -285,7 +270,6 @@ window.send = async()=>{
 
 };
 
-/* SCROLL */
 window.scrollToForm=()=>{
   document.getElementById("form").scrollIntoView({behavior:"smooth"});
 };
