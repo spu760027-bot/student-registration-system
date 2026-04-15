@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تتبع الطلب</title>
+<title>تتبع الطلب | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
 body {
-  background:#1e295a;
+  background: linear-gradient(135deg,#1e295a,#8e1a1e);
   color:white;
   display:flex;
   justify-content:center;
@@ -17,13 +17,43 @@ body {
   height:100vh;
   font-family:'Tajawal';
 }
+
+/* Card */
 .card {
   background:white;
   color:#1e293b;
   padding:30px;
-  border-radius:15px;
-  width:320px;
+  border-radius:20px;
+  width:340px;
   text-align:center;
+  box-shadow:0 15px 40px rgba(0,0,0,0.3);
+  animation:fadeUp 0.7s ease;
+}
+
+/* Animation */
+@keyframes fadeUp {
+  from {opacity:0; transform:translateY(30px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+/* Status Box */
+.statusBox {
+  margin-top:15px;
+  padding:10px;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+/* Colors */
+.pending { background:#facc15; color:black; }
+.approved { background:#16a34a; color:white; }
+.rejected { background:#dc2626; color:white; }
+
+button {
+  transition:0.3s;
+}
+button:hover {
+  transform:scale(1.05);
 }
 </style>
 </head>
@@ -36,11 +66,11 @@ body {
 
 <input id="id" class="w-full p-2 border rounded mb-3" placeholder="أدخل رقم الطلب">
 
-<button onclick="check()" class="bg-blue-600 text-white px-4 py-2 rounded">
+<button onclick="check()" class="bg-blue-600 text-white px-4 py-2 rounded w-full">
 تحقق
 </button>
 
-<p id="result" class="mt-4 font-bold"></p>
+<div id="result" class="mt-4"></div>
 
 </div>
 
@@ -50,24 +80,39 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/fireba
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const app = initializeApp({
-  apiKey: "AIzaSy...",
+  apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
   authDomain: "student-system-13431.firebaseapp.com",
   projectId: "student-system-13431",
 });
 
 const db = getFirestore(app);
 
+let lastStatus = "";
+
 /* Auto fill */
 const saved = localStorage.getItem("requestId");
 if (saved) document.getElementById("id").value = saved;
 
+/* عرض الحالة */
+function renderStatus(status){
+
+  let className = "pending";
+
+  if (status.includes("مقبول")) className = "approved";
+  if (status.includes("مرفوض")) className = "rejected";
+
+  document.getElementById("result").innerHTML =
+    `<div class="statusBox ${className}">📊 الحالة: ${status}</div>`;
+}
+
+/* تحقق */
 window.check = async () => {
 
   const id = document.getElementById("id").value;
   const result = document.getElementById("result");
 
   if (!id) {
-    result.innerText = "❌ أدخل رقم الطلب";
+    result.innerHTML = "❌ أدخل رقم الطلب";
     return;
   }
 
@@ -75,15 +120,37 @@ window.check = async () => {
   const snap = await getDoc(ref);
 
   if (!snap.exists()) {
-    result.innerText = "❌ الطلب غير موجود";
+    result.innerHTML = "❌ الطلب غير موجود";
     return;
   }
 
   const data = snap.data();
 
-  result.innerText = "📊 الحالة: " + data.status;
-
+  lastStatus = data.status;
+  renderStatus(data.status);
 };
+
+/* 🔔 إشعار تلقائي كل 5 ثواني */
+setInterval(async () => {
+
+  const id = document.getElementById("id").value;
+  if (!id) return;
+
+  const ref = doc(db, "students", id);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) return;
+
+  const data = snap.data();
+
+  if (lastStatus && lastStatus !== data.status) {
+    alert("🔔 تم تحديث حالة طلبك: " + data.status);
+    renderStatus(data.status);
+  }
+
+  lastStatus = data.status;
+
+}, 5000);
 
 </script>
 
