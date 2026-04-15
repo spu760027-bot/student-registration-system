@@ -11,10 +11,9 @@
 <style>
 body { font-family:'Tajawal', sans-serif; background:#f0f4f8; margin:0; }
 
-/* HERO */
-.hero { height:260px; position:relative; overflow:hidden; }
-.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.75); }
-.overlay { position:absolute; width:100%; height:100%; background:rgba(0,0,0,.3); }
+.hero { width:100%; height:260px; position:relative; overflow:hidden; }
+.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.8); }
+.overlay { position:absolute; width:100%; height:100%; background:rgba(0,0,0,.2); }
 
 .hero-content {
 position:absolute;
@@ -25,7 +24,6 @@ text-align:center;
 color:white;
 }
 
-/* CARD */
 .card {
 background:white;
 padding:25px;
@@ -33,16 +31,13 @@ border-radius:16px;
 box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* INPUT */
 .input {
 width:100%;
 padding:12px;
 border:1px solid #cbd5e1;
 border-radius:10px;
-margin-bottom:10px;
 }
 
-/* BUTTON */
 .btn {
 background:#1e295a;
 color:white;
@@ -51,15 +46,14 @@ border-radius:10px;
 width:100%;
 }
 
-/* PREVIEW */
+.btn:hover { background:#8e1a1e; }
+
 .preview img {
 width:90px;
 height:90px;
 border-radius:10px;
-margin-top:5px;
 }
 
-/* TOAST */
 #toast {
 position:fixed;
 top:20px;
@@ -71,6 +65,9 @@ border-radius:10px;
 opacity:0;
 transition:.3s;
 }
+
+.progress { height:6px; background:#e2e8f0; border-radius:10px; overflow:hidden; }
+.progress-bar { height:100%; width:0%; background:#1e295a; }
 </style>
 </head>
 
@@ -80,13 +77,35 @@ transition:.3s;
 
 <!-- HERO -->
 <div class="hero">
-<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238">
+<img src="logo.png">
 <div class="overlay"></div>
 
 <div class="hero-content">
 <h1>ابدأ مستقبلك مع SPU 🎓</h1>
 <p>انضم وسجل الآن بسهولة</p>
-<button onclick="scrollToForm()" style="background:#8e1a1e;padding:10px 20px;border-radius:8px;">قدّم الآن</button>
+<button onclick="scrollToForm()" style="background:#8e1a1e;padding:12px 25px;border-radius:10px;">قدّم الآن</button>
+</div>
+</div>
+
+<!-- INFO -->
+<div class="max-w-6xl mx-auto mt-10 px-4">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+
+<div class="bg-white p-6 rounded-2xl shadow">
+<h2 class="text-3xl font-bold text-[#1e295a]">2005</h2>
+<p>📅 سنة التأسيس</p>
+</div>
+
+<div class="bg-white p-6 rounded-2xl shadow">
+<h2 class="text-3xl font-bold text-[#1e295a]">3000+</h2>
+<p>👨‍🎓 عدد الطلاب</p>
+</div>
+
+<div class="bg-white p-6 rounded-2xl shadow">
+<h2 class="text-3xl font-bold text-[#1e295a]">6</h2>
+<p>🎓 عدد الكليات</p>
+</div>
+
 </div>
 </div>
 
@@ -94,34 +113,57 @@ transition:.3s;
 <div class="max-w-2xl mx-auto mt-10 px-4">
 <div class="card">
 
-<h2 class="text-xl font-bold text-center mb-6">استمارة التسجيل</h2>
+<h2 class="text-xl font-bold text-center mb-6">استمارة التسجيل الإلكتروني - 2026</h2>
 
-<input id="name" class="input" placeholder="الاسم">
-<input id="email" class="input" placeholder="البريد">
-<input id="phone" class="input" placeholder="الهاتف">
+<input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
+<input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
+<input id="national" class="input mb-3" placeholder="الرقم الوطني">
+<input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<select id="major" class="input">
-<option value="">اختر الكلية</option>
+<select id="major" class="input mb-5">
+<option value="">اختر الكلية المطلوبة</option>
+
+<optgroup label="الكليات الطبية">
 <option>الطب البشري</option>
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
-<option>هندسة المعلوماتية</option>
-<option>الهندسة البترولية</option>
+</optgroup>
+
+<optgroup label="الكليات الهندسية">
+<option>هندسة المعلوماتية والاتصالات</option>
+<option>هندسة الذكاء الاصطناعي</option>
+<option>الهندسة المدنية</option>
+<option>الهندسة المعمارية</option>
+<option>هندسة البترول</option>
+</optgroup>
+
+<optgroup label="الكليات الإدارية">
 <option>إدارة الأعمال</option>
+</optgroup>
+
 </select>
 
-<h3>📁 رفع الصور</h3>
+<h3 class="font-bold mb-3">📁 الوثائق</h3>
 
-<input type="file" onchange="upload(this,'cert')" class="input">
-<div id="certPreview" class="preview"></div>
+<label>📄 صورة الشهادة الثانوية</label>
+<input type="file" onchange="upload(this,'cert')" class="input mb-2">
+<div id="certPreview" class="preview mb-3"></div>
 
-<input type="file" onchange="upload(this,'idimg')" class="input">
-<div id="idimgPreview" class="preview"></div>
+<label>🪪 صورة الهوية</label>
+<input type="file" onchange="upload(this,'idimg')" class="input mb-2">
+<div id="idimgPreview" class="preview mb-3"></div>
 
-<input type="file" onchange="upload(this,'personal')" class="input">
-<div id="personalPreview" class="preview"></div>
+<label>👤 صورة شخصية</label>
+<input type="file" onchange="upload(this,'personal')" class="input mb-2">
+<div id="personalPreview" class="preview mb-4"></div>
 
-<button class="btn mt-4" onclick="send()">إرسال</button>
+<div class="bg-blue-50 p-4 rounded-xl text-center">
+<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px;margin:auto">
+<input id="transfer" class="input mt-3" placeholder="رقم عملية التحويل">
+</div>
+
+<button class="btn mt-5" onclick="send()">إرسال الطلب</button>
 
 </div>
 </div>
@@ -131,104 +173,88 @@ transition:.3s;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
-/* Firebase */
-const firebaseConfig = {
-apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
-authDomain: "student-system-13431.firebaseapp.com",
-projectId: "student-system-13431"
-};
+const app = initializeApp({
+apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+authDomain:"student-system-13431.firebaseapp.com",
+projectId:"student-system-13431"
+});
 
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* ImgBB */
-const API_KEY = "bfa4cc0d29fb46535a67fd3dbe8de3bc";
+const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
-let images = {};
+let uploaded={};
 
-/* Toast */
 function toast(msg){
-const t = document.getElementById("toast");
-t.innerText = msg;
-t.style.opacity = 1;
-setTimeout(()=>t.style.opacity = 0,2000);
+const t=document.getElementById("toast");
+t.innerText=msg;
+t.style.opacity=1;
+setTimeout(()=>t.style.opacity=0,3000);
 }
 
-/* Upload */
 window.upload = async(input,key)=>{
 try{
-const file = input.files[0];
-if(!file) return;
+const file=input.files[0];
+if(!file)return;
 
-document.getElementById(key+"Preview").innerHTML =
+document.getElementById(key+"Preview").innerHTML=
 `<img src="${URL.createObjectURL(file)}">`;
 
-const fd = new FormData();
+const fd=new FormData();
 fd.append("image",file);
 
-const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
+const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
 method:"POST",
 body:fd
 });
 
-const data = await res.json();
+const data=await res.json();
 
-if(!data.success){
-throw "error";
-}
+if(!data.success) throw "error";
 
-images[key] = data.data.url;
-
-toast("تم رفع الصورة");
+uploaded[key]=data.data.url;
 
 }catch{
-toast("فشل رفع الصورة");
+toast("❌ فشل رفع الصورة");
 }
 };
 
-/* Send */
 window.send = async()=>{
 try{
 
-const name = document.getElementById("name").value;
-const email = document.getElementById("email").value;
-const phone = document.getElementById("phone").value;
-const major = document.getElementById("major").value;
+const name=document.getElementById("name").value;
+const email=document.getElementById("email").value;
+const phone=document.getElementById("phone").value;
+const major=document.getElementById("major").value;
 
 if(!name || !email || !phone || !major){
-toast("❌ املأ كل الحقول");
+toast("❌ يرجى تعبئة جميع الحقول");
 return;
 }
 
-if(!images.cert || !images.idimg || !images.personal){
+if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
 toast("❌ ارفع كل الصور");
 return;
 }
 
 await addDoc(collection(db,"students"),{
-name,
-email,
-phone,
-major,
-cert:images.cert,
-id:images.idimg,
-personal:images.personal,
+name,email,phone,major,
+cert:uploaded.cert,
+id:uploaded.idimg,
+personal:uploaded.personal,
 status:"قيد المراجعة"
 });
 
 toast("✅ تم الإرسال");
 
-setTimeout(()=>{
-window.location.href="success.html";
-},1200);
+setTimeout(()=>window.location.href="success.html",1200);
 
 }catch(e){
 console.log(e);
-toast("❌ خطأ");
+toast("❌ خطأ في الإرسال");
 }
 };
 
-/* Scroll */
 window.scrollToForm = ()=>{
 document.querySelector(".card").scrollIntoView({behavior:"smooth"});
 };
