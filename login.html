@@ -3,38 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول</title>
+<title>تسجيل الدخول | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
 body {
-  background:#1e293b;
+  background: linear-gradient(135deg,#0f172a,#1e293b);
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
   font-family:'Tajawal', sans-serif;
+  margin:0;
 }
+
+/* 🔥 كارد احترافي */
 .card {
   background:white;
   padding:30px;
-  border-radius:15px;
-  width:300px;
+  border-radius:16px;
+  width:320px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  animation:fadeUp .6s ease;
 }
+
+@keyframes fadeUp {
+  from {opacity:0; transform:translateY(30px);}
+}
+
+/* 🔥 Inputs */
 .input {
   width:100%;
-  padding:10px;
-  border:1px solid #ccc;
-  margin-bottom:10px;
-  border-radius:8px;
+  padding:12px;
+  border:1px solid #cbd5e1;
+  margin-bottom:12px;
+  border-radius:10px;
+  transition:0.3s;
 }
+.input:focus {
+  border-color:#1e295a;
+  outline:none;
+}
+
+/* 🔥 Button */
 .btn {
   width:100%;
-  padding:10px;
+  padding:12px;
   background:#1e295a;
   color:white;
-  border-radius:8px;
+  border-radius:10px;
+  font-weight:bold;
+  transition:.3s;
+}
+.btn:hover {
+  background:#8e1a1e;
+}
+
+/* 🔥 Loading */
+.loader {
+  display:none;
+  margin:auto;
+  border:4px solid #eee;
+  border-top:4px solid #1e295a;
+  border-radius:50%;
+  width:30px;
+  height:30px;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg);} }
+
+/* 🔥 رسالة */
+#msg {
+  min-height:20px;
 }
 </style>
 </head>
@@ -42,14 +83,18 @@ body {
 <body>
 
 <div class="card">
-  <h2 class="text-center font-bold mb-4">🔐 تسجيل الدخول</h2>
+
+  <h2 class="text-center text-xl font-bold mb-4">🔐 تسجيل الدخول</h2>
 
   <input id="email" class="input" placeholder="Email">
   <input id="password" type="password" class="input" placeholder="Password">
 
-  <button id="loginBtn" class="btn">دخول</button>
+  <button id="loginBtn" class="btn" onclick="login()">دخول</button>
+
+  <div class="loader mt-3" id="loader"></div>
 
   <p id="msg" class="text-center mt-3 text-red-500"></p>
+
 </div>
 
 <script type="module">
@@ -63,7 +108,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
-/* Firebase */
+/* 🔥 Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
   authDomain: "student-system-13431.firebaseapp.com",
@@ -73,46 +118,67 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-/* 🔥 إذا مسجل دخول بالفعل → روح للأدمن مباشرة */
+/* 🔥 إذا المستخدم مسجل مسبقاً → يدخل مباشرة */
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    window.location.href = "admin.html";
+    location.replace("admin.html");
   }
 });
 
 /* 🔐 تسجيل الدخول */
-document.getElementById("loginBtn").addEventListener("click", async () => {
+window.login = async () => {
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   const msg = document.getElementById("msg");
+  const loader = document.getElementById("loader");
+  const btn = document.getElementById("loginBtn");
+
+  msg.innerText = "";
 
   if (!email || !password) {
-    msg.innerText = "❌ عبي كل الحقول";
+    msg.innerText = "❌ عبّي كل الحقول";
     return;
   }
 
   try {
 
-    // 🔥 تثبيت الجلسة (مهم جداً)
+    // 🔥 حفظ الجلسة (أهم سطر)
     await setPersistence(auth, browserLocalPersistence);
 
+    // 🔄 Loading
+    loader.style.display = "block";
+    btn.disabled = true;
+
+    // 🔐 تسجيل الدخول
     await signInWithEmailAndPassword(auth, email, password);
 
+    // ✅ نجاح
     msg.style.color = "green";
     msg.innerText = "✅ تم تسجيل الدخول";
 
+    // 🔥 تحويل احترافي (يمنع الرجوع)
     setTimeout(()=>{
-      window.location.href = "admin.html";
-    }, 500);
+      location.replace("admin.html");
+    },800);
 
   } catch (e) {
-    console.error(e);
-    msg.style.color = "red";
-    msg.innerText = "❌ الإيميل أو كلمة السر غلط";
-  }
 
-});
+    loader.style.display = "none";
+    btn.disabled = false;
+
+    // 🔥 أخطاء مفهومة
+    if (e.code === "auth/user-not-found") {
+      msg.innerText = "❌ الحساب غير موجود";
+    } else if (e.code === "auth/wrong-password") {
+      msg.innerText = "❌ كلمة السر غلط";
+    } else if (e.code === "auth/invalid-email") {
+      msg.innerText = "❌ الإيميل غير صالح";
+    } else {
+      msg.innerText = "❌ خطأ: " + e.message;
+    }
+  }
+};
 
 </script>
 
