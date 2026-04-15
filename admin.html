@@ -54,7 +54,6 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
   outline:3px solid #00000020;
 }
 
-/* Toast */
 #toast {
 position:fixed;
 top:20px;
@@ -68,7 +67,6 @@ transition:0.4s;
 z-index:9999;
 }
 
-/* Image Modal */
 #modal {
 position:fixed;
 top:0;left:0;
@@ -84,10 +82,8 @@ z-index:999;
 
 <body>
 
-<!-- Toast -->
 <div id="toast"></div>
 
-<!-- Image Modal -->
 <div id="modal">
   <img id="modalImg" style="max-width:90%;max-height:90%;border-radius:10px;">
 </div>
@@ -102,9 +98,7 @@ z-index:999;
 
 <h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
-<!-- Tabs -->
 <div class="flex gap-2 mb-4 flex-wrap">
-
 <button onclick="filterStatus('all', this)" class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active">
 الكل (<span id="cAll">0</span>)
 </button>
@@ -120,16 +114,13 @@ z-index:999;
 <button onclick="filterStatus('pending', this)" class="tab bg-yellow-500 text-white px-4 py-2 rounded">
 قيد المراجعة (<span id="cPending">0</span>)
 </button>
-
 </div>
 
-<!-- Export -->
 <div class="flex gap-3 mb-5">
   <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">Excel 📊</button>
   <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">PDF 📄</button>
 </div>
 
-<!-- Stats -->
 <div class="grid grid-cols-2 gap-4 mb-5">
   <div class="card">
     <p>عدد الطلبات</p>
@@ -142,22 +133,18 @@ z-index:999;
   </div>
 </div>
 
-<!-- نسبة القبول -->
 <div class="card mb-5">
   <p>نسبة القبول</p>
   <h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
 </div>
 
-<!-- Charts -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
   <div class="card"><canvas id="barChart"></canvas></div>
   <div class="card"><canvas id="pieChart"></canvas></div>
 </div>
 
-<!-- Search -->
 <input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
 
-<!-- List -->
 <div id="list"></div>
 
 </div>
@@ -168,162 +155,128 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/fireba
 import { getFirestore, collection, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
-  authDomain: "student-system-13431.firebaseapp.com",
-  projectId: "student-system-13431",
-};
+const app = initializeApp({
+  apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+  authDomain:"student-system-13431.firebaseapp.com",
+  projectId:"student-system-13431"
+});
 
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let students = [];
-let currentFilter = "all";
-let barChart, pieChart;
+let students=[];
+let currentFilter="all";
+let barChart,pieChart;
 
-/* Toast */
 function toast(msg){
-  const t = document.getElementById("toast");
-  t.innerText = msg;
-  t.style.opacity = 1;
-  setTimeout(()=> t.style.opacity = 0, 3000);
+  const t=document.getElementById("toast");
+  t.innerText=msg;
+  t.style.opacity=1;
+  setTimeout(()=>t.style.opacity=0,3000);
 }
 
-/* حماية */
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    document.body.style.display = "block";
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+    document.body.style.display="block";
     startLive();
   } else {
-    window.location.href = "login.html";
+    window.location.href="login.html";
   }
 });
 
-/* LIVE */
 function startLive(){
-  onSnapshot(collection(db, "students"), (snapshot) => {
+  onSnapshot(collection(db,"students"),(snap)=>{
+    students=[];
+    snap.forEach(d=>students.push({id:d.id,...d.data()}));
 
-    students = [];
-
-    snapshot.forEach(d=>{
-      students.push({ id:d.id, ...d.data() });
-    });
-
-    document.getElementById("count").innerText = students.length;
+    document.getElementById("count").innerText=students.length;
 
     buildCharts();
     updateCounters();
     applyFilters();
-
   });
 }
 
-/* Counters */
 function updateCounters(){
-
-  let approved = 0;
-  let rejected = 0;
-  let pending = 0;
+  let approved=0,rejected=0,pending=0;
 
   students.forEach(s=>{
-    if (!s.status || s.status.includes("قيد")) pending++;
-    else if (s.status.includes("مقبول")) approved++;
-    else if (s.status.includes("مرفوض")) rejected++;
+    if(!s.status || s.status.includes("قيد")) pending++;
+    else if(s.status.includes("مقبول")) approved++;
+    else rejected++;
   });
 
-  document.getElementById("cAll").innerText = students.length;
-  document.getElementById("cApproved").innerText = approved;
-  document.getElementById("cRejected").innerText = rejected;
-  document.getElementById("cPending").innerText = pending;
+  document.getElementById("cAll").innerText=students.length;
+  document.getElementById("cApproved").innerText=approved;
+  document.getElementById("cRejected").innerText=rejected;
+  document.getElementById("cPending").innerText=pending;
 
-  const rate = students.length ? Math.round((approved / students.length) * 100) : 0;
-  document.getElementById("acceptRate").innerText = rate + "%";
+  const rate=students.length?Math.round((approved/students.length)*100):0;
+  document.getElementById("acceptRate").innerText=rate+"%";
 }
 
-/* Charts */
 function buildCharts(){
-
-  const majors = {};
+  const majors={};
 
   students.forEach(s=>{
-    majors[s.major] = (majors[s.major] || 0) + 1;
+    majors[s.major]=(majors[s.major]||0)+1;
   });
 
-  document.getElementById("majorsCount").innerText = Object.keys(majors).length;
+  document.getElementById("majorsCount").innerText=Object.keys(majors).length;
 
-  const labels = Object.keys(majors);
-  const data = Object.values(majors);
+  const labels=Object.keys(majors);
+  const data=Object.values(majors);
 
-  if (barChart) barChart.destroy();
-  if (pieChart) pieChart.destroy();
+  if(barChart) barChart.destroy();
+  if(pieChart) pieChart.destroy();
 
-  barChart = new Chart(document.getElementById("barChart"), {
-    type: "bar",
-    data: { labels, datasets: [{ label: "عدد الطلاب", data }] }
+  barChart=new Chart(document.getElementById("barChart"),{
+    type:"bar",
+    data:{labels,datasets:[{label:"عدد الطلاب",data}]}
   });
 
-  pieChart = new Chart(document.getElementById("pieChart"), {
-    type: "pie",
-    data: { labels, datasets: [{ data }] }
+  pieChart=new Chart(document.getElementById("pieChart"),{
+    type:"pie",
+    data:{labels,datasets:[{data}]}
   });
 }
 
-/* Filter */
-window.filterStatus = (type, el)=>{
-  currentFilter = type;
-
+window.filterStatus=function(type,el){
+  currentFilter=type;
   document.querySelectorAll(".tab").forEach(b=>b.classList.remove("tab-active"));
-  if (el) el.classList.add("tab-active");
-
+  if(el) el.classList.add("tab-active");
   applyFilters();
 };
 
 function applyFilters(){
+  let filtered=[...students];
 
-  let filtered = [...students];
+  if(currentFilter==="approved")
+    filtered=filtered.filter(s=>s.status?.includes("مقبول"));
+  if(currentFilter==="rejected")
+    filtered=filtered.filter(s=>s.status?.includes("مرفوض"));
+  if(currentFilter==="pending")
+    filtered=filtered.filter(s=>!s.status || s.status.includes("قيد"));
 
-  if (currentFilter === "approved")
-    filtered = filtered.filter(s => (s.status || "").includes("مقبول"));
-
-  if (currentFilter === "rejected")
-    filtered = filtered.filter(s => (s.status || "").includes("مرفوض"));
-
-  if (currentFilter === "pending")
-    filtered = filtered.filter(s => !s.status || s.status.includes("قيد"));
-
-  const searchVal = document.getElementById("search").value.toLowerCase();
-
-  if (searchVal)
-    filtered = filtered.filter(s =>
-      s.name.toLowerCase().includes(searchVal) ||
-      s.phone.includes(searchVal)
-    );
+  const val=document.getElementById("search").value.toLowerCase();
+  if(val)
+    filtered=filtered.filter(s=>s.name.toLowerCase().includes(val));
 
   show(filtered);
 }
 
-/* Show */
 function show(data){
-  const list = document.getElementById("list");
-  list.innerHTML = "";
+  const list=document.getElementById("list");
+  list.innerHTML="";
 
   data.forEach(s=>{
-    list.innerHTML += `
+    list.insertAdjacentHTML("beforeend",`
     <div class="student flex justify-between items-center">
-
       <div>
-        <p>👤 ${s.name}</p>
-        <p>📞 ${s.phone}</p>
-        <p>🎓 ${s.major}</p>
-
-        <p>📊 <b style="
-        color:${
-          (s.status||"").includes("مقبول") ? "green" :
-          (s.status||"").includes("مرفوض") ? "red" : "orange"
-        }">
-        ${s.status || "⏳ قيد المراجعة"}
-        </b></p>
+        <p>${s.name}</p>
+        <p>${s.phone}</p>
+        <p>${s.major}</p>
+        <p>${s.status||"قيد المراجعة"}</p>
 
         <div class="flex gap-2 mt-2">
           <img src="${s.cert}" onclick="openImg('${s.cert}')">
@@ -332,22 +285,29 @@ function show(data){
         </div>
 
         <div class="mt-2 flex gap-2">
-          <button onclick="updateStatus('${s.id}','✅ مقبول')" class="bg-green-600 text-white px-3 py-1 rounded">قبول</button>
-          <button onclick="updateStatus('${s.id}','❌ مرفوض')" class="bg-red-600 text-white px-3 py-1 rounded">رفض</button>
-          <button onclick="updateStatus('${s.id}','⏳ قيد المراجعة')" class="bg-yellow-500 text-white px-3 py-1 rounded">مراجعة</button>
+          <button onclick="updateStatus('${s.id}','✅ مقبول')" class="bg-green-600 text-white px-2 py-1 rounded">قبول</button>
+          <button onclick="updateStatus('${s.id}','❌ مرفوض')" class="bg-red-600 text-white px-2 py-1 rounded">رفض</button>
+          <button onclick="updateStatus('${s.id}','⏳ قيد المراجعة')" class="bg-yellow-500 text-white px-2 py-1 rounded">مراجعة</button>
         </div>
-
       </div>
 
-      <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف ❌</button>
-
+      <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف</button>
     </div>
-    `;
+    `);
   });
 }
 
-/* Image Modal */
-window.openImg = (src)=>{
+window.updateStatus=async function(id,status){
+  await updateDoc(doc(db,"students",id),{status});
+  toast("تم التحديث");
+};
+
+window.del=async function(id){
+  await deleteDoc(doc(db,"students",id));
+  toast("تم الحذف");
+};
+
+window.openImg=function(src){
   document.getElementById("modal").style.display="flex";
   document.getElementById("modalImg").src=src;
 };
@@ -356,60 +316,38 @@ document.getElementById("modal").onclick=()=>{
   document.getElementById("modal").style.display="none";
 };
 
-/* Search */
-document.getElementById("search").addEventListener("input", applyFilters);
-
-/* Update */
-window.updateStatus = async (id, status)=>{
-  await updateDoc(doc(db,"students",id), { status });
-  toast("✅ تم تحديث الحالة");
-};
-
-/* Delete */
-window.del = async (id)=>{
-  await deleteDoc(doc(db,"students",id));
-  toast("🗑 تم الحذف");
-};
-
-/* Logout */
-window.logout = async ()=>{
+window.logout=async()=>{
   await signOut(auth);
-  window.location.href="login.html";
+  location.href="login.html";
 };
 
-/* Excel */
-window.exportExcel = () => {
-  const data = students.map(s => ({
-    الاسم: s.name,
-    الهاتف: s.phone,
-    الكلية: s.major,
-    الحالة: s.status
+window.exportExcel=()=>{
+  const data=students.map(s=>({
+    الاسم:s.name,
+    الهاتف:s.phone,
+    الكلية:s.major,
+    الحالة:s.status
   }));
 
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Students");
-  XLSX.writeFile(wb, "students.xlsx");
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"طلاب");
+  XLSX.writeFile(wb,"students.xlsx");
 };
 
-/* PDF */
-window.exportPDF = () => {
+window.exportPDF=()=>{
+  const pdf=new jspdf.jsPDF();
+  let y=10;
 
-  const pdf = new jspdf.jsPDF();
-  let y = 10;
-
-  students.forEach((s, i) => {
-    pdf.text(`${i+1}. ${s.name} - ${s.phone} - ${s.major} - ${s.status}`, 10, y);
-    y += 10;
-
-    if (y > 280) {
-      pdf.addPage();
-      y = 10;
-    }
+  students.forEach((s,i)=>{
+    pdf.text(`${i+1} ${s.name}`,10,y);
+    y+=10;
   });
 
   pdf.save("students.pdf");
 };
+
+document.getElementById("search").addEventListener("input",applyFilters);
 
 </script>
 
