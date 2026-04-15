@@ -3,17 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPU تسجيل</title>
+<title>بوابة التسجيل الإلكتروني | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-body{font-family:sans-serif;background:#f1f5f9;margin:0}
-.card{background:white;padding:20px;border-radius:10px;max-width:500px;margin:50px auto}
-.input{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px}
-.btn{background:#1e295a;color:white;padding:12px;border:none;border-radius:8px;width:100%}
-.preview img{width:70px;height:70px;border-radius:8px}
-#toast{position:fixed;top:20px;right:20px;background:#1e295a;color:white;padding:10px;border-radius:8px;opacity:0}
+body { font-family:'Tajawal', sans-serif; background:#f0f4f8; margin:0; }
+
+/* HERO */
+.hero { height:260px; position:relative; overflow:hidden; }
+.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.75); }
+.overlay { position:absolute; width:100%; height:100%; background:rgba(0,0,0,.3); }
+
+.hero-content {
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+color:white;
+}
+
+/* CARD */
+.card {
+background:white;
+padding:25px;
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* INPUT */
+.input {
+width:100%;
+padding:12px;
+border:1px solid #cbd5e1;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+/* BUTTON */
+.btn {
+background:#1e295a;
+color:white;
+padding:15px;
+border-radius:10px;
+width:100%;
+}
+
+/* PREVIEW */
+.preview img {
+width:90px;
+height:90px;
+border-radius:10px;
+margin-top:5px;
+}
+
+/* TOAST */
+#toast {
+position:fixed;
+top:20px;
+right:20px;
+background:#1e295a;
+color:white;
+padding:12px;
+border-radius:10px;
+opacity:0;
+transition:.3s;
+}
 </style>
 </head>
 
@@ -21,8 +78,23 @@ body{font-family:sans-serif;background:#f1f5f9;margin:0}
 
 <div id="toast"></div>
 
+<!-- HERO -->
+<div class="hero">
+<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238">
+<div class="overlay"></div>
+
+<div class="hero-content">
+<h1>ابدأ مستقبلك مع SPU 🎓</h1>
+<p>انضم وسجل الآن بسهولة</p>
+<button onclick="scrollToForm()" style="background:#8e1a1e;padding:10px 20px;border-radius:8px;">قدّم الآن</button>
+</div>
+</div>
+
+<!-- FORM -->
+<div class="max-w-2xl mx-auto mt-10 px-4">
 <div class="card">
-<h2>استمارة التسجيل</h2>
+
+<h2 class="text-xl font-bold text-center mb-6">استمارة التسجيل</h2>
 
 <input id="name" class="input" placeholder="الاسم">
 <input id="email" class="input" placeholder="البريد">
@@ -30,12 +102,15 @@ body{font-family:sans-serif;background:#f1f5f9;margin:0}
 
 <select id="major" class="input">
 <option value="">اختر الكلية</option>
-<option>الطب</option>
-<option>الهندسة</option>
+<option>الطب البشري</option>
+<option>طب الأسنان</option>
+<option>الصيدلة</option>
+<option>هندسة المعلوماتية</option>
+<option>الهندسة البترولية</option>
 <option>إدارة الأعمال</option>
 </select>
 
-<h3>رفع الصور</h3>
+<h3>📁 رفع الصور</h3>
 
 <input type="file" onchange="upload(this,'cert')" class="input">
 <div id="certPreview" class="preview"></div>
@@ -46,8 +121,9 @@ body{font-family:sans-serif;background:#f1f5f9;margin:0}
 <input type="file" onchange="upload(this,'personal')" class="input">
 <div id="personalPreview" class="preview"></div>
 
-<button class="btn" onclick="send()">إرسال</button>
+<button class="btn mt-4" onclick="send()">إرسال</button>
 
+</div>
 </div>
 
 <script type="module">
@@ -55,96 +131,106 @@ body{font-family:sans-serif;background:#f1f5f9;margin:0}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
-const app = initializeApp({
-apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
-authDomain:"student-system-13431.firebaseapp.com",
-projectId:"student-system-13431"
-});
+/* Firebase */
+const firebaseConfig = {
+apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+authDomain: "student-system-13431.firebaseapp.com",
+projectId: "student-system-13431"
+};
 
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
+/* ImgBB */
+const API_KEY = "bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
-let images={};
+let images = {};
 
+/* Toast */
 function toast(msg){
-const t=document.getElementById("toast");
-t.innerText=msg;
-t.style.opacity=1;
-setTimeout(()=>t.style.opacity=0,2000);
+const t = document.getElementById("toast");
+t.innerText = msg;
+t.style.opacity = 1;
+setTimeout(()=>t.style.opacity = 0,2000);
 }
 
+/* Upload */
 window.upload = async(input,key)=>{
-const file=input.files[0];
-if(!file)return;
+try{
+const file = input.files[0];
+if(!file) return;
 
-document.getElementById(key+"Preview").innerHTML=
-'<img src="'+URL.createObjectURL(file)+'">';
+document.getElementById(key+"Preview").innerHTML =
+`<img src="${URL.createObjectURL(file)}">`;
 
-const fd=new FormData();
+const fd = new FormData();
 fd.append("image",file);
 
-try{
-const res=await fetch("https://api.imgbb.com/1/upload?key="+API_KEY,{
+const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
 method:"POST",
 body:fd
 });
 
-const data=await res.json();
+const data = await res.json();
 
-if(data.success){
-images[key]=data.data.url;
-toast("تم رفع الصورة");
-}else{
-toast("فشل الرفع");
+if(!data.success){
+throw "error";
 }
 
+images[key] = data.data.url;
+
+toast("تم رفع الصورة");
+
 }catch{
-toast("خطأ بالرفع");
+toast("فشل رفع الصورة");
 }
 };
 
+/* Send */
 window.send = async()=>{
-
-const name=document.getElementById("name").value;
-const email=document.getElementById("email").value;
-const phone=document.getElementById("phone").value;
-const major=document.getElementById("major").value;
-
-if(!name||!email||!phone||!major){
-toast("املأ كل الحقول");
-return;
-}
-
-if(!images.cert||!images.idimg||!images.personal){
-toast("ارفع الصور");
-return;
-}
-
 try{
 
+const name = document.getElementById("name").value;
+const email = document.getElementById("email").value;
+const phone = document.getElementById("phone").value;
+const major = document.getElementById("major").value;
+
+if(!name || !email || !phone || !major){
+toast("❌ املأ كل الحقول");
+return;
+}
+
+if(!images.cert || !images.idimg || !images.personal){
+toast("❌ ارفع كل الصور");
+return;
+}
+
 await addDoc(collection(db,"students"),{
-name:name,
-email:email,
-phone:phone,
-major:major,
+name,
+email,
+phone,
+major,
 cert:images.cert,
 id:images.idimg,
 personal:images.personal,
 status:"قيد المراجعة"
 });
 
-toast("تم الإرسال");
+toast("✅ تم الإرسال");
 
 setTimeout(()=>{
 window.location.href="success.html";
-},1000);
+},1200);
 
 }catch(e){
 console.log(e);
-toast("خطأ في الإرسال");
+toast("❌ خطأ");
 }
+};
 
+/* Scroll */
+window.scrollToForm = ()=>{
+document.querySelector(".card").scrollIntoView({behavior:"smooth"});
 };
 
 </script>
