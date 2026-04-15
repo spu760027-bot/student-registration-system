@@ -6,21 +6,12 @@
 <title>Dashboard | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Excel -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-<!-- PDF -->
 <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
 
 <style>
-body { background:#f1f5f9; font-family:'Tajawal', sans-serif; }
-
-/* نخفي الصفحة بالبداية */
-body { display:none; }
+body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
 
 .sidebar {
   width:250px;
@@ -62,19 +53,16 @@ body { display:none; }
 
 <body>
 
-<!-- Sidebar -->
 <div class="sidebar">
   <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
   <p>📊 Dashboard</p>
   <button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
 </div>
 
-<!-- Content -->
 <div class="content">
 
 <h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
-<!-- Export -->
 <div class="flex gap-3 mb-5">
   <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">
     تحميل Excel 📊
@@ -85,7 +73,6 @@ body { display:none; }
   </button>
 </div>
 
-<!-- Stats -->
 <div class="grid grid-cols-2 gap-4 mb-5">
   <div class="card">
     <p>عدد الطلبات</p>
@@ -98,7 +85,6 @@ body { display:none; }
   </div>
 </div>
 
-<!-- Charts -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
   <div class="card">
     <canvas id="barChart"></canvas>
@@ -109,10 +95,8 @@ body { display:none; }
   </div>
 </div>
 
-<!-- Search -->
 <input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
 
-<!-- List -->
 <div id="list"></div>
 
 </div>
@@ -120,7 +104,7 @@ body { display:none; }
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -133,10 +117,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* 🔐 حماية + حل مشكلة الطرد */
+/* 🔐 حماية */
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    document.body.style.display = "block"; // يظهر الصفحة
+    document.body.style.display = "block";
     load();
   } else {
     window.location.href = "login.html";
@@ -175,22 +159,16 @@ function buildCharts(){
 
   new Chart(document.getElementById("barChart"), {
     type: "bar",
-    data: {
-      labels,
-      datasets: [{ label: "عدد الطلاب", data }]
-    }
+    data: { labels, datasets: [{ label: "عدد الطلاب", data }] }
   });
 
   new Chart(document.getElementById("pieChart"), {
     type: "pie",
-    data: {
-      labels,
-      datasets: [{ data }]
-    }
+    data: { labels, datasets: [{ data }] }
   });
 }
 
-/* عرض */
+/* عرض الطلاب */
 function show(data){
   const list = document.getElementById("list");
   list.innerHTML = "";
@@ -200,15 +178,24 @@ function show(data){
     <div class="student flex justify-between items-center">
 
       <div>
+        <p>🆔 ${s.id}</p>
         <p>👤 ${s.name}</p>
         <p>📞 ${s.phone}</p>
         <p>🎓 ${s.major}</p>
+        <p>📊 <b>${s.status || "⏳ قيد المراجعة"}</b></p>
 
         <div class="flex gap-2 mt-2">
           <img src="${s.cert}">
           <img src="${s.id}">
           <img src="${s.personal}">
         </div>
+
+        <div class="mt-2 flex gap-2">
+          <button onclick="updateStatus('${s.id}','✅ مقبول')" class="bg-green-600 text-white px-3 py-1 rounded">قبول</button>
+          <button onclick="updateStatus('${s.id}','❌ مرفوض')" class="bg-red-600 text-white px-3 py-1 rounded">رفض</button>
+          <button onclick="updateStatus('${s.id}','⏳ قيد المراجعة')" class="bg-yellow-500 text-white px-3 py-1 rounded">مراجعة</button>
+        </div>
+
       </div>
 
       <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">
@@ -233,6 +220,12 @@ window.del = async (id)=>{
   load();
 };
 
+/* 🔥 تحديث الحالة */
+window.updateStatus = async (id, status)=>{
+  await updateDoc(doc(db,"students",id), { status });
+  load();
+};
+
 /* Logout */
 window.logout = async ()=>{
   await signOut(auth);
@@ -244,34 +237,33 @@ window.exportExcel = () => {
   const data = students.map(s => ({
     الاسم: s.name,
     الهاتف: s.phone,
-    الكلية: s.major
+    الكلية: s.major,
+    الحالة: s.status
   }));
 
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
-
   XLSX.utils.book_append_sheet(wb, ws, "Students");
-
   XLSX.writeFile(wb, "students.xlsx");
 };
 
 /* PDF */
 window.exportPDF = () => {
 
-  const doc = new jspdf.jsPDF();
+  const docPdf = new jspdf.jsPDF();
   let y = 10;
 
   students.forEach((s, i) => {
-    doc.text(`${i+1}. ${s.name} - ${s.phone} - ${s.major}`, 10, y);
+    docPdf.text(`${i+1}. ${s.name} - ${s.phone} - ${s.major} - ${s.status}`, 10, y);
     y += 10;
 
     if (y > 280) {
-      doc.addPage();
+      docPdf.addPage();
       y = 10;
     }
   });
 
-  doc.save("students.pdf");
+  docPdf.save("students.pdf");
 };
 
 </script>
