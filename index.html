@@ -16,15 +16,36 @@ body {
   padding-top:80px;
 }
 
-/* NAVBAR */
+/* 🔥 NAVBAR */
 .navbar {
   backdrop-filter: blur(12px);
   background: rgba(0,0,0,0.6);
 }
 
+/* 🔥 LOADER */
+#loader {
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:#0f172a;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+.spinner {
+  width:50px;
+  height:50px;
+  border:5px solid #334155;
+  border-top:5px solid #fff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
 /* HERO */
 .hero { height:320px; position:relative; overflow:hidden; }
-.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); }
+.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); transition:.5s; }
 
 .overlay {
   position:absolute;
@@ -48,6 +69,10 @@ background:white;
 padding:25px;
 border-radius:16px;
 box-shadow:0 10px 30px rgba(0,0,0,0.1);
+transition:.4s;
+}
+.card:hover {
+transform:translateY(-8px) scale(1.02);
 }
 
 /* INPUT */
@@ -86,10 +111,24 @@ border-radius:10px;
 opacity:0;
 transition:.3s;
 }
+
+/* FADE */
+.fade {
+opacity:0;
+transform:translateY(30px);
+transition:.8s;
+}
+.fade.show {
+opacity:1;
+transform:translateY(0);
+}
 </style>
 </head>
 
 <body>
+
+<!-- LOADER -->
+<div id="loader"><div class="spinner"></div></div>
 
 <div id="toast"></div>
 
@@ -137,15 +176,15 @@ transition:.3s;
 
 <!-- STATS -->
 <div class="max-w-6xl mx-auto mt-12 px-4 text-center grid md:grid-cols-3 gap-6">
-<div class="bg-white p-6 rounded shadow">
+<div class="card fade">
 <h2 class="text-4xl font-bold text-[#1e295a]" data-count="2005">0</h2>
 <p>📅 سنة التأسيس</p>
 </div>
-<div class="bg-white p-6 rounded shadow">
+<div class="card fade">
 <h2 class="text-4xl font-bold text-[#1e295a]" data-count="3000">0</h2>
 <p>👨‍🎓 عدد الطلاب</p>
 </div>
-<div class="bg-white p-6 rounded shadow">
+<div class="card fade">
 <h2 class="text-4xl font-bold text-[#1e295a]" data-count="6">0</h2>
 <p>🎓 عدد الكليات</p>
 </div>
@@ -153,34 +192,23 @@ transition:.3s;
 
 <!-- WHY -->
 <div class="max-w-6xl mx-auto mt-16 px-4 text-center">
-<h2 class="text-3xl font-bold mb-8">لماذا SPU؟</h2>
+<h2 class="text-3xl font-bold mb-8 fade">لماذا SPU؟</h2>
 <div class="grid md:grid-cols-3 gap-6">
 
-<div class="bg-white p-6 rounded shadow">
-<h3 class="font-bold text-xl">🎓 تعليم متطور</h3>
-<p>مناهج حديثة</p>
-</div>
-
-<div class="bg-white p-6 rounded shadow">
-<h3 class="font-bold text-xl">💼 فرص عمل</h3>
-<p>ربط مع الشركات</p>
-</div>
-
-<div class="bg-white p-6 rounded shadow">
-<h3 class="font-bold text-xl">🌍 بيئة عالمية</h3>
-<p>طلاب دوليين</p>
-</div>
+<div class="card fade"><h3>🎓 تعليم متطور</h3></div>
+<div class="card fade"><h3>💼 فرص عمل</h3></div>
+<div class="card fade"><h3>🌍 بيئة عالمية</h3></div>
 
 </div>
 </div>
 
 <!-- GALLERY -->
 <div class="max-w-6xl mx-auto mt-16 px-4">
-<h2 class="text-2xl font-bold text-center mb-6">📸 الحياة الجامعية</h2>
+<h2 class="text-2xl text-center mb-6 fade">📸 الحياة الجامعية</h2>
 <div class="grid md:grid-cols-3 gap-4">
-<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded shadow">
-<img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded shadow">
-<img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded shadow">
+<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded fade">
+<img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded fade">
+<img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded fade">
 </div>
 </div>
 
@@ -188,7 +216,7 @@ transition:.3s;
 <div id="form" class="max-w-2xl mx-auto mt-10 px-4">
 <div class="card">
 
-<h2 class="text-xl font-bold text-center mb-6">استمارة التسجيل</h2>
+<h2 class="text-xl text-center mb-6">استمارة التسجيل</h2>
 
 <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
 <input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
@@ -197,47 +225,35 @@ transition:.3s;
 
 <select id="major" class="input mb-5">
 <option value="">اختر الكلية</option>
-
-<optgroup label="الكليات الطبية">
 <option>الطب البشري</option>
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
-</optgroup>
-
-<optgroup label="الكليات الهندسية">
 <option>هندسة المعلوماتية والاتصالات</option>
 <option>هندسة الذكاء الاصطناعي</option>
 <option>الهندسة المدنية</option>
 <option>الهندسة المعمارية</option>
 <option>هندسة البترول</option>
-</optgroup>
-
-<optgroup label="الإدارية">
 <option>إدارة الأعمال</option>
-</optgroup>
 </select>
 
-<h3 class="font-bold mb-3">📁 الوثائق</h3>
+<h3 class="mb-3">📁 الوثائق</h3>
 
-<label>📄 الشهادة</label>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
-<div id="certPreview" class="preview mb-3"></div>
+<div id="certPreview"></div>
 
-<label>🪪 الهوية</label>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
-<div id="idimgPreview" class="preview mb-3"></div>
+<div id="idimgPreview"></div>
 
-<label>👤 صورة شخصية</label>
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
-<div id="personalPreview" class="preview mb-4"></div>
+<div id="personalPreview"></div>
 
-<div class="bg-blue-50 p-4 rounded text-center">
-<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px;margin:auto">
-<input id="transfer" class="input mt-3" placeholder="رقم التحويل">
+<div class="bg-blue-50 p-4 text-center mt-4">
+<p>💳 500$</p>
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:150px">
+<input id="transfer" class="input mt-2">
 </div>
 
-<button class="btn mt-5" onclick="send()">إرسال الطلب</button>
+<button class="btn mt-5" onclick="send()">إرسال</button>
 
 </div>
 </div>
@@ -248,7 +264,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/fireba
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+apiKey:"AIzaSyDYZC...",
 authDomain:"student-system-13431.firebaseapp.com",
 projectId:"student-system-13431"
 });
@@ -269,7 +285,7 @@ window.upload = async(input,key)=>{
 const file=input.files[0];
 if(!file)return;
 
-document.getElementById(key+"Preview").innerHTML=`<img src="${URL.createObjectURL(file)}">`;
+document.getElementById(key+"Preview").innerHTML=`<img src="${URL.createObjectURL(file)}" width="80">`;
 
 const fd=new FormData();
 fd.append("image",file);
@@ -280,24 +296,17 @@ body:fd
 });
 
 const data=await res.json();
-if(data.success){
 uploaded[key]=data.data.url;
-}
 };
 
 window.send = async()=>{
-const name = document.getElementById("name").value;
-const email = document.getElementById("email").value;
-const phone = document.getElementById("phone").value;
-const major = document.getElementById("major").value;
+const name=document.getElementById("name").value;
+const email=document.getElementById("email").value;
+const phone=document.getElementById("phone").value;
+const major=document.getElementById("major").value;
 
 if(!name || !email || !phone || !major){
 toast("❌ عبي كل الحقول");
-return;
-}
-
-if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
-toast("❌ ارفع الصور");
 return;
 }
 
@@ -310,32 +319,34 @@ status:"قيد المراجعة"
 });
 
 toast("✅ تم الإرسال");
-setTimeout(()=>window.location.href="success.html",1200);
-};
-
-window.scrollToForm=()=>{
-document.getElementById("form").scrollIntoView({behavior:"smooth"});
 };
 
 window.toggleMenu=()=>{
 document.getElementById("mobileMenu").classList.toggle("hidden");
 };
 
-/* COUNTER */
-document.querySelectorAll("[data-count]").forEach(el=>{
-let target=+el.dataset.count;
-let count=0;
-let step=Math.ceil(target/50);
+window.scrollToForm=()=>{
+document.getElementById("form").scrollIntoView({behavior:"smooth"});
+};
 
-function update(){
-count+=step;
-if(count>=target){el.innerText=target+"+";}
-else{el.innerText=count;requestAnimationFrame(update);}
-}
-update();
+/* LOADER */
+window.addEventListener("load",()=>{
+setTimeout(()=>document.getElementById("loader").style.display="none",800);
+});
+
+/* FADE */
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("show")});
+});
+document.querySelectorAll(".fade").forEach(el=>observer.observe(el));
+
+/* PARALLAX */
+window.addEventListener("scroll",()=>{
+const hero=document.querySelector(".hero img");
+hero.style.transform=`translateY(${window.scrollY*0.3}px) scale(1.05)`;
 });
 
 </script>
 
 </body>
-  </html>
+</html>
