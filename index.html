@@ -1,106 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPU تسجيل</title>
 
+<script src="https://cdn.tailwindcss.com"></script>
 
+<style>
+body{font-family:sans-serif;background:#f1f5f9;margin:0}
+.card{background:white;padding:20px;border-radius:10px;max-width:500px;margin:50px auto}
+.input{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px}
+.btn{background:#1e295a;color:white;padding:12px;border:none;border-radius:8px;width:100%}
+.preview img{width:70px;height:70px;border-radius:8px}
+#toast{position:fixed;top:20px;right:20px;background:#1e295a;color:white;padding:10px;border-radius:8px;opacity:0}
+</style>
+</head>
 
+<body>
 
+<div id="toast"></div>
 
+<div class="card">
+<h2>استمارة التسجيل</h2>
 
+<input id="name" class="input" placeholder="الاسم">
+<input id="email" class="input" placeholder="البريد">
+<input id="phone" class="input" placeholder="الهاتف">
 
+<select id="major" class="input">
+<option value="">اختر الكلية</option>
+<option>الطب</option>
+<option>الهندسة</option>
+<option>إدارة الأعمال</option>
+</select>
 
+<h3>رفع الصور</h3>
 
+<input type="file" onchange="upload(this,'cert')" class="input">
+<div id="certPreview" class="preview"></div>
+
+<input type="file" onchange="upload(this,'idimg')" class="input">
+<div id="idimgPreview" class="preview"></div>
 
+<input type="file" onchange="upload(this,'personal')" class="input">
+<div id="personalPreview" class="preview"></div>
 
+<button class="btn" onclick="send()">إرسال</button>
 
+</div>
 
+<script type="module">
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
+const app = initializeApp({
+apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+authDomain:"student-system-13431.firebaseapp.com",
+projectId:"student-system-13431"
+});
 
+const db = getFirestore(app);
 
-  
-  
+const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
+let images={};
 
-  
+function toast(msg){
+const t=document.getElementById("toast");
+t.innerText=msg;
+t.style.opacity=1;
+setTimeout(()=>t.style.opacity=0,2000);
+}
 
-    
-ابدأ مستقبلك مع SPU 🎓
+window.upload = async(input,key)=>{
+const file=input.files[0];
+if(!file)return;
 
-    
-سجل الآن بسهولة
+document.getElementById(key+"Preview").innerHTML=
+'<img src="'+URL.createObjectURL(file)+'">';
 
-    قدّم الآن
-  
+const fd=new FormData();
+fd.append("image",file);
 
+try{
+const res=await fetch("https://api.imgbb.com/1/upload?key="+API_KEY,{
+method:"POST",
+body:fd
+});
 
+const data=await res.json();
 
+if(data.success){
+images[key]=data.data.url;
+toast("تم رفع الصورة");
+}else{
+toast("فشل الرفع");
+}
 
-
-
-  
-2005
-📅 التأسيس
-
-  
-3000+
-👨‍🎓 الطلاب
-
-  
-6
-🎓 الكليات
-
-
-
-
-
-
-
-
-
-استمارة التسجيل الإلكتروني
-
-
-
-
-
-اختر الكلية
-الطب البشري
-طب الأسنان
-الصيدلة
-هندسة المعلوماتية
-الهندسة البترولية
-إدارة الأعمال
-
-
-📁 الوثائق
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-إرسال الطلب
-
-
-
-
-
-
-
-
-
+}catch{
+toast("خطأ بالرفع");
+}
+};
+
+window.send = async()=>{
+
+const name=document.getElementById("name").value;
+const email=document.getElementById("email").value;
+const phone=document.getElementById("phone").value;
+const major=document.getElementById("major").value;
+
+if(!name||!email||!phone||!major){
+toast("املأ كل الحقول");
+return;
+}
+
+if(!images.cert||!images.idimg||!images.personal){
+toast("ارفع الصور");
+return;
+}
+
+try{
+
+await addDoc(collection(db,"students"),{
+name:name,
+email:email,
+phone:phone,
+major:major,
+cert:images.cert,
+id:images.idimg,
+personal:images.personal,
+status:"قيد المراجعة"
+});
+
+toast("تم الإرسال");
+
+setTimeout(()=>{
+window.location.href="success.html";
+},1000);
+
+}catch(e){
+console.log(e);
+toast("خطأ في الإرسال");
+}
+
+};
+
+</script>
+
+</body>
+</html>
