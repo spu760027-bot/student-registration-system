@@ -1,301 +1,106 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>بوابة التسجيل الإلكتروني | SPU</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-<style>
-body { font-family:'Tajawal', sans-serif; background:#f0f4f8; margin:0; }
 
-/* 🔥 HERO */
-.hero {
-  width:100%;
-  height:260px;
-  overflow:hidden;
-  position:relative;
-}
 
-.hero img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  filter: contrast(1.1) brightness(1.1);
-  transition:.5s;
-}
 
-.overlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:linear-gradient(to right, rgba(30,41,90,0.05), rgba(142,26,30,0.05));
-}
 
-/* 🔥 نص فوق الصورة */
-.hero-content {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  color:white;
-  z-index:2;
-  animation:fadeUp 1s ease;
-}
 
-.hero-content h1 {
-  font-size:32px;
-  font-weight:bold;
-  margin-bottom:10px;
-}
 
-.hero-content p {
-  font-size:16px;
-  margin-bottom:20px;
-}
 
-.hero-content button {
-  background:#8e1a1e;
-  padding:12px 25px;
-  border-radius:10px;
-  font-weight:bold;
-  transition:.3s;
-}
 
-.hero-content button:hover {
-  background:#fff;
-  color:#1e295a;
-}
 
-/* كارد */
-.card {
-  background:white;
-  padding:25px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  animation:fadeUp .6s;
-}
 
-@keyframes fadeUp {
-  from{opacity:0;transform:translateY(20px);}
-}
 
-/* عناصر */
-.input {
-  width:100%;
-  padding:12px;
-  border:1px solid #cbd5e1;
-  border-radius:10px;
-}
 
-.btn {
-  background:#1e295a;
-  color:white;
-  padding:15px;
-  border-radius:10px;
-  width:100%;
-}
 
-.btn:hover { background:#8e1a1e; }
 
-.preview img {
-  width:90px;
-  height:90px;
-  border-radius:10px;
-}
 
-/* Toast */
-#toast {
-position:fixed;
-top:20px;
-right:20px;
-background:#1e295a;
-color:white;
-padding:15px;
-border-radius:10px;
-opacity:0;
-transform:translateY(-20px);
-transition:.4s;
-}
+  
+  
 
-/* Progress */
-.progress { height:6px; background:#e2e8f0; border-radius:10px; overflow:hidden; }
-.progress-bar { height:100%; width:0%; background:#1e295a; }
-</style>
-</head>
 
-<body>
+  
 
-<div id="toast"></div>
+    
+ابدأ مستقبلك مع SPU 🎓
 
-<!-- 🔥 HERO -->
-<div class="hero">
+    
+سجل الآن بسهولة
 
-  <img id="heroImg" src="logo.png">
+    قدّم الآن
+  
 
-  <div class="overlay"></div>
 
-  <div class="hero-content">
-    <h1>ابدأ مستقبلك مع SPU 🎓</h1>
-    <p>انضم إلى الجامعة السورية الخاصة وسجّل الآن بسهولة</p>
-    <button onclick="scrollToForm()">قدّم الآن</button>
-  </div>
 
-</div>
 
-<!-- 🔥 معلومات الجامعة -->
-<div class="max-w-6xl mx-auto mt-10 px-4">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
 
-    <div class="bg-white p-6 rounded-2xl shadow">
-      <h2 class="text-3xl font-bold text-[#1e295a]">2005</h2>
-      <p>📅 سنة التأسيس</p>
-    </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow">
-      <h2 class="text-3xl font-bold text-[#1e295a]">3000+</h2>
-      <p>👨‍🎓 عدد الطلاب</p>
-    </div>
+  
+2005
+📅 التأسيس
 
-    <div class="bg-white p-6 rounded-2xl shadow">
-      <h2 class="text-3xl font-bold text-[#1e295a]">6</h2>
-      <p>🎓 عدد الكليات</p>
-    </div>
+  
+3000+
+👨‍🎓 الطلاب
 
-  </div>
-</div>
+  
+6
+🎓 الكليات
 
-<!-- 📸 صور -->
-<div class="max-w-6xl mx-auto mt-10 px-4">
-  <h2 class="text-2xl font-bold text-center mb-6 text-[#1e295a]">📸 الحياة الجامعية</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded-xl shadow">
-    <img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded-xl shadow">
-    <img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded-xl shadow">
-  </div>
-</div>
 
-<!-- الفورم -->
-<div class="max-w-2xl mx-auto mt-10 px-4">
-<div class="card">
 
-<h2 class="text-xl font-bold text-center mb-6">استمارة التسجيل الإلكتروني - 2026</h2>
 
-<input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
-<input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
-<input id="national" class="input mb-3" placeholder="الرقم الوطني">
-<input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<select id="major" class="input mb-5">
-<option value="">اختر الكلية المطلوبة</option>
-<option>الطب البشري</option>
-<option>طب الأسنان</option>
-<option>الصيدلة</option>
-<option>هندسة المعلوماتية</option>
-<option>الهندسة البترولية</option>
-<option>إدارة الأعمال</option>
-</select>
 
-<h3 class="font-bold mb-3">📁 الوثائق</h3>
 
-<label>📄 الشهادة</label>
-<input type="file" onchange="upload(this,'cert')" class="input mb-2">
-<div id="certPreview" class="preview"></div>
-<div id="certBar" class="progress hidden mb-3"><div class="progress-bar"></div></div>
 
-<label>🪪 الهوية</label>
-<input type="file" onchange="upload(this,'idimg')" class="input mb-2">
-<div id="idimgPreview" class="preview"></div>
-<div id="idimgBar" class="progress hidden mb-3"><div class="progress-bar"></div></div>
 
-<label>👤 صورة شخصية</label>
-<input type="file" onchange="upload(this,'personal')" class="input mb-2">
-<div id="personalPreview" class="preview"></div>
-<div id="personalBar" class="progress hidden mb-3"><div class="progress-bar"></div></div>
+استمارة التسجيل الإلكتروني
 
-<div class="bg-blue-50 p-4 rounded-xl text-center mt-4">
-<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px;margin:auto">
-<input id="transfer" class="input mt-3" placeholder="رقم التحويل">
-</div>
 
-<button class="btn mt-5" onclick="send()">إرسال الطلب</button>
 
-</div>
-</div>
 
-<script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+اختر الكلية
+الطب البشري
+طب الأسنان
+الصيدلة
+هندسة المعلوماتية
+الهندسة البترولية
+إدارة الأعمال
 
-const app = initializeApp({
-apiKey:"AIzaSy...",
-authDomain:"student-system-13431.firebaseapp.com",
-projectId:"student-system-13431"
-});
 
-const db = getFirestore(app);
+📁 الوثائق
 
-const apiKey="YOUR_IMGBB_KEY";
-let uploaded={};
 
-function toast(msg){
-  const t=document.getElementById("toast");
-  t.innerText=msg;
-  t.style.opacity=1;
-  setTimeout(()=>t.style.opacity=0,3000);
-}
 
-window.upload = async(input,key)=>{
-  const file=input.files[0];
-  if(!file)return;
 
-  document.getElementById(key+"Preview").innerHTML=`<img src="${URL.createObjectURL(file)}">`;
 
-  const bar=document.querySelector("#"+key+"Bar .progress-bar");
-  document.getElementById(key+"Bar").classList.remove("hidden");
 
-  const fd=new FormData();
-  fd.append("image",file);
 
-  const res=await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`,{method:"POST",body:fd});
-  const data=await res.json();
 
-  bar.style.width="100%";
-  uploaded[key]=data.data.url;
-};
 
-window.send = async()=>{
-  if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
-    toast("❌ ارفع كل الصور");
-    return;
-  }
 
-  await addDoc(collection(db,"students"),{
-    name:name.value,
-    email:email.value,
-    phone:phone.value,
-    major:major.value,
-    cert:uploaded.cert,
-    id:uploaded.idimg,
-    personal:uploaded.personal,
-    status:"قيد المراجعة"
-  });
 
-  toast("✅ تم الإرسال");
-  setTimeout(()=>window.location.href="success.html",1500);
-};
 
-window.scrollToForm = ()=>{
-  document.querySelector(".card").scrollIntoView({behavior:"smooth"});
-};
 
-</script>
 
-</body>
-</html>
+
+
+
+
+
+
+
+
+
+إرسال الطلب
+
+
+
+
+
+
+
+
+
