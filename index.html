@@ -235,39 +235,44 @@ window.upload = async(input,key)=>{
 };
 
 window.send = async()=>{
+  try {
 
-  const name=document.getElementById("name").value;
-  const email=document.getElementById("email").value;
-  const phone=document.getElementById("phone").value;
-  const major=document.getElementById("major").value;
+    const name=document.getElementById("name").value;
+    const email=document.getElementById("email").value;
+    const phone=document.getElementById("phone").value;
+    const major=document.getElementById("major").value;
 
-  if(!name || !email || !phone || !major){
-    toast("❌ عبي كل الحقول");
-    return;
+    if(!name || !email || !phone || !major){
+      toast("❌ عبي كل الحقول");
+      return;
+    }
+
+    if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
+      toast("❌ ارفع كل الصور");
+      return;
+    }
+
+    toast("⏳ جاري الإرسال...");
+
+    await addDoc(collection(db,"students"),{
+      name,email,phone,major,
+      cert:uploaded.cert,
+      idimg:uploaded.idimg,
+      personal:uploaded.personal,
+      status:"قيد المراجعة",
+      date:new Date()
+    });
+
+    toast("✅ تم الإرسال");
+
+    setTimeout(()=>{
+      window.location.href="success.html";
+    },1000);
+
+  } catch(e) {
+    console.error(e);
+    toast("❌ فشل الإرسال");
   }
-
-  if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
-    toast("❌ ارفع كل الصور");
-    return;
-  }
-
-  toast("⏳ جاري الإرسال...");
-
-  await addDoc(collection(db,"students"),{
-    name,email,phone,major,
-    cert:uploaded.cert,
-    idimg:uploaded.idimg,
-    personal:uploaded.personal,
-    status:"قيد المراجعة",
-    date:new Date()
-  });
-
-  toast("✅ تم الإرسال");
-
-  setTimeout(()=>{
-    window.location.href="success.html";
-  },1200);
-
 };
 
 window.scrollToForm=()=>{
