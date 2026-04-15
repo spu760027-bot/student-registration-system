@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>بوابة التسجيل الإلكتروني | SPU</title>
+<title>بوابة التسجيل | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
@@ -11,9 +11,23 @@
 <style>
 body { font-family:'Tajawal', sans-serif; background:#f0f4f8; margin:0; }
 
-.hero { width:100%; height:260px; position:relative; overflow:hidden; }
-.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.8); }
-.overlay { position:absolute; width:100%; height:100%; background:rgba(0,0,0,.2); }
+.navbar {
+  background:white;
+  box-shadow:0 5px 20px rgba(0,0,0,0.05);
+  position:sticky;
+  top:0;
+  z-index:999;
+}
+
+.hero { height:300px; position:relative; overflow:hidden; }
+.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.7); }
+
+.overlay {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.4);
+}
 
 .hero-content {
 position:absolute;
@@ -46,8 +60,6 @@ border-radius:10px;
 width:100%;
 }
 
-.btn:hover { background:#8e1a1e; }
-
 .preview img {
 width:90px;
 height:90px;
@@ -65,9 +77,6 @@ border-radius:10px;
 opacity:0;
 transition:.3s;
 }
-
-.progress { height:6px; background:#e2e8f0; border-radius:10px; overflow:hidden; }
-.progress-bar { height:100%; width:0%; background:#1e295a; }
 </style>
 </head>
 
@@ -75,45 +84,49 @@ transition:.3s;
 
 <div id="toast"></div>
 
+<!-- NAVBAR -->
+<div class="navbar flex justify-between items-center px-6 py-3">
+  <h2 class="font-bold text-[#1e295a]">🎓 SPU</h2>
+  <div class="flex gap-4">
+    <a href="#">الرئيسية</a>
+    <a href="#form">التسجيل</a>
+    <a href="track.html">تتبع الطلب</a>
+  </div>
+</div>
+
 <!-- HERO -->
 <div class="hero">
 <img src="logo.png">
 <div class="overlay"></div>
 
 <div class="hero-content">
-<h1>ابدأ مستقبلك مع SPU 🎓</h1>
-<p>انضم وسجل الآن بسهولة</p>
-<button onclick="scrollToForm()" style="background:#8e1a1e;padding:12px 25px;border-radius:10px;">قدّم الآن</button>
+<h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
+<p class="mt-2">جامعة رائدة بمستوى عالمي</p>
+<button onclick="scrollToForm()" class="mt-4 bg-red-700 px-6 py-2 rounded-lg">
+قدّم الآن
+</button>
 </div>
 </div>
 
-<!-- INFO -->
-<div class="max-w-6xl mx-auto mt-10 px-4">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+<!-- ABOUT -->
+<div class="max-w-6xl mx-auto mt-10 px-4 text-center">
+<h2 class="text-2xl font-bold text-[#1e295a] mb-4">عن الجامعة</h2>
+<p class="text-gray-600">
+تأسست الجامعة السورية الخاصة عام 2005 وتقدم برامج تعليمية متميزة.
+</p>
 
-<div class="bg-white p-6 rounded-2xl shadow">
-<h2 class="text-3xl font-bold text-[#1e295a]">2005</h2>
-<p>📅 سنة التأسيس</p>
-</div>
-
-<div class="bg-white p-6 rounded-2xl shadow">
-<h2 class="text-3xl font-bold text-[#1e295a]">3000+</h2>
-<p>👨‍🎓 عدد الطلاب</p>
-</div>
-
-<div class="bg-white p-6 rounded-2xl shadow">
-<h2 class="text-3xl font-bold text-[#1e295a]">6</h2>
-<p>🎓 عدد الكليات</p>
-</div>
-
+<div class="grid grid-cols-3 gap-4 mt-6">
+<div class="bg-white p-4 rounded shadow">📅 2005</div>
+<div class="bg-white p-4 rounded shadow">👨‍🎓 3000+</div>
+<div class="bg-white p-4 rounded shadow">🎓 6 كليات</div>
 </div>
 </div>
 
 <!-- FORM -->
-<div class="max-w-2xl mx-auto mt-10 px-4">
+<div id="form" class="max-w-2xl mx-auto mt-10 px-4">
 <div class="card">
 
-<h2 class="text-xl font-bold text-center mb-6">استمارة التسجيل الإلكتروني - 2026</h2>
+<h2 class="text-xl font-bold text-center mb-6">استمارة التسجيل</h2>
 
 <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
 <input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
@@ -140,7 +153,6 @@ transition:.3s;
 <optgroup label="الكليات الإدارية">
 <option>إدارة الأعمال</option>
 </optgroup>
-
 </select>
 
 <h3 class="font-bold mb-3">📁 الوثائق</h3>
@@ -168,6 +180,11 @@ transition:.3s;
 </div>
 </div>
 
+<!-- FOOTER -->
+<div class="mt-10 bg-[#1e295a] text-white text-center p-5">
+<p>© 2026 SPU University</p>
+</div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
@@ -180,7 +197,6 @@ projectId:"student-system-13431"
 });
 
 const db = getFirestore(app);
-
 const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
 let uploaded={};
@@ -193,11 +209,10 @@ setTimeout(()=>t.style.opacity=0,3000);
 }
 
 window.upload = async(input,key)=>{
-try{
 const file=input.files[0];
 if(!file)return;
 
-document.getElementById(key+"Preview").innerHTML=
+document.getElementById(key+"Preview").innerHTML =
 `<img src="${URL.createObjectURL(file)}">`;
 
 const fd=new FormData();
@@ -209,26 +224,20 @@ body:fd
 });
 
 const data=await res.json();
-
-if(!data.success) throw "error";
-
+if(data.success){
 uploaded[key]=data.data.url;
-
-}catch{
-toast("❌ فشل رفع الصورة");
 }
 };
 
 window.send = async()=>{
-try{
 
-const name=document.getElementById("name").value;
-const email=document.getElementById("email").value;
-const phone=document.getElementById("phone").value;
-const major=document.getElementById("major").value;
+const name = document.getElementById("name").value;
+const email = document.getElementById("email").value;
+const phone = document.getElementById("phone").value;
+const major = document.getElementById("major").value;
 
 if(!name || !email || !phone || !major){
-toast("❌ يرجى تعبئة جميع الحقول");
+toast("❌ عبي كل الحقول");
 return;
 }
 
@@ -246,17 +255,11 @@ status:"قيد المراجعة"
 });
 
 toast("✅ تم الإرسال");
-
 setTimeout(()=>window.location.href="success.html",1200);
-
-}catch(e){
-console.log(e);
-toast("❌ خطأ في الإرسال");
-}
 };
 
-window.scrollToForm = ()=>{
-document.querySelector(".card").scrollIntoView({behavior:"smooth"});
+window.scrollToForm=()=>{
+document.getElementById("form").scrollIntoView({behavior:"smooth"});
 };
 
 </script>
