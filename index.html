@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>بوابة التسجيل | SPU</title>
+<title>SPU | التسجيل الإلكتروني</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
@@ -16,14 +16,14 @@ body {
   padding-top:80px;
 }
 
-/* 🔥 NAVBAR */
+/* NAVBAR */
 .navbar {
   backdrop-filter: blur(12px);
   background: rgba(0,0,0,0.6);
 }
 
 /* HERO */
-.hero { height:300px; position:relative; overflow:hidden; }
+.hero { height:320px; position:relative; overflow:hidden; }
 .hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); }
 
 .overlay {
@@ -93,36 +93,33 @@ transition:.3s;
 
 <div id="toast"></div>
 
-<!-- 🔥 NAVBAR -->
+<!-- NAVBAR -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
 
-  <div class="flex items-center gap-2">
-    <img src="logo.png" class="w-8 h-8">
-    <h2 class="font-bold text-white">SPU</h2>
-  </div>
+<div class="flex items-center gap-2">
+<img src="logo.png" class="w-8 h-8">
+<h2 class="text-white font-bold">SPU</h2>
+</div>
 
-  <div class="hidden md:flex gap-6 text-white">
-    <a href="#">الرئيسية</a>
-    <a href="#form">التسجيل</a>
-    <a href="track.html">تتبع الطلب</a>
-  </div>
+<div class="hidden md:flex gap-6 text-white">
+<a href="#">الرئيسية</a>
+<a href="#form">التسجيل</a>
+<a href="track.html">تتبع الطلب</a>
+</div>
 
-  <button onclick="scrollToForm()" 
-  class="hidden md:block bg-red-600 px-4 py-2 rounded text-white">
-  قدّم الآن
-  </button>
+<button onclick="scrollToForm()" class="hidden md:block bg-red-600 px-4 py-2 rounded text-white">
+قدّم الآن
+</button>
 
-  <button onclick="toggleMenu()" class="md:hidden text-white text-2xl">
-    ☰
-  </button>
+<button onclick="toggleMenu()" class="md:hidden text-white text-2xl">☰</button>
 
 </div>
 
 <div id="mobileMenu" class="hidden flex-col bg-black text-white text-center py-5 space-y-4">
-  <a href="#">الرئيسية</a>
-  <a href="#form">التسجيل</a>
-  <a href="track.html">تتبع الطلب</a>
+<a href="#">الرئيسية</a>
+<a href="#form">التسجيل</a>
+<a href="track.html">تتبع الطلب</a>
 </div>
 </nav>
 
@@ -134,9 +131,56 @@ transition:.3s;
 <div class="hero-content">
 <h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
 <p class="mt-2">جامعة رائدة بمستوى عالمي</p>
-<button onclick="scrollToForm()" class="mt-4 bg-red-700 px-6 py-2 rounded">
-قدّم الآن
-</button>
+<button onclick="scrollToForm()" class="mt-4 bg-red-700 px-6 py-2 rounded">قدّم الآن</button>
+</div>
+</div>
+
+<!-- STATS -->
+<div class="max-w-6xl mx-auto mt-12 px-4 text-center grid md:grid-cols-3 gap-6">
+<div class="bg-white p-6 rounded shadow">
+<h2 class="text-4xl font-bold text-[#1e295a]" data-count="2005">0</h2>
+<p>📅 سنة التأسيس</p>
+</div>
+<div class="bg-white p-6 rounded shadow">
+<h2 class="text-4xl font-bold text-[#1e295a]" data-count="3000">0</h2>
+<p>👨‍🎓 عدد الطلاب</p>
+</div>
+<div class="bg-white p-6 rounded shadow">
+<h2 class="text-4xl font-bold text-[#1e295a]" data-count="6">0</h2>
+<p>🎓 عدد الكليات</p>
+</div>
+</div>
+
+<!-- WHY -->
+<div class="max-w-6xl mx-auto mt-16 px-4 text-center">
+<h2 class="text-3xl font-bold mb-8">لماذا SPU؟</h2>
+<div class="grid md:grid-cols-3 gap-6">
+
+<div class="bg-white p-6 rounded shadow">
+<h3 class="font-bold text-xl">🎓 تعليم متطور</h3>
+<p>مناهج حديثة</p>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+<h3 class="font-bold text-xl">💼 فرص عمل</h3>
+<p>ربط مع الشركات</p>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+<h3 class="font-bold text-xl">🌍 بيئة عالمية</h3>
+<p>طلاب دوليين</p>
+</div>
+
+</div>
+</div>
+
+<!-- GALLERY -->
+<div class="max-w-6xl mx-auto mt-16 px-4">
+<h2 class="text-2xl font-bold text-center mb-6">📸 الحياة الجامعية</h2>
+<div class="grid md:grid-cols-3 gap-4">
+<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded shadow">
+<img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded shadow">
+<img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded shadow">
 </div>
 </div>
 
@@ -152,7 +196,7 @@ transition:.3s;
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
 <select id="major" class="input mb-5">
-<option value="">اختر الكلية المطلوبة</option>
+<option value="">اختر الكلية</option>
 
 <optgroup label="الكليات الطبية">
 <option>الطب البشري</option>
@@ -168,18 +212,18 @@ transition:.3s;
 <option>هندسة البترول</option>
 </optgroup>
 
-<optgroup label="الكليات الإدارية">
+<optgroup label="الإدارية">
 <option>إدارة الأعمال</option>
 </optgroup>
 </select>
 
 <h3 class="font-bold mb-3">📁 الوثائق</h3>
 
-<label>📄 صورة الشهادة الثانوية</label>
+<label>📄 الشهادة</label>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview mb-3"></div>
 
-<label>🪪 صورة الهوية</label>
+<label>🪪 الهوية</label>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
 <div id="idimgPreview" class="preview mb-3"></div>
 
@@ -187,10 +231,10 @@ transition:.3s;
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview mb-4"></div>
 
-<div class="bg-blue-50 p-4 rounded-xl text-center">
+<div class="bg-blue-50 p-4 rounded text-center">
 <p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
 <img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px;margin:auto">
-<input id="transfer" class="input mt-3" placeholder="رقم عملية التحويل">
+<input id="transfer" class="input mt-3" placeholder="رقم التحويل">
 </div>
 
 <button class="btn mt-5" onclick="send()">إرسال الطلب</button>
@@ -225,8 +269,7 @@ window.upload = async(input,key)=>{
 const file=input.files[0];
 if(!file)return;
 
-document.getElementById(key+"Preview").innerHTML =
-`<img src="${URL.createObjectURL(file)}">`;
+document.getElementById(key+"Preview").innerHTML=`<img src="${URL.createObjectURL(file)}">`;
 
 const fd=new FormData();
 fd.append("image",file);
@@ -243,7 +286,6 @@ uploaded[key]=data.data.url;
 };
 
 window.send = async()=>{
-
 const name = document.getElementById("name").value;
 const email = document.getElementById("email").value;
 const phone = document.getElementById("phone").value;
@@ -255,7 +297,7 @@ return;
 }
 
 if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
-toast("❌ ارفع كل الصور");
+toast("❌ ارفع الصور");
 return;
 }
 
@@ -275,12 +317,25 @@ window.scrollToForm=()=>{
 document.getElementById("form").scrollIntoView({behavior:"smooth"});
 };
 
-window.toggleMenu = ()=>{
-const menu=document.getElementById("mobileMenu");
-menu.classList.toggle("hidden");
+window.toggleMenu=()=>{
+document.getElementById("mobileMenu").classList.toggle("hidden");
 };
+
+/* COUNTER */
+document.querySelectorAll("[data-count]").forEach(el=>{
+let target=+el.dataset.count;
+let count=0;
+let step=Math.ceil(target/50);
+
+function update(){
+count+=step;
+if(count>=target){el.innerText=target+"+";}
+else{el.innerText=count;requestAnimationFrame(update);}
+}
+update();
+});
 
 </script>
 
 </body>
-</html>
+  </html>
