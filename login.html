@@ -3,50 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل دخول الأدمن</title>
+<title>تسجيل الدخول</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body { background:#f1f5f9; font-family:sans-serif; }
-.box { background:white; padding:20px; border-radius:12px; max-width:400px; margin:100px auto; }
-.input { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; margin-bottom:10px; }
-.btn { background:#1e293b; color:white; padding:10px; width:100%; border-radius:8px; }
-.btn:hover { background:#8e1a1e; }
+body {
+  background:#1e293b;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  font-family:'Tajawal', sans-serif;
+}
+.card {
+  background:white;
+  padding:30px;
+  border-radius:15px;
+  width:300px;
+}
+.input {
+  width:100%;
+  padding:10px;
+  border:1px solid #ccc;
+  margin-bottom:10px;
+  border-radius:8px;
+}
+.btn {
+  width:100%;
+  padding:10px;
+  background:#1e295a;
+  color:white;
+  border-radius:8px;
+}
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="card">
+  <h2 class="text-center font-bold mb-4">🔐 تسجيل الدخول</h2>
 
-<h2 class="text-lg mb-4 text-center">🔐 تسجيل دخول الأدمن</h2>
+  <input id="email" class="input" placeholder="Email">
+  <input id="password" type="password" class="input" placeholder="Password">
 
-<input id="user" class="input" placeholder="اسم المستخدم">
-<input id="pass" type="password" class="input" placeholder="كلمة المرور">
+  <button class="btn" onclick="login()">دخول</button>
 
-<button class="btn" onclick="login()">دخول</button>
-
-<p id="msg" class="text-center mt-3"></p>
-
+  <p id="msg" class="text-center mt-3 text-red-500"></p>
 </div>
 
-<script>
+<script type="module">
 
-// 🔥 مهم: حذف تسجيل الدخول القديم
-localStorage.removeItem("auth");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } 
+from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
-function login() {
-  const user = document.getElementById("user").value;
-  const pass = document.getElementById("pass").value;
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+  authDomain: "student-system-13431.firebaseapp.com",
+  projectId: "student-system-13431",
+};
 
-  if (user === "admin" && pass === "1234") {
-    localStorage.setItem("auth", "true");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+/* 🔐 تسجيل الدخول (مع حفظ الجلسة) */
+window.login = async () => {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+
+  try {
+
+    // 🔥 هذا أهم سطر (يحل المشكلة)
+    await setPersistence(auth, browserLocalPersistence);
+
+    await signInWithEmailAndPassword(auth, email, password);
+
     window.location.href = "admin.html";
-  } else {
-    document.getElementById("msg").innerText = "بيانات خاطئة ❌";
+
+  } catch (e) {
+    msg.innerText = "❌ تأكد من الإيميل وكلمة السر";
   }
-}
+};
 
 </script>
 
