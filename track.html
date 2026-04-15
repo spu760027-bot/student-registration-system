@@ -36,24 +36,35 @@ body {
   to {opacity:1; transform:translateY(0);}
 }
 
-/* Status Box */
+/* Status */
 .statusBox {
   margin-top:15px;
-  padding:10px;
-  border-radius:10px;
+  padding:12px;
+  border-radius:12px;
   font-weight:bold;
+  transition:0.4s;
 }
 
-/* Colors */
 .pending { background:#facc15; color:black; }
 .approved { background:#16a34a; color:white; }
 .rejected { background:#dc2626; color:white; }
 
-button {
-  transition:0.3s;
+/* Toast */
+#toast {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  padding:12px 20px;
+  border-radius:12px;
+  color:white;
+  font-weight:bold;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  animation:slideIn 0.5s ease;
 }
-button:hover {
-  transform:scale(1.05);
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity:0; }
+  to { transform: translateX(0); opacity:1; }
 }
 </style>
 </head>
@@ -74,6 +85,14 @@ button:hover {
 
 </div>
 
+<!-- Toast -->
+<div id="toast" class="hidden"></div>
+
+<!-- Sound -->
+<audio id="notifySound">
+  <source src="https://www.soundjay.com/buttons/sounds/button-3.mp3">
+</audio>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
@@ -93,19 +112,38 @@ let lastStatus = "";
 const saved = localStorage.getItem("requestId");
 if (saved) document.getElementById("id").value = saved;
 
-/* عرض الحالة */
-function renderStatus(status){
+/* Toast */
+function showToast(message, type){
 
-  let className = "pending";
+  const toast = document.getElementById("toast");
 
-  if (status.includes("مقبول")) className = "approved";
-  if (status.includes("مرفوض")) className = "rejected";
+  let color = "#2563eb";
+  if (type === "success") color = "#16a34a";
+  if (type === "error") color = "#dc2626";
 
-  document.getElementById("result").innerHTML =
-    `<div class="statusBox ${className}">📊 الحالة: ${status}</div>`;
+  toast.style.background = color;
+  toast.innerText = message;
+  toast.classList.remove("hidden");
+
+  document.getElementById("notifySound").play();
+
+  setTimeout(()=>{
+    toast.classList.add("hidden");
+  },3000);
 }
 
-/* تحقق */
+/* Render Status */
+function renderStatus(status){
+
+  let cls = "pending";
+  if (status.includes("مقبول")) cls = "approved";
+  if (status.includes("مرفوض")) cls = "rejected";
+
+  document.getElementById("result").innerHTML =
+    `<div class="statusBox ${cls}">📊 الحالة: ${status}</div>`;
+}
+
+/* Check */
 window.check = async () => {
 
   const id = document.getElementById("id").value;
@@ -130,7 +168,7 @@ window.check = async () => {
   renderStatus(data.status);
 };
 
-/* 🔔 إشعار تلقائي كل 5 ثواني */
+/* 🔔 Auto Update */
 setInterval(async () => {
 
   const id = document.getElementById("id").value;
@@ -144,7 +182,7 @@ setInterval(async () => {
   const data = snap.data();
 
   if (lastStatus && lastStatus !== data.status) {
-    alert("🔔 تم تحديث حالة طلبك: " + data.status);
+    showToast("🔔 تم تحديث الحالة: " + data.status, "success");
     renderStatus(data.status);
   }
 
