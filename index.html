@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPU Premium</title>
+
+<title>SPU Registration</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
@@ -11,81 +12,91 @@
 <style>
 body {
   font-family:'Tajawal', sans-serif;
-  margin:0;
-  background: linear-gradient(135deg, #1e295a, #8e1a1e);
-  min-height:100vh;
-  color:white;
-}
-
-/* Glow */
-body::before {
-  content:'';
-  position:fixed;
-  width:500px;
-  height:500px;
-  background:#ffffff20;
-  filter:blur(120px);
-  top:-100px;
-  right:-100px;
-}
-
-/* Hero */
-.hero {
-  height:200px;
-  overflow:hidden;
-}
-.hero img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  opacity:0.7;
+  background:#f1f5f9;
 }
 
 /* Card */
 .card {
-  backdrop-filter: blur(20px);
-  background: rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.2);
-  border-radius:20px;
+  background:white;
   padding:30px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  border-radius:20px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.1);
 }
 
 /* Inputs */
 .input {
   width:100%;
   padding:12px;
-  border-radius:12px;
-  background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.2);
-  color:white;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  transition:0.3s;
 }
-.input::placeholder { color:#ddd; }
 
 .input:focus {
+  border-color:#1e295a;
+  box-shadow:0 0 0 2px rgba(30,41,90,0.2);
   outline:none;
-  border-color:#fff;
-  box-shadow:0 0 10px #ffffff50;
 }
 
 /* Button */
 .btn {
-  width:100%;
-  padding:15px;
-  border-radius:12px;
-  background:linear-gradient(135deg,#ffffff,#dbeafe);
-  color:#1e295a;
-  font-weight:bold;
+  background:#1e295a;
+  color:white;
+  padding:12px;
+  border-radius:10px;
   transition:0.3s;
 }
+
 .btn:hover {
-  transform:scale(1.05);
-  box-shadow:0 10px 30px rgba(255,255,255,0.3);
+  background:#8e1a1e;
 }
 
-/* Preview */
+/* Progress */
+.progress {
+  height:6px;
+  background:#e2e8f0;
+  border-radius:10px;
+}
+
+.progress-bar {
+  height:100%;
+  background:linear-gradient(90deg,#1e295a,#8e1a1e);
+  width:33%;
+  transition:0.4s;
+}
+
+/* Animation */
+.step {
+  animation: fade 0.4s ease;
+}
+
+@keyframes fade {
+  from { opacity:0; transform:translateY(10px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* Shake */
+.shake {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-5px)}
+  50%{transform:translateX(5px)}
+  75%{transform:translateX(-5px)}
+  100%{transform:translateX(0)}
+}
+
+.error {
+  border-color:red !important;
+}
+
+.hidden { display:none; }
+
 .preview img {
   width:80px;
+  height:80px;
   border-radius:10px;
 }
 </style>
@@ -93,57 +104,51 @@ body::before {
 
 <body>
 
-<div class="hero">
-  <img src="logo.png">
+<div class="max-w-2xl mx-auto mt-10 px-4">
+<div id="card" class="card">
+
+<h2 class="text-xl font-bold text-center mb-4">🎓 التسجيل الإلكتروني</h2>
+
+<div class="progress mb-6">
+  <div id="bar" class="progress-bar"></div>
 </div>
 
-<div class="max-w-2xl mx-auto mt-[-60px] px-4">
+<!-- STEP 1 -->
+<div id="step1" class="step">
+  <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
+  <input id="national" class="input mb-3" placeholder="الرقم الوطني">
+  <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<div class="card">
-
-<h2 class="text-2xl font-bold text-center mb-6">
-🚀 تسجيل طالب - SPU Premium
-</h2>
-
-<input id="name" class="input mb-3" placeholder="الاسم الكامل">
-<input id="phone" class="input mb-3" placeholder="رقم الهاتف">
-
-<select id="major" class="input mb-5">
-<option value="">اختر الكلية</option>
-<option>الطب البشري</option>
-<option>طب الأسنان</option>
-<option>الصيدلة</option>
-<option>هندسة المعلوماتية والاتصالات</option>
-<option>الهندسة المدنية</option>
-<option>إدارة الأعمال</option>
-</select>
-
-<h3 class="mb-3">📁 رفع الملفات</h3>
-
-<label>📄 شهادة</label>
-<input type="file" id="cert" class="input mb-2" onchange="preview(this,'p1')">
-<div id="p1" class="preview mb-3"></div>
-
-<label>🪪 هوية</label>
-<input type="file" id="idimg" class="input mb-2" onchange="preview(this,'p2')">
-<div id="p2" class="preview mb-3"></div>
-
-<label>👤 شخصية</label>
-<input type="file" id="personal" class="input mb-2" onchange="preview(this,'p3')">
-<div id="p3" class="preview mb-4"></div>
-
-<div class="bg-white/10 p-4 rounded-xl text-center">
-<p>💳 الدفع عبر QR</p>
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" class="mx-auto my-3" style="width:150px">
-<input id="transfer" class="input" placeholder="رقم العملية">
+  <button class="btn w-full" onclick="nextStep(2)">التالي ➡️</button>
 </div>
 
-<button class="btn mt-5" onclick="send()">إرسال 🚀</button>
+<!-- STEP 2 -->
+<div id="step2" class="hidden step">
+  <select id="major" class="input mb-4">
+    <option value="">اختر الكلية</option>
+    <option>الطب</option>
+    <option>الهندسة</option>
+  </select>
 
-<p id="msg" class="text-center mt-3 font-bold"></p>
-
+  <div class="flex justify-between">
+    <button class="btn" onclick="nextStep(1)">⬅️ رجوع</button>
+    <button class="btn" onclick="nextStep(3)">التالي ➡️</button>
+  </div>
 </div>
 
+<!-- STEP 3 -->
+<div id="step3" class="hidden step">
+  <input type="file" id="cert" class="input mb-2">
+  <input type="file" id="idimg" class="input mb-2">
+  <input type="file" id="personal" class="input mb-3">
+
+  <button class="btn w-full" onclick="send()">🚀 إرسال</button>
+  <button class="btn w-full mt-2" onclick="nextStep(2)">⬅️ رجوع</button>
+</div>
+
+<p id="msg" class="text-center mt-3 text-red-500"></p>
+
+</div>
 </div>
 
 <script type="module">
@@ -151,84 +156,79 @@ body::before {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+const app = initializeApp({
+  apiKey: "AIzaSy...",
   authDomain: "student-system-13431.firebaseapp.com",
   projectId: "student-system-13431",
-};
+});
 
-const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const apiKey = "bfa4cc0d29fb46535a67fd3dbe8de3bc";
+/* Validation */
+function validateStep(step){
 
-/* Upload */
-async function uploadImage(file){
-  const formData = new FormData();
-  formData.append("image", file);
+  let valid = true;
+  let fields = [];
 
-  const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-    method:"POST",
-    body:formData
+  if (step === 1) {
+    fields = ["name","national","phone"];
+  }
+
+  if (step === 2) {
+    fields = ["major"];
+  }
+
+  fields.forEach(id=>{
+    const el = document.getElementById(id);
+    el.classList.remove("error");
+
+    if (!el.value) {
+      el.classList.add("error");
+      valid = false;
+    }
   });
 
-  const data = await res.json();
-  return data.data.url;
+  return valid;
 }
 
-/* Preview */
-window.preview = (input, id)=>{
-  const file = input.files[0];
-  if (!file) return;
-  document.getElementById(id).innerHTML =
-    `<img src="${URL.createObjectURL(file)}">`;
-};
+/* Navigation */
+window.nextStep = (n)=>{
 
-/* Send */
-window.send = async () => {
+  if (n > 1 && !validateStep(n-1)) {
+    document.getElementById("msg").innerText = "❌ يرجى تعبئة الحقول";
+    document.getElementById("card").classList.add("shake");
 
-  const msg = document.getElementById("msg");
+    setTimeout(()=>{
+      document.getElementById("card").classList.remove("shake");
+    },300);
 
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const major = document.getElementById("major").value;
-
-  const cert = document.getElementById("cert").files[0];
-  const idimg = document.getElementById("idimg").files[0];
-  const personal = document.getElementById("personal").files[0];
-
-  if (!name || !phone || !major || !cert || !idimg || !personal) {
-    msg.innerText = "❌ يرجى تعبئة كل الحقول";
     return;
   }
 
-  msg.innerText = "⏳ جاري رفع الصور...";
+  document.getElementById("msg").innerText = "";
 
-  const certUrl = await uploadImage(cert);
-  const idUrl = await uploadImage(idimg);
-  const personalUrl = await uploadImage(personal);
+  document.querySelectorAll("[id^='step']").forEach(s=>s.classList.add("hidden"));
+  document.getElementById("step"+n).classList.remove("hidden");
 
-  msg.innerText = "⏳ جاري حفظ البيانات...";
+  document.getElementById("bar").style.width =
+    n===1?"33%":n===2?"66%":"100%";
+};
 
-  const docRef = await addDoc(collection(db, "students"), {
-    name,
-    phone,
-    major,
-    cert: certUrl,
-    id: idUrl,
-    personal: personalUrl,
-    status: "⏳ قيد المراجعة"
+/* Send */
+window.send = async ()=>{
+
+  if (!validateStep(2)) return;
+
+  document.getElementById("msg").innerText="⏳ جاري الإرسال...";
+
+  await addDoc(collection(db,"students"),{
+    name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    major: document.getElementById("major").value,
+    status:"⏳ قيد المراجعة"
   });
 
-  const requestId = docRef.id;
-
-  localStorage.setItem("requestId", requestId);
-
-  msg.innerText = "✅ تم الإرسال - رقم طلبك: " + requestId;
-
-  setTimeout(()=>{
-    window.location.href = "track.html";
-  },1500);
+  window.location.href="success.html";
 };
 
 </script>
