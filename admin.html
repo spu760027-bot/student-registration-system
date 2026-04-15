@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | SPU</title>
+<title>Dashboard PRO | SPU</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -48,6 +48,10 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
   border-radius:8px;
   object-fit:cover;
 }
+
+.tab-active {
+  outline:3px solid #00000020;
+}
 </style>
 </head>
 
@@ -55,7 +59,7 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
 
 <div class="sidebar">
   <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
-  <p>📊 Dashboard</p>
+  <p>📊 Dashboard PRO</p>
   <button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
 </div>
 
@@ -63,16 +67,34 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
 
 <h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
-<div class="flex gap-3 mb-5">
-  <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">
-    تحميل Excel 📊
-  </button>
+<!-- 🔥 Tabs + Counters -->
+<div class="flex gap-2 mb-4 flex-wrap">
 
-  <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">
-    تحميل PDF 📄
-  </button>
+<button onclick="filterStatus('all', this)" class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active">
+الكل (<span id="cAll">0</span>)
+</button>
+
+<button onclick="filterStatus('approved', this)" class="tab bg-green-600 text-white px-4 py-2 rounded">
+مقبول (<span id="cApproved">0</span>)
+</button>
+
+<button onclick="filterStatus('rejected', this)" class="tab bg-red-600 text-white px-4 py-2 rounded">
+مرفوض (<span id="cRejected">0</span>)
+</button>
+
+<button onclick="filterStatus('pending', this)" class="tab bg-yellow-500 text-white px-4 py-2 rounded">
+قيد المراجعة (<span id="cPending">0</span>)
+</button>
+
 </div>
 
+<!-- Export -->
+<div class="flex gap-3 mb-5">
+  <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">Excel 📊</button>
+  <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">PDF 📄</button>
+</div>
+
+<!-- Stats -->
 <div class="grid grid-cols-2 gap-4 mb-5">
   <div class="card">
     <p>عدد الطلبات</p>
@@ -85,18 +107,16 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
   </div>
 </div>
 
+<!-- Charts -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-  <div class="card">
-    <canvas id="barChart"></canvas>
-  </div>
-
-  <div class="card">
-    <canvas id="pieChart"></canvas>
-  </div>
+  <div class="card"><canvas id="barChart"></canvas></div>
+  <div class="card"><canvas id="pieChart"></canvas></div>
 </div>
 
+<!-- Search -->
 <input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
 
+<!-- List -->
 <div id="list"></div>
 
 </div>
@@ -104,7 +124,7 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -117,30 +137,56 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+let students = [];
+let currentFilter = "all";
+let barChart, pieChart;
+
 /* 🔐 حماية */
 onAuthStateChanged(auth, (user) => {
   if (user) {
     document.body.style.display = "block";
-    load();
+    startLive();
   } else {
     window.location.href = "login.html";
   }
 });
 
-let students = [];
+/* 🔥 LIVE */
+function startLive(){
+  onSnapshot(collection(db, "students"), (snapshot) => {
 
-async function load(){
-  const snapshot = await getDocs(collection(db,"students"));
-  students = [];
+    students = [];
 
-  snapshot.forEach(d=>{
-    students.push({ id:d.id, ...d.data() });
+    snapshot.forEach(d=>{
+      students.push({ id:d.id, ...d.data() });
+    });
+
+    document.getElementById("count").innerText = students.length;
+
+    buildCharts();
+    updateCounters();
+    applyFilters();
+
+  });
+}
+
+/* 🔢 Counters */
+function updateCounters(){
+
+  let approved = 0;
+  let rejected = 0;
+  let pending = 0;
+
+  students.forEach(s=>{
+    if (!s.status || s.status.includes("قيد")) pending++;
+    else if (s.status.includes("مقبول")) approved++;
+    else if (s.status.includes("مرفوض")) rejected++;
   });
 
-  document.getElementById("count").innerText = students.length;
-
-  buildCharts();
-  show(students);
+  document.getElementById("cAll").innerText = students.length;
+  document.getElementById("cApproved").innerText = approved;
+  document.getElementById("cRejected").innerText = rejected;
+  document.getElementById("cPending").innerText = pending;
 }
 
 /* Charts */
@@ -157,18 +203,52 @@ function buildCharts(){
   const labels = Object.keys(majors);
   const data = Object.values(majors);
 
-  new Chart(document.getElementById("barChart"), {
+  if (barChart) barChart.destroy();
+  if (pieChart) pieChart.destroy();
+
+  barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: { labels, datasets: [{ label: "عدد الطلاب", data }] }
   });
 
-  new Chart(document.getElementById("pieChart"), {
+  pieChart = new Chart(document.getElementById("pieChart"), {
     type: "pie",
     data: { labels, datasets: [{ data }] }
   });
 }
 
-/* عرض الطلاب */
+/* Filter */
+window.filterStatus = (type, el)=>{
+  currentFilter = type;
+
+  document.querySelectorAll(".tab").forEach(b=>b.classList.remove("tab-active"));
+  if (el) el.classList.add("tab-active");
+
+  applyFilters();
+};
+
+function applyFilters(){
+
+  let filtered = [...students];
+
+  if (currentFilter === "approved")
+    filtered = filtered.filter(s => (s.status || "").includes("مقبول"));
+
+  if (currentFilter === "rejected")
+    filtered = filtered.filter(s => (s.status || "").includes("مرفوض"));
+
+  if (currentFilter === "pending")
+    filtered = filtered.filter(s => !s.status || s.status.includes("قيد"));
+
+  const searchVal = document.getElementById("search").value.toLowerCase();
+
+  if (searchVal)
+    filtered = filtered.filter(s => s.name.toLowerCase().includes(searchVal));
+
+  show(filtered);
+}
+
+/* Show */
 function show(data){
   const list = document.getElementById("list");
   list.innerHTML = "";
@@ -178,7 +258,6 @@ function show(data){
     <div class="student flex justify-between items-center">
 
       <div>
-        <p>🆔 ${s.id}</p>
         <p>👤 ${s.name}</p>
         <p>📞 ${s.phone}</p>
         <p>🎓 ${s.major}</p>
@@ -198,9 +277,7 @@ function show(data){
 
       </div>
 
-      <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">
-        حذف ❌
-      </button>
+      <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف ❌</button>
 
     </div>
     `;
@@ -208,22 +285,16 @@ function show(data){
 }
 
 /* Search */
-document.getElementById("search").addEventListener("input", e=>{
-  const v = e.target.value.toLowerCase();
-  const filtered = students.filter(s => s.name.toLowerCase().includes(v));
-  show(filtered);
-});
+document.getElementById("search").addEventListener("input", applyFilters);
+
+/* Update */
+window.updateStatus = async (id, status)=>{
+  await updateDoc(doc(db,"students",id), { status });
+};
 
 /* Delete */
 window.del = async (id)=>{
   await deleteDoc(doc(db,"students",id));
-  load();
-};
-
-/* 🔥 تحديث الحالة */
-window.updateStatus = async (id, status)=>{
-  await updateDoc(doc(db,"students",id), { status });
-  load();
 };
 
 /* Logout */
@@ -250,20 +321,20 @@ window.exportExcel = () => {
 /* PDF */
 window.exportPDF = () => {
 
-  const docPdf = new jspdf.jsPDF();
+  const pdf = new jspdf.jsPDF();
   let y = 10;
 
   students.forEach((s, i) => {
-    docPdf.text(`${i+1}. ${s.name} - ${s.phone} - ${s.major} - ${s.status}`, 10, y);
+    pdf.text(`${i+1}. ${s.name} - ${s.phone} - ${s.major} - ${s.status}`, 10, y);
     y += 10;
 
     if (y > 280) {
-      docPdf.addPage();
+      pdf.addPage();
       y = 10;
     }
   });
 
-  docPdf.save("students.pdf");
+  pdf.save("students.pdf");
 };
 
 </script>
