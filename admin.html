@@ -13,10 +13,26 @@
 <style>
 body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
 
-.sidebar { width:250px; background:#1e293b; color:white; position:fixed; height:100%; padding:20px; }
-.content { margin-right:250px; padding:20px; }
+.sidebar {
+  width:250px;
+  background:#1e293b;
+  color:white;
+  position:fixed;
+  height:100%;
+  padding:20px;
+}
 
-.card { background:white; padding:20px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.05); }
+.content {
+  margin-right:250px;
+  padding:20px;
+}
+
+.card {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.05);
+}
 
 .student {
   background:white;
@@ -34,26 +50,68 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
   cursor:pointer;
 }
 
-.tab-active { outline:3px solid #00000020; }
+.tab-active {
+  outline:3px solid #00000020;
+}
+
+/* Toast */
+#toast {
+position:fixed;
+top:20px;
+left:20px;
+background:#1e293b;
+color:white;
+padding:12px 20px;
+border-radius:10px;
+opacity:0;
+transition:0.4s;
+z-index:9999;
+}
+
+/* Modal */
+#modal {
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
 </style>
 </head>
 
 <body>
 
+<div id="toast"></div>
+
+<div id="modal" onclick="closeImg()">
+  <img id="modalImg" style="max-width:90%;max-height:90%;">
+</div>
+
 <div class="sidebar">
   <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
+  <p>📊 Dashboard</p>
   <button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
 </div>
 
 <div class="content">
 
-<h1 class="text-2xl font-bold mb-3">📊 Dashboard</h1>
+<h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
-<div class="flex gap-2 mb-4">
+<div class="flex gap-2 mb-4 flex-wrap">
 <button onclick="filterStatus('all',this)" class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active">الكل</button>
 <button onclick="filterStatus('approved',this)" class="tab bg-green-600 text-white px-4 py-2 rounded">مقبول</button>
 <button onclick="filterStatus('rejected',this)" class="tab bg-red-600 text-white px-4 py-2 rounded">مرفوض</button>
 <button onclick="filterStatus('pending',this)" class="tab bg-yellow-500 text-white px-4 py-2 rounded">مراجعة</button>
+</div>
+
+<div class="flex gap-3 mb-5">
+  <button onclick="exportExcel()" class="bg-green-600 text-white px-4 py-2 rounded">Excel</button>
+  <button onclick="exportPDF()" class="bg-blue-600 text-white px-4 py-2 rounded">PDF</button>
 </div>
 
 <input id="search" placeholder="بحث..." class="w-full p-3 border rounded mb-4">
@@ -80,6 +138,14 @@ const auth = getAuth(app);
 let students=[];
 let currentFilter="all";
 
+/* Toast */
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.innerText=msg;
+  t.style.opacity=1;
+  setTimeout(()=>t.style.opacity=0,3000);
+}
+
 /* حماية */
 onAuthStateChanged(auth,user=>{
   if(user){
@@ -90,7 +156,7 @@ onAuthStateChanged(auth,user=>{
   }
 });
 
-/* جلب البيانات */
+/* تحميل البيانات */
 function start(){
   onSnapshot(collection(db,"students"),snap=>{
     students=[];
@@ -135,12 +201,13 @@ function show(data){
         <p>👤 ${s.name}</p>
         <p>📞 ${s.phone}</p>
         <p>🎓 ${s.major}</p>
+
         <p>📊 ${s.status || "⏳ قيد المراجعة"}</p>
 
         <div class="flex gap-2 mt-2">
-          <img src="${s.cert}">
-          <img src="${s.idimg}">
-          <img src="${s.personal}">
+          <img src="${s.cert}" onclick="openImg('${s.cert}')">
+          <img src="${s.idimg}" onclick="openImg('${s.idimg}')">
+          <img src="${s.personal}" onclick="openImg('${s.personal}')">
         </div>
 
         <div class="mt-2 flex gap-2">
@@ -148,6 +215,7 @@ function show(data){
           <button onclick="updateStatus('${s.docId}','❌ مرفوض')" class="bg-red-600 text-white px-3 py-1 rounded">رفض</button>
           <button onclick="updateStatus('${s.docId}','⏳ قيد المراجعة')" class="bg-yellow-500 text-white px-3 py-1 rounded">مراجعة</button>
         </div>
+
       </div>
 
       <button onclick="del('${s.docId}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف</button>
@@ -158,18 +226,64 @@ function show(data){
 
 /* عمليات */
 window.updateStatus = async (id,status)=>{
-  await updateDoc(doc(db,"students",id),{status});
-};
-
-window.del = async (id)=>{
-  if(confirm("متأكد من الحذف؟")){
-    await deleteDoc(doc(db,"students",id));
+  try{
+    await updateDoc(doc(db,"students",id),{status});
+    toast("تم التحديث");
+  }catch(e){
+    alert("فشل التحديث");
+    console.error(e);
   }
 };
 
+window.del = async (id)=>{
+  if(!confirm("متأكد من الحذف؟")) return;
+  try{
+    await deleteDoc(doc(db,"students",id));
+    toast("تم الحذف");
+  }catch(e){
+    alert("فشل الحذف");
+    console.error(e);
+  }
+};
+
+/* صور */
+window.openImg=(src)=>{
+  document.getElementById("modal").style.display="flex";
+  document.getElementById("modalImg").src=src;
+};
+window.closeImg=()=>{
+  document.getElementById("modal").style.display="none";
+};
+
+/* Logout */
 window.logout=async()=>{
   await signOut(auth);
   location.href="login.html";
+};
+
+/* Excel */
+window.exportExcel=()=>{
+  const data=students.map(s=>({
+    الاسم:s.name,
+    الهاتف:s.phone,
+    الكلية:s.major,
+    الحالة:s.status
+  }));
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"طلاب");
+  XLSX.writeFile(wb,"students.xlsx");
+};
+
+/* PDF */
+window.exportPDF=()=>{
+  const pdf=new jspdf.jsPDF();
+  let y=10;
+  students.forEach((s,i)=>{
+    pdf.text(`${i+1}. ${s.name} - ${s.phone}`,10,y);
+    y+=10;
+  });
+  pdf.save("students.pdf");
 };
 
 document.getElementById("search").addEventListener("input",applyFilters);
