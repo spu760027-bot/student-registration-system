@@ -47,15 +47,50 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
   height:60px;
   border-radius:8px;
   object-fit:cover;
+  cursor:pointer;
 }
 
 .tab-active {
   outline:3px solid #00000020;
 }
+
+/* Toast */
+#toast {
+position:fixed;
+top:20px;
+left:20px;
+background:#1e293b;
+color:white;
+padding:12px 20px;
+border-radius:10px;
+opacity:0;
+transition:0.4s;
+z-index:9999;
+}
+
+/* Image Modal */
+#modal {
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,0.8);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
 </style>
 </head>
 
 <body>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Image Modal -->
+<div id="modal">
+  <img id="modalImg" style="max-width:90%;max-height:90%;border-radius:10px;">
+</div>
 
 <div class="sidebar">
   <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
@@ -67,7 +102,7 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
 
 <h1 class="text-2xl font-bold mb-3">📊 Analytics Dashboard</h1>
 
-<!-- 🔥 Tabs + Counters -->
+<!-- Tabs -->
 <div class="flex gap-2 mb-4 flex-wrap">
 
 <button onclick="filterStatus('all', this)" class="tab bg-gray-800 text-white px-4 py-2 rounded tab-active">
@@ -107,6 +142,12 @@ body { background:#f1f5f9; font-family:'Tajawal', sans-serif; display:none; }
   </div>
 </div>
 
+<!-- نسبة القبول -->
+<div class="card mb-5">
+  <p>نسبة القبول</p>
+  <h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
+</div>
+
 <!-- Charts -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
   <div class="card"><canvas id="barChart"></canvas></div>
@@ -141,7 +182,15 @@ let students = [];
 let currentFilter = "all";
 let barChart, pieChart;
 
-/* 🔐 حماية */
+/* Toast */
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.opacity = 1;
+  setTimeout(()=> t.style.opacity = 0, 3000);
+}
+
+/* حماية */
 onAuthStateChanged(auth, (user) => {
   if (user) {
     document.body.style.display = "block";
@@ -151,7 +200,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-/* 🔥 LIVE */
+/* LIVE */
 function startLive(){
   onSnapshot(collection(db, "students"), (snapshot) => {
 
@@ -170,7 +219,7 @@ function startLive(){
   });
 }
 
-/* 🔢 Counters */
+/* Counters */
 function updateCounters(){
 
   let approved = 0;
@@ -187,6 +236,9 @@ function updateCounters(){
   document.getElementById("cApproved").innerText = approved;
   document.getElementById("cRejected").innerText = rejected;
   document.getElementById("cPending").innerText = pending;
+
+  const rate = students.length ? Math.round((approved / students.length) * 100) : 0;
+  document.getElementById("acceptRate").innerText = rate + "%";
 }
 
 /* Charts */
@@ -243,7 +295,10 @@ function applyFilters(){
   const searchVal = document.getElementById("search").value.toLowerCase();
 
   if (searchVal)
-    filtered = filtered.filter(s => s.name.toLowerCase().includes(searchVal));
+    filtered = filtered.filter(s =>
+      s.name.toLowerCase().includes(searchVal) ||
+      s.phone.includes(searchVal)
+    );
 
   show(filtered);
 }
@@ -261,12 +316,19 @@ function show(data){
         <p>👤 ${s.name}</p>
         <p>📞 ${s.phone}</p>
         <p>🎓 ${s.major}</p>
-        <p>📊 <b>${s.status || "⏳ قيد المراجعة"}</b></p>
+
+        <p>📊 <b style="
+        color:${
+          (s.status||"").includes("مقبول") ? "green" :
+          (s.status||"").includes("مرفوض") ? "red" : "orange"
+        }">
+        ${s.status || "⏳ قيد المراجعة"}
+        </b></p>
 
         <div class="flex gap-2 mt-2">
-          <img src="${s.cert}">
-          <img src="${s.id}">
-          <img src="${s.personal}">
+          <img src="${s.cert}" onclick="openImg('${s.cert}')">
+          <img src="${s.id}" onclick="openImg('${s.id}')">
+          <img src="${s.personal}" onclick="openImg('${s.personal}')">
         </div>
 
         <div class="mt-2 flex gap-2">
@@ -284,17 +346,29 @@ function show(data){
   });
 }
 
+/* Image Modal */
+window.openImg = (src)=>{
+  document.getElementById("modal").style.display="flex";
+  document.getElementById("modalImg").src=src;
+};
+
+document.getElementById("modal").onclick=()=>{
+  document.getElementById("modal").style.display="none";
+};
+
 /* Search */
 document.getElementById("search").addEventListener("input", applyFilters);
 
 /* Update */
 window.updateStatus = async (id, status)=>{
   await updateDoc(doc(db,"students",id), { status });
+  toast("✅ تم تحديث الحالة");
 };
 
 /* Delete */
 window.del = async (id)=>{
   await deleteDoc(doc(db,"students",id));
+  toast("🗑 تم الحذف");
 };
 
 /* Logout */
