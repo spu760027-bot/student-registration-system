@@ -14,8 +14,19 @@ body { font-family:'Tajawal', sans-serif; background:#f0f4f8; margin:0; }
 
 /* بانر */
 .hero { width:100%; height:220px; overflow:hidden; position:relative; }
-.hero img { width:100%; height:100%; object-fit:cover; transition:0.5s; }
-.overlay { position:absolute; width:100%; height:100%; background:linear-gradient(to right, rgba(30,41,90,0.2), rgba(142,26,30,0.15)); }
+.hero img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:0.5s;
+  filter: contrast(1.1) brightness(1.1);
+}
+.overlay {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:linear-gradient(to right, rgba(30,41,90,0.05), rgba(142,26,30,0.05));
+}
 
 /* كارد */
 .card {
@@ -100,7 +111,6 @@ transition:.4s;
 <input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
-<!-- ✅ كليات SPU -->
 <select id="major" class="input mb-5">
 <option value="">اختر الكلية المطلوبة</option>
 
@@ -120,22 +130,26 @@ transition:.4s;
 </optgroup>
 </select>
 
-<h3 class="font-bold mb-3">📁 الوثائق</h3>
+<!-- 📁 الوثائق -->
+<h3 class="font-bold mb-3">📁 الوثائق المطلوبة</h3>
 
+<label>📄 صورة الشهادة الثانوية</label>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview"></div>
-<div id="certBar" class="progress hidden"><div class="progress-bar"></div></div>
+<div id="certBar" class="progress hidden mb-4"><div class="progress-bar"></div></div>
 
+<label>🪪 صورة الهوية</label>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
 <div id="idimgPreview" class="preview"></div>
-<div id="idimgBar" class="progress hidden"><div class="progress-bar"></div></div>
+<div id="idimgBar" class="progress hidden mb-4"><div class="progress-bar"></div></div>
 
+<label>👤 صورة شخصية</label>
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
-<div id="personalBar" class="progress hidden"><div class="progress-bar"></div></div>
+<div id="personalBar" class="progress hidden mb-4"><div class="progress-bar"></div></div>
 
 <div class="bg-blue-50 p-4 rounded-xl text-center mt-4">
-<p class="font-bold mb-2">💳 رسوم التسجيل 20$</p>
+<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
 <img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px;margin:auto">
 <input id="transfer" class="input mt-3" placeholder="رقم عملية التحويل">
 </div>
@@ -200,8 +214,10 @@ window.upload = async(input,key)=>{
 
 /* Send */
 window.send = async()=>{
-  const name=nameInput.value;
-  const email=emailInput.value;
+  const name=document.getElementById("name").value;
+  const email=document.getElementById("email").value;
+  const phone=document.getElementById("phone").value;
+  const major=document.getElementById("major").value;
 
   if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
     toast("❌ ارفع كل الصور");
@@ -213,8 +229,8 @@ window.send = async()=>{
   await addDoc(collection(db,"students"),{
     name,
     email,
-    phone:phone.value,
-    major:major.value,
+    phone,
+    major,
     cert:uploaded.cert,
     id:uploaded.idimg,
     personal:uploaded.personal,
