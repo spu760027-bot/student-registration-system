@@ -136,22 +136,18 @@ z-index:999;
 </div>
 </div>
 
-<!-- نسبة القبول -->
 <div class="card mb-5">
 <p>نسبة القبول</p>
 <h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
 </div>
 
-<!-- Charts -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 <div class="card"><canvas id="barChart"></canvas></div>
 <div class="card"><canvas id="pieChart"></canvas></div>
 </div>
 
-<!-- Search -->
 <input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
 
-<!-- List -->
 <div id="list"></div>
 
 </div>
@@ -175,7 +171,6 @@ let students=[];
 let currentFilter="all";
 let barChart, pieChart;
 
-/* Toast */
 window.toast=(msg)=>{
 const t=document.getElementById("toast");
 t.innerText=msg;
@@ -183,7 +178,6 @@ t.style.opacity=1;
 setTimeout(()=>t.style.opacity=0,3000);
 };
 
-/* Auth */
 onAuthStateChanged(auth,(user)=>{
 if(user){
 document.body.style.display="block";
@@ -193,7 +187,6 @@ location.href="login.html";
 }
 });
 
-/* Live */
 function startLive(){
 onSnapshot(collection(db,"students"),(snap)=>{
 students=[];
@@ -207,7 +200,6 @@ applyFilters();
 });
 }
 
-/* Counters */
 function updateCounters(){
 let approved=0,rejected=0,pending=0;
 
@@ -225,7 +217,6 @@ cPending.innerText=pending;
 acceptRate.innerText = students.length ? Math.round((approved/students.length)*100)+"%" : "0%";
 }
 
-/* Charts */
 function buildCharts(){
 const majors={};
 students.forEach(s=>majors[s.major]=(majors[s.major]||0)+1);
@@ -249,7 +240,6 @@ data:{labels,datasets:[{data}]}
 });
 }
 
-/* Filter */
 window.filterStatus=(type,el)=>{
 currentFilter=type;
 document.querySelectorAll(".tab").forEach(b=>b.classList.remove("tab-active"));
@@ -270,7 +260,6 @@ if(q) filtered=filtered.filter(s=>s.name.toLowerCase().includes(q));
 show(filtered);
 }
 
-/* Show */
 function show(data){
 list.innerHTML="";
 
@@ -302,16 +291,22 @@ list.innerHTML+=`
 });
 }
 
-/* Actions */
+/* 🔥 الحل النهائي للحذف */
+window.del = async(id)=>{
+if(!confirm("متأكد من الحذف؟")) return;
+
+try {
+await deleteDoc(doc(db,"students",id));
+toast("✅ تم الحذف");
+} catch(e){
+console.error(e);
+alert("❌ خطأ: "+e.message);
+}
+};
+
 window.updateStatus=async(id,status)=>{
 await updateDoc(doc(db,"students",id),{status});
 toast("تم التحديث");
-};
-
-window.del=async(id)=>{
-if(!confirm("متأكد من الحذف؟")) return;
-await deleteDoc(doc(db,"students",id));
-toast("تم الحذف");
 };
 
 window.openImg=(src)=>{
@@ -328,7 +323,6 @@ await signOut(auth);
 location.href="login.html";
 };
 
-/* Export */
 window.exportExcel=()=>{
 const data=students.map(s=>({
 الاسم:s.name,
@@ -359,4 +353,4 @@ pdf.save("students.pdf");
 </script>
 
 </body>
-  </html>
+</html>
