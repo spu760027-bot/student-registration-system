@@ -85,13 +85,13 @@ z-index:999;
 <div id="toast"></div>
 
 <div id="modal">
-  <img id="modalImg" style="max-width:90%;max-height:90%;border-radius:10px;">
+<img id="modalImg" style="max-width:90%;max-height:90%;">
 </div>
 
 <div class="sidebar">
-  <h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
-  <p>📊 Dashboard PRO</p>
-  <button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
+<h2 class="text-xl font-bold mb-6">🎓 SPU</h2>
+<p>📊 Dashboard PRO</p>
+<button onclick="logout()" class="bg-red-500 px-4 py-2 mt-6 rounded">Logout</button>
 </div>
 
 <div class="content">
@@ -136,18 +136,22 @@ z-index:999;
 </div>
 </div>
 
+<!-- نسبة القبول -->
 <div class="card mb-5">
 <p>نسبة القبول</p>
 <h2 id="acceptRate" class="text-2xl font-bold">0%</h2>
 </div>
 
+<!-- Charts -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 <div class="card"><canvas id="barChart"></canvas></div>
 <div class="card"><canvas id="pieChart"></canvas></div>
 </div>
 
+<!-- Search -->
 <input id="search" placeholder="🔍 بحث..." class="w-full p-3 border rounded mb-4">
 
+<!-- List -->
 <div id="list"></div>
 
 </div>
@@ -171,13 +175,15 @@ let students=[];
 let currentFilter="all";
 let barChart, pieChart;
 
-window.toast=(msg)=>{
+/* Toast */
+function toast(msg){
 const t=document.getElementById("toast");
 t.innerText=msg;
 t.style.opacity=1;
 setTimeout(()=>t.style.opacity=0,3000);
-};
+}
 
+/* Auth */
 onAuthStateChanged(auth,(user)=>{
 if(user){
 document.body.style.display="block";
@@ -187,6 +193,7 @@ location.href="login.html";
 }
 });
 
+/* Live */
 function startLive(){
 onSnapshot(collection(db,"students"),(snap)=>{
 students=[];
@@ -200,6 +207,7 @@ applyFilters();
 });
 }
 
+/* Counters */
 function updateCounters(){
 let approved=0,rejected=0,pending=0;
 
@@ -217,6 +225,7 @@ cPending.innerText=pending;
 acceptRate.innerText = students.length ? Math.round((approved/students.length)*100)+"%" : "0%";
 }
 
+/* Charts */
 function buildCharts(){
 const majors={};
 students.forEach(s=>majors[s.major]=(majors[s.major]||0)+1);
@@ -240,10 +249,13 @@ data:{labels,datasets:[{data}]}
 });
 }
 
+/* Filter */
 window.filterStatus=(type,el)=>{
 currentFilter=type;
+
 document.querySelectorAll(".tab").forEach(b=>b.classList.remove("tab-active"));
 if(el) el.classList.add("tab-active");
+
 applyFilters();
 };
 
@@ -260,12 +272,14 @@ if(q) filtered=filtered.filter(s=>s.name.toLowerCase().includes(q));
 show(filtered);
 }
 
+/* Show */
 function show(data){
 list.innerHTML="";
 
 data.forEach(s=>{
 list.innerHTML+=`
 <div class="student flex justify-between items-center">
+
 <div>
 <p>👤 ${s.name}</p>
 <p>📞 ${s.phone}</p>
@@ -286,12 +300,13 @@ list.innerHTML+=`
 </div>
 
 <button onclick="del('${s.id}')" class="bg-red-500 text-white px-3 py-2 rounded">حذف</button>
+
 </div>
 `;
 });
 }
 
-/* 🔥 الحل النهائي للحذف */
+/* 🔥 DELETE FIXED */
 window.del = async(id)=>{
 if(!confirm("متأكد من الحذف؟")) return;
 
@@ -300,57 +315,15 @@ await deleteDoc(doc(db,"students",id));
 toast("✅ تم الحذف");
 } catch(e){
 console.error(e);
-alert("❌ خطأ: "+e.message);
+alert("❌ " + e.message);
 }
 };
 
-window.updateStatus=async(id,status)=>{
+/* Update */
+window.updateStatus = async(id,status)=>{
 await updateDoc(doc(db,"students",id),{status});
 toast("تم التحديث");
 };
 
-window.openImg=(src)=>{
-modal.style.display="flex";
-modalImg.src=src;
-};
-
-modal.onclick=()=>modal.style.display="none";
-
-search.addEventListener("input",applyFilters);
-
-window.logout=async()=>{
-await signOut(auth);
-location.href="login.html";
-};
-
-window.exportExcel=()=>{
-const data=students.map(s=>({
-الاسم:s.name,
-الهاتف:s.phone,
-الكلية:s.major,
-الحالة:s.status
-}));
-
-const ws=XLSX.utils.json_to_sheet(data);
-const wb=XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(wb,ws,"Students");
-XLSX.writeFile(wb,"students.xlsx");
-};
-
-window.exportPDF=()=>{
-const pdf=new jspdf.jsPDF();
-let y=10;
-
-students.forEach((s,i)=>{
-pdf.text(`${i+1}. ${s.name} - ${s.phone} - ${s.major} - ${s.status}`,10,y);
-y+=10;
-if(y>280){pdf.addPage();y=10;}
-});
-
-pdf.save("students.pdf");
-};
-
-</script>
-
-</body>
-</html>
+/* Image */
+window.openImg=(src
