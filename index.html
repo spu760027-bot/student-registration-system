@@ -21,27 +21,35 @@ body {
   backdrop-filter:blur(10px);
 }
 
-/* HERO */
 .hero {
   height:320px;
-  background:linear-gradient(to right,#1e295a,#0f172a);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  color:white;
+  position:relative;
+  overflow:hidden;
 }
 
 .hero img {
-  width:120px;
-  height:120px;
-  background:white;
-  padding:10px;
-  border-radius:20px;
-  margin-bottom:10px;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:brightness(.6);
 }
 
-/* CARD */
+.overlay {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.4);
+}
+
+.hero-content {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  color:white;
+}
+
 .card {
   background:white;
   padding:25px;
@@ -67,20 +75,21 @@ body {
 .preview img {
   width:90px;
   height:90px;
-  border-radius:10px;
+  object-fit:cover;
+  border-radius:12px;
   margin:5px;
 }
 
 #toast {
-position:fixed;
-top:20px;
-right:20px;
-background:#1e295a;
-color:white;
-padding:12px;
-border-radius:10px;
-opacity:0;
-transition:.3s;
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:#1e295a;
+  color:white;
+  padding:12px;
+  border-radius:10px;
+  opacity:0;
+  transition:.3s;
 }
 </style>
 </head>
@@ -89,7 +98,7 @@ transition:.3s;
 
 <div id="toast"></div>
 
-<!-- ✅ NAVBAR (الشعار الأصلي) -->
+<!-- ✅ NAVBAR (الشعار الأصلي بدون قص) -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
 
@@ -97,50 +106,40 @@ transition:.3s;
 قدّم الآن
 </button>
 
-<div>
-  <img src="logo.png"
-       onerror="this.style.display='none'"
-       style="height:40px; object-fit:contain;">
-</div>
+<img src="logo.png" style="height:40px; object-fit:contain;">
 
 </div>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
-<img src="logo.png" onerror="this.src='https://i.ibb.co/4pDNDk1/avatar.png'">
+<img src="https://spu.edu.sy/sites/default/files/2023-10/banner.jpg">
+<div class="overlay"></div>
+
+<div class="hero-content">
 <h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
 <p>الجامعة السورية الخاصة</p>
 </div>
+</div>
 
 <!-- STATS -->
-<div class="max-w-6xl mx-auto mt-10 grid md:grid-cols-3 gap-6 text-center px-4">
+<div class="max-w-6xl mx-auto mt-12 px-4 text-center grid md:grid-cols-3 gap-6">
 
 <div class="card">
-<h2 class="text-3xl font-bold">2005</h2>
+<h2 class="text-4xl font-bold text-[#1e295a]">2005</h2>
 <p>📅 سنة التأسيس</p>
 </div>
 
 <div class="card">
-<h2 class="text-3xl font-bold">5000+</h2>
+<h2 class="text-4xl font-bold text-[#1e295a]">5000+</h2>
 <p>👨‍🎓 عدد الطلاب</p>
 </div>
 
 <div class="card">
-<h2 class="text-3xl font-bold">6</h2>
+<h2 class="text-4xl font-bold text-[#1e295a]">6</h2>
 <p>🎓 عدد الكليات</p>
 </div>
 
-</div>
-
-<!-- GALLERY -->
-<div class="max-w-6xl mx-auto mt-10 px-4">
-<h2 class="text-center text-xl mb-4">📸 الحياة الجامعية</h2>
-<div class="grid md:grid-cols-3 gap-4">
-<img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded">
-<img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded">
-<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded">
-</div>
 </div>
 
 <!-- FORM -->
@@ -160,10 +159,21 @@ transition:.3s;
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
 <option>التمريض</option>
-<option>الهندسة المعلوماتية</option>
 <option>الهندسة المدنية</option>
 <option>الهندسة المعمارية</option>
+<option>هندسة المعلوماتية والاتصالات</option>
+<option>هندسة الذكاء الاصطناعي</option>
+<option>الهندسة الميكانيكية</option>
+<option>الهندسة الكهربائية</option>
+<option>هندسة البترول</option>
 <option>إدارة الأعمال</option>
+<option>المحاسبة</option>
+<option>التسويق</option>
+<option>الاقتصاد</option>
+<option>الإعلام</option>
+<option>الحقوق</option>
+<option>التربية</option>
+<option>اللغات والترجمة</option>
 <option>العلاقات الدولية</option>
 </select>
 
@@ -181,23 +191,21 @@ transition:.3s;
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
-<div class="bg-blue-50 p-4 text-center mt-4 rounded">
+<div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
+<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
 
-<p>💳 رسوم التسجيل 500$</p>
-
-<div style="display:flex;justify-content:center;">
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" width="180">
+<div class="flex justify-center">
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px">
 </div>
 
-<label class="mt-3">📸 إثبات الدفع</label>
+<label class="block mt-3 font-bold">📸 إثبات الدفع</label>
 <input type="file" onchange="upload(this,'payment')" class="input mt-2">
 <div id="paymentPreview" class="preview"></div>
 
-<input id="transfer" class="input mt-2" placeholder="رقم التحويل">
-
+<input id="transfer" class="input mt-3" placeholder="رقم التحويل">
 </div>
 
-<button id="submitBtn" class="btn mt-4" onclick="send()">إرسال الطلب</button>
+<button id="submitBtn" class="btn mt-5" onclick="send()">إرسال الطلب</button>
 
 </div>
 </div>
@@ -209,17 +217,20 @@ import { getFirestore, collection, addDoc, serverTimestamp }
 from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey:"PUT_YOUR_API_KEY",
-authDomain:"PUT_YOUR_AUTH_DOMAIN",
-projectId:"PUT_YOUR_PROJECT_ID"
+apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+authDomain:"student-system-13431.firebaseapp.com",
+projectId:"student-system-13431"
 });
 
 const db = getFirestore(app);
-const API_KEY="PUT_YOUR_IMGBB_KEY";
 
-let uploaded={};
-let sending=false;
+/* 🔥 مفتاحك القديم شغال */
+const API_KEY = "bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
+let uploaded = {};
+let sending = false;
+
+/* TOAST */
 function toast(msg){
 const t=document.getElementById("toast");
 t.innerText=msg;
@@ -227,9 +238,12 @@ t.style.opacity=1;
 setTimeout(()=>t.style.opacity=0,3000);
 }
 
+/* UPLOAD */
 window.upload = async(input,key)=>{
 const file=input.files[0];
-if(!file)return;
+if(!file) return;
+
+document.getElementById(key+"Preview").innerHTML="⏳ رفع...";
 
 const fd=new FormData();
 fd.append("image",file);
@@ -240,20 +254,30 @@ body:fd
 });
 
 const data=await res.json();
+
+if(!data.success){
+toast("❌ فشل رفع الصورة");
+return;
+}
+
 uploaded[key]=data.data.url;
 
 document.getElementById(key+"Preview").innerHTML=
 `<img src="${data.data.url}">`;
 };
 
+/* ✅ SEND (مصلّح 100%) */
 window.send = async()=>{
-if(sending)return;
+
+if(sending) return;
 sending=true;
 
 const btn=document.getElementById("submitBtn");
 btn.disabled=true;
+btn.innerText="جاري الإرسال...";
 
 try{
+
 const name=document.getElementById("name").value.trim();
 const email=document.getElementById("email").value.trim();
 const national=document.getElementById("national").value.trim();
@@ -272,7 +296,12 @@ throw new Error();
 }
 
 await addDoc(collection(db,"students"),{
-name,email,national,phone,major,transfer,
+name,
+email,
+national,
+phone,
+major,
+transfer,
 cert:uploaded.cert,
 idimg:uploaded.idimg,
 personal:uploaded.personal,
@@ -282,14 +311,17 @@ date:serverTimestamp()
 });
 
 toast("✅ تم الإرسال");
+
 setTimeout(()=>location.reload(),1000);
 
 }catch(e){
+console.error(e);
 toast("❌ فشل الإرسال");
 }
 
 sending=false;
 btn.disabled=false;
+btn.innerText="إرسال الطلب";
 };
 
 window.scrollToForm=()=>{
