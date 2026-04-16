@@ -99,11 +99,10 @@ body {
 
 <div id="toast"></div>
 
-<!-- NAVBAR (FIXED LOGO) -->
+<!-- NAV -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
 
-<!-- LOGO FIX -->
 <div class="flex items-center gap-2">
 <img src="logo.png" class="w-10 h-10 rounded-full border-2 border-white shadow">
 <b>SPU</b>
@@ -124,9 +123,6 @@ body {
 <div class="hero-content">
 <h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
 <p>الجامعة السورية الخاصة</p>
-<button onclick="scrollToForm()" class="mt-4 bg-red-600 px-6 py-2 rounded">
-قدّم الآن
-</button>
 </div>
 </div>
 
@@ -158,10 +154,12 @@ body {
 
 <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
 <input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
+<input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
 <select id="major" class="input mb-5">
 <option value="">اختر الكلية</option>
+
 <option>الطب البشري</option>
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
@@ -174,10 +172,19 @@ body {
 <option>الهندسة الكهربائية</option>
 <option>هندسة البترول</option>
 <option>إدارة الأعمال</option>
+<option>المحاسبة</option>
+<option>التسويق</option>
+<option>الاقتصاد</option>
+<option>الإعلام</option>
+<option>الحقوق</option>
+<option>التربية</option>
+<option>اللغات والترجمة</option>
+<option>العلاقات الدولية</option>
+
 </select>
 
 <!-- DOCUMENTS -->
-<h3 class="mb-3 font-bold">📁 الوثائق المطلوبة</h3>
+<h3 class="mb-3 font-bold">📁 الوثائق</h3>
 
 <label>📄 صورة الشهادة الثانوية</label>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
@@ -243,11 +250,12 @@ setTimeout(()=>t.style.opacity=0,3000);
 /* UPLOAD */
 window.upload = async(input,key)=>{
 const file=input.files[0];
-if(!file)return;
+if(!file) return;
 
 uploaded[key]=null;
 document.getElementById(key+"Preview").innerHTML="⏳ رفع...";
 
+try{
 const fd=new FormData();
 fd.append("image",file);
 
@@ -260,6 +268,7 @@ const data=await res.json();
 
 if(!data.success){
 toast("❌ فشل رفع الصورة");
+uploaded[key]=null;
 return;
 }
 
@@ -267,13 +276,19 @@ uploaded[key]=data.data.url;
 
 document.getElementById(key+"Preview").innerHTML=
 `<img src="${data.data.url}">`;
+
+}catch(e){
+console.log(e);
+toast("❌ خطأ في الرفع");
+uploaded[key]=null;
+}
 };
 
 /* SEND */
 window.send = async()=>{
 
 if(sending) return;
-sending = true;
+sending=true;
 
 const btn=document.getElementById("submitBtn");
 btn.disabled=true;
@@ -283,22 +298,23 @@ try{
 
 const name=document.getElementById("name").value.trim();
 const email=document.getElementById("email").value.trim();
+const national=document.getElementById("national").value.trim();
 const phone=document.getElementById("phone").value.trim();
 const major=document.getElementById("major").value;
 const transfer=document.getElementById("transfer").value.trim();
 
-if(!name || !email || !phone || !major){
+if(!name || !email || !national || !phone || !major){
 toast("❌ عبي كل الحقول");
 throw new Error();
 }
 
 if(!email.includes("@")){
-toast("❌ بريد غير صالح");
+toast("❌ البريد غير صالح");
 throw new Error();
 }
 
 if(phone.length < 8){
-toast("❌ رقم هاتف غير صالح");
+toast("❌ رقم الهاتف غير صالح");
 throw new Error();
 }
 
@@ -308,7 +324,7 @@ throw new Error();
 }
 
 if(!uploaded.cert || !uploaded.idimg || !uploaded.personal || !uploaded.payment){
-toast("❌ ارفع كل الوثائق + إثبات الدفع");
+toast("❌ ارفع كل الوثائق");
 throw new Error();
 }
 
@@ -317,6 +333,7 @@ toast("⏳ جاري الإرسال...");
 await addDoc(collection(db,"students"),{
 name,
 email,
+national,
 phone,
 major,
 transfer,
@@ -334,6 +351,7 @@ setTimeout(()=>location.reload(),1200);
 
 }catch(e){
 console.log(e);
+toast("❌ فشل الإرسال");
 }finally{
 sending=false;
 btn.disabled=false;
