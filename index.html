@@ -9,87 +9,76 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-body{
-font-family:'Tajawal',sans-serif;
-background:#f0f4f8;
-margin:0;
-padding-top:80px;
+body {
+  font-family:'Tajawal', sans-serif;
+  background:#f0f4f8;
+  margin:0;
+  padding-top:80px;
 }
 
-.navbar{
-background:rgba(0,0,0,0.7);
-backdrop-filter:blur(10px);
+.navbar {
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(10px);
 }
 
-.hero{
-height:320px;
-position:relative;
-overflow:hidden;
+.hero { height:320px; position:relative; overflow:hidden; }
+.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); }
+
+.overlay {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.4);
 }
 
-.hero img{
-width:100%;
-height:100%;
-object-fit:cover;
-filter:brightness(.6);
+.hero-content {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  color:white;
 }
 
-.overlay{
-position:absolute;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.4);
+.card {
+  background:white;
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-.hero-content{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-color:white;
+.input {
+  width:100%;
+  padding:12px;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
 }
 
-.card{
-background:white;
-padding:25px;
-border-radius:16px;
-box-shadow:0 10px 30px rgba(0,0,0,0.1);
+.btn {
+  background:#1e295a;
+  color:white;
+  padding:15px;
+  border-radius:10px;
+  width:100%;
 }
 
-.input{
-width:100%;
-padding:12px;
-border:1px solid #cbd5e1;
-border-radius:10px;
+.preview img {
+  width:80px;
+  height:80px;
+  border-radius:10px;
+  margin:5px;
 }
 
-.btn{
-background:#1e295a;
-color:white;
-padding:15px;
-border-radius:10px;
-width:100%;
-cursor:pointer;
-}
-
-.preview img{
-width:80px;
-height:80px;
-border-radius:10px;
-margin:5px;
-}
-
-#toast{
-position:fixed;
-top:20px;
-right:20px;
-background:#1e295a;
-color:white;
-padding:12px;
-border-radius:10px;
-opacity:0;
-transition:.3s;
+#toast {
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:#1e295a;
+  color:white;
+  padding:12px;
+  border-radius:10px;
+  opacity:0;
+  transition:.3s;
 }
 </style>
 </head>
@@ -162,6 +151,7 @@ transition:.3s;
 
 <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
 <input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
+<input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
 <select id="major" class="input mb-5">
@@ -169,26 +159,36 @@ transition:.3s;
 <option>الطب البشري</option>
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
-<option>هندسة المعلوماتية</option>
+<option>هندسة المعلوماتية والاتصالات</option>
+<option>هندسة الذكاء الاصطناعي</option>
 <option>الهندسة المدنية</option>
+<option>الهندسة المعمارية</option>
+<option>هندسة البترول</option>
 <option>إدارة الأعمال</option>
 </select>
 
 <h3 class="mb-3">📁 الوثائق</h3>
 
+<label>📄 صورة الشهادة الثانوية</label>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview"></div>
 
+<label>🪪 صورة الهوية</label>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
 <div id="idimgPreview" class="preview"></div>
 
+<label>👤 صورة شخصية</label>
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
 <div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
-<p>💳 500$</p>
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:150px;margin:auto;">
-<input id="transfer" class="input mt-2" placeholder="رقم التحويل">
+<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
+
+<div class="flex justify-center">
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px">
+</div>
+
+<input id="transfer" class="input mt-3" placeholder="رقم التحويل">
 </div>
 
 <button class="btn mt-5" onclick="send()">إرسال الطلب</button>
@@ -260,8 +260,6 @@ toast("❌ عبي كل الحقول");
 return;
 }
 
-toast("⏳ جاري الإرسال...");
-
 await addDoc(collection(db,"students"),{
 name,email,phone,major,
 cert:uploaded.cert || "",
@@ -273,12 +271,9 @@ date:new Date()
 
 toast("✅ تم الإرسال");
 
-setTimeout(()=>{
-window.location.href="success.html";
-},1000);
-
 }catch(e){
 console.error(e);
+alert(e.message);
 toast("❌ فشل الإرسال");
 }
 };
@@ -290,4 +285,4 @@ document.getElementById("form").scrollIntoView({behavior:"smooth"});
 </script>
 
 </body>
-  </html>
+</html>
