@@ -99,11 +99,20 @@ body {
 
 <div id="toast"></div>
 
-<!-- NAV -->
+<!-- NAVBAR (FIXED LOGO) -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
+
+<!-- LOGO FIX -->
+<div class="flex items-center gap-2">
+<img src="logo.png" class="w-10 h-10 rounded-full border-2 border-white shadow">
 <b>SPU</b>
-<button onclick="scrollToForm()" class="bg-red-600 px-4 py-2 rounded">قدّم الآن</button>
+</div>
+
+<button onclick="scrollToForm()" class="bg-red-600 px-4 py-2 rounded">
+قدّم الآن
+</button>
+
 </div>
 </nav>
 
@@ -171,17 +180,14 @@ body {
 <h3 class="mb-3 font-bold">📁 الوثائق المطلوبة</h3>
 
 <label>📄 صورة الشهادة الثانوية</label>
-<p class="text-sm text-gray-500">يرجى رفع شهادة واضحة</p>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview"></div>
 
 <label>🪪 صورة الهوية</label>
-<p class="text-sm text-gray-500">هوية أو جواز سفر</p>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
 <div id="idimgPreview" class="preview"></div>
 
 <label>👤 صورة شخصية</label>
-<p class="text-sm text-gray-500">خلفية بيضاء</p>
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
@@ -194,12 +200,7 @@ body {
 <img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px">
 </div>
 
-<!-- IMPORTANT: PAYMENT PROOF -->
 <label class="block mt-3 font-bold">📸 صورة إثبات الدفع</label>
-<p class="text-sm text-gray-500 mb-2">
-يجب رفع صورة التحويل بعد الدفع
-</p>
-
 <input type="file" onchange="upload(this,'payment')" class="input mt-2">
 <div id="paymentPreview" class="preview"></div>
 
