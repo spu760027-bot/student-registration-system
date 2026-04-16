@@ -9,76 +9,87 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-  font-family:'Tajawal', sans-serif;
-  background:#f0f4f8;
-  margin:0;
-  padding-top:80px;
+body{
+font-family:'Tajawal',sans-serif;
+background:#f0f4f8;
+margin:0;
+padding-top:80px;
 }
 
-.navbar {
-  background:rgba(0,0,0,0.7);
-  backdrop-filter:blur(10px);
+.navbar{
+background:rgba(0,0,0,0.7);
+backdrop-filter:blur(10px);
 }
 
-.hero { height:320px; position:relative; overflow:hidden; }
-.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); }
-
-.overlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.4);
+.hero{
+height:320px;
+position:relative;
+overflow:hidden;
 }
 
-.hero-content {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  color:white;
+.hero img{
+width:100%;
+height:100%;
+object-fit:cover;
+filter:brightness(.6);
 }
 
-.card {
-  background:white;
-  padding:25px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+.overlay{
+position:absolute;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.4);
 }
 
-.input {
-  width:100%;
-  padding:12px;
-  border:1px solid #cbd5e1;
-  border-radius:10px;
+.hero-content{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+color:white;
 }
 
-.btn {
-  background:#1e295a;
-  color:white;
-  padding:15px;
-  border-radius:10px;
-  width:100%;
+.card{
+background:white;
+padding:25px;
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-.preview img {
-  width:80px;
-  height:80px;
-  border-radius:10px;
-  margin:5px;
+.input{
+width:100%;
+padding:12px;
+border:1px solid #cbd5e1;
+border-radius:10px;
 }
 
-#toast {
-  position:fixed;
-  top:20px;
-  right:20px;
-  background:#1e295a;
-  color:white;
-  padding:12px;
-  border-radius:10px;
-  opacity:0;
-  transition:.3s;
+.btn{
+background:#1e295a;
+color:white;
+padding:15px;
+border-radius:10px;
+width:100%;
+cursor:pointer;
+}
+
+.preview img{
+width:80px;
+height:80px;
+border-radius:10px;
+margin:5px;
+}
+
+#toast{
+position:fixed;
+top:20px;
+right:20px;
+background:#1e295a;
+color:white;
+padding:12px;
+border-radius:10px;
+opacity:0;
+transition:.3s;
 }
 </style>
 </head>
@@ -87,6 +98,7 @@ body {
 
 <div id="toast"></div>
 
+<!-- NAVBAR -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
 
@@ -108,6 +120,7 @@ body {
 </div>
 </nav>
 
+<!-- HERO -->
 <div class="hero">
 <img src="logo.png">
 <div class="overlay"></div>
@@ -121,6 +134,7 @@ body {
 </div>
 </div>
 
+<!-- STATS -->
 <div class="max-w-6xl mx-auto mt-12 px-4 grid md:grid-cols-3 gap-6 text-center">
 
 <div class="card">
@@ -140,6 +154,7 @@ body {
 
 </div>
 
+<!-- FORM -->
 <div id="form" class="max-w-2xl mx-auto mt-10 px-4">
 <div class="card">
 
@@ -147,7 +162,6 @@ body {
 
 <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
 <input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
-<input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
 <select id="major" class="input mb-5">
@@ -155,36 +169,26 @@ body {
 <option>الطب البشري</option>
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
-<option>هندسة المعلوماتية والاتصالات</option>
-<option>هندسة الذكاء الاصطناعي</option>
+<option>هندسة المعلوماتية</option>
 <option>الهندسة المدنية</option>
-<option>الهندسة المعمارية</option>
-<option>هندسة البترول</option>
 <option>إدارة الأعمال</option>
 </select>
 
 <h3 class="mb-3">📁 الوثائق</h3>
 
-<label>📄 صورة الشهادة الثانوية</label>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview"></div>
 
-<label>🪪 صورة الهوية</label>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
 <div id="idimgPreview" class="preview"></div>
 
-<label>👤 صورة شخصية</label>
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
 <div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
-<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
-
-<div class="flex justify-center">
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px">
-</div>
-
-<input id="transfer" class="input mt-3" placeholder="رقم التحويل">
+<p>💳 500$</p>
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:150px;margin:auto;">
+<input id="transfer" class="input mt-2" placeholder="رقم التحويل">
 </div>
 
 <button class="btn mt-5" onclick="send()">إرسال الطلب</button>
@@ -209,77 +213,81 @@ const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
 let uploaded={};
 
 function toast(msg){
-  const t=document.getElementById("toast");
-  t.innerText=msg;
-  t.style.opacity=1;
-  setTimeout(()=>t.style.opacity=0,3000);
+const t=document.getElementById("toast");
+t.innerText=msg;
+t.style.opacity=1;
+setTimeout(()=>t.style.opacity=0,3000);
 }
 
 window.upload = async(input,key)=>{
-  const file=input.files[0];
-  if(!file)return;
+try{
+const file=input.files[0];
+if(!file)return;
 
-  document.getElementById(key+"Preview").innerHTML=
-  `<img src="${URL.createObjectURL(file)}">`;
+document.getElementById(key+"Preview").innerHTML=`<img src="${URL.createObjectURL(file)}">`;
 
-  const fd=new FormData();
-  fd.append("image",file);
+const fd=new FormData();
+fd.append("image",file);
 
-  const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
-    method:"POST",
-    body:fd
-  });
+const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
+method:"POST",
+body:fd
+});
 
-  const data=await res.json();
-  uploaded[key]=data.data.url;
+const data=await res.json();
+
+if(data.success){
+uploaded[key]=data.data.url;
+}else{
+toast("فشل رفع الصورة");
+}
+
+}catch(e){
+toast("خطأ رفع الصورة");
+}
 };
 
 window.send = async()=>{
-  try {
+try{
 
-    const name=document.getElementById("name").value;
-    const email=document.getElementById("email").value;
-    const phone=document.getElementById("phone").value;
-    const major=document.getElementById("major").value;
+const name=document.getElementById("name").value.trim();
+const email=document.getElementById("email").value.trim();
+const phone=document.getElementById("phone").value.trim();
+const major=document.getElementById("major").value;
 
-    if(!name || !email || !phone || !major){
-      toast("❌ عبي كل الحقول");
-      return;
-    }
+if(!name || !email || !phone || !major){
+toast("❌ عبي كل الحقول");
+return;
+}
 
-    if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
-      toast("❌ ارفع كل الصور");
-      return;
-    }
+toast("⏳ جاري الإرسال...");
 
-    toast("⏳ جاري الإرسال...");
+await addDoc(collection(db,"students"),{
+name,email,phone,major,
+cert:uploaded.cert || "",
+idimg:uploaded.idimg || "",
+personal:uploaded.personal || "",
+status:"قيد المراجعة",
+date:new Date()
+});
 
-    await addDoc(collection(db,"students"),{
-      name,email,phone,major,
-      cert:uploaded.cert,
-      idimg:uploaded.idimg,
-      personal:uploaded.personal,
-      status:"قيد المراجعة",
-      date:new Date()
-    });
+toast("✅ تم الإرسال");
 
-    toast("✅ تم الإرسال");
+setTimeout(()=>{
+window.location.href="success.html";
+},1000);
 
-    setTimeout(()=>{
-      window.location.href="success.html";
-    },1000);
-
-  } catch(e) {
-    console.error(e);
-    toast("❌ فشل الإرسال");
-  }
+}catch(e){
+console.error(e);
+toast("❌ فشل الإرسال");
+}
 };
 
 window.scrollToForm=()=>{
-  document.getElementById("form").scrollIntoView({behavior:"smooth"});
+document.getElementById("form").scrollIntoView({behavior:"smooth"});
 };
 
 </script>
 
 </body>
-</html>
+  </html>
