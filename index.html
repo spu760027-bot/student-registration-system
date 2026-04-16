@@ -16,15 +16,23 @@ body {
   padding-top:80px;
 }
 
-/* NAV */
 .navbar {
   background:rgba(0,0,0,0.7);
   backdrop-filter:blur(10px);
 }
 
-/* HERO */
-.hero { height:320px; position:relative; overflow:hidden; }
-.hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); }
+.hero {
+  height:320px;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:brightness(.6);
+}
 
 .overlay {
   position:absolute;
@@ -42,7 +50,6 @@ body {
   color:white;
 }
 
-/* CARD */
 .card {
   background:white;
   padding:25px;
@@ -50,7 +57,6 @@ body {
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* INPUT */
 .input {
   width:100%;
   padding:12px;
@@ -58,7 +64,6 @@ body {
   border-radius:10px;
 }
 
-/* BUTTON */
 .btn {
   background:#1e295a;
   color:white;
@@ -67,15 +72,15 @@ body {
   width:100%;
 }
 
-/* PREVIEW */
 .preview img {
-  width:80px;
-  height:80px;
-  border-radius:10px;
+  width:90px;
+  height:90px;
+  object-fit:cover;
+  border-radius:12px;
   margin:5px;
+  border:2px solid #ddd;
 }
 
-/* TOAST */
 #toast {
   position:fixed;
   top:20px;
@@ -94,7 +99,7 @@ body {
 
 <div id="toast"></div>
 
-<!-- NAVBAR -->
+<!-- NAV -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
 <b>SPU</b>
@@ -104,11 +109,15 @@ body {
 
 <!-- HERO -->
 <div class="hero">
-<img src="logo.png">
+<img src="https://spu.edu.sy/sites/default/files/2023-10/banner.jpg">
 <div class="overlay"></div>
+
 <div class="hero-content">
 <h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
 <p>الجامعة السورية الخاصة</p>
+<button onclick="scrollToForm()" class="mt-4 bg-red-600 px-6 py-2 rounded">
+قدّم الآن
+</button>
 </div>
 </div>
 
@@ -158,24 +167,41 @@ body {
 <option>إدارة الأعمال</option>
 </select>
 
-<h3 class="mb-3">📁 الوثائق</h3>
+<!-- DOCUMENTS -->
+<h3 class="mb-3 font-bold">📁 الوثائق المطلوبة</h3>
 
+<label>📄 صورة الشهادة الثانوية</label>
+<p class="text-sm text-gray-500">يرجى رفع شهادة واضحة</p>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview"></div>
 
+<label>🪪 صورة الهوية</label>
+<p class="text-sm text-gray-500">هوية أو جواز سفر</p>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
 <div id="idimgPreview" class="preview"></div>
 
+<label>👤 صورة شخصية</label>
+<p class="text-sm text-gray-500">خلفية بيضاء</p>
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
-<!-- الدفع -->
+<!-- PAYMENT -->
 <div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
+
 <p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
 
-<div style="display:flex;justify-content:center;">
+<div class="flex justify-center">
 <img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px">
 </div>
+
+<!-- IMPORTANT: PAYMENT PROOF -->
+<label class="block mt-3 font-bold">📸 صورة إثبات الدفع</label>
+<p class="text-sm text-gray-500 mb-2">
+يجب رفع صورة التحويل بعد الدفع
+</p>
+
+<input type="file" onchange="upload(this,'payment')" class="input mt-2">
+<div id="paymentPreview" class="preview"></div>
 
 <input id="transfer" class="input mt-3" placeholder="رقم التحويل">
 
@@ -193,13 +219,14 @@ import { getFirestore, collection, addDoc, serverTimestamp }
 from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fIE",
-authDomain:"student-system-13431.firebaseapp.com",
-projectId:"student-system-13431"
+apiKey:"YOUR_API_KEY",
+authDomain:"YOUR_AUTH_DOMAIN",
+projectId:"YOUR_PROJECT_ID"
 });
 
 const db = getFirestore(app);
-const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
+
+const API_KEY = "YOUR_IMGBB_KEY";
 
 let uploaded = {};
 let sending = false;
@@ -279,8 +306,8 @@ toast("❌ أدخل رقم التحويل");
 throw new Error();
 }
 
-if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
-toast("❌ ارفع كل الملفات");
+if(!uploaded.cert || !uploaded.idimg || !uploaded.personal || !uploaded.payment){
+toast("❌ ارفع كل الوثائق + إثبات الدفع");
 throw new Error();
 }
 
@@ -295,6 +322,7 @@ transfer,
 cert:uploaded.cert,
 idimg:uploaded.idimg,
 personal:uploaded.personal,
+payment:uploaded.payment,
 status:"قيد المراجعة",
 date:serverTimestamp()
 });
