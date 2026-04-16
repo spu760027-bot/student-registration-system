@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -16,12 +15,10 @@ body {
   margin:0;
   padding-top:80px;
 }
-
 .navbar {
-  background:rgba(0,0,0,0.7);
-  backdrop-filter:blur(10px);
+  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.6);
 }
-
 .hero { height:320px; position:relative; overflow:hidden; }
 .hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); }
 
@@ -33,53 +30,53 @@ body {
 }
 
 .hero-content {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  color:white;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+color:white;
 }
 
 .card {
-  background:white;
-  padding:25px;
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+background:white;
+padding:25px;
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+transition:.4s;
 }
+.card:hover { transform:translateY(-5px); }
 
 .input {
-  width:100%;
-  padding:12px;
-  border:1px solid #cbd5e1;
-  border-radius:10px;
+width:100%;
+padding:12px;
+border:1px solid #cbd5e1;
+border-radius:10px;
 }
 
 .btn {
-  background:#1e295a;
-  color:white;
-  padding:15px;
-  border-radius:10px;
-  width:100%;
+background:#1e295a;
+color:white;
+padding:15px;
+border-radius:10px;
+width:100%;
 }
 
 .preview img {
-  width:80px;
-  height:80px;
-  border-radius:10px;
-  margin:5px;
+width:80px;height:80px;
+border-radius:10px;margin:5px;
 }
 
 #toast {
-  position:fixed;
-  top:20px;
-  right:20px;
-  background:#1e295a;
-  color:white;
-  padding:12px;
-  border-radius:10px;
-  opacity:0;
-  transition:.3s;
+position:fixed;
+top:20px;
+right:20px;
+background:#1e295a;
+color:white;
+padding:12px;
+border-radius:10px;
+opacity:0;
+transition:.3s;
 }
 </style>
 </head>
@@ -88,13 +85,57 @@ body {
 
 <div id="toast"></div>
 
+<!-- NAVBAR -->
+<nav class="navbar fixed w-full top-0 z-50">
+<div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
+<b>SPU</b>
+<button onclick="scrollToForm()" class="bg-red-600 px-4 py-2 rounded">قدّم الآن</button>
+</div>
+</nav>
+
 <!-- HERO -->
 <div class="hero">
 <img src="logo.png">
 <div class="overlay"></div>
 <div class="hero-content">
 <h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
-<p>جامعة بمستوى عالمي</p>
+<p>الجامعة السورية الخاصة</p>
+</div>
+</div>
+
+<!-- STATS -->
+<div class="max-w-6xl mx-auto mt-12 px-4 text-center grid md:grid-cols-3 gap-6">
+<div class="card">
+<h2 class="text-4xl font-bold text-[#1e295a]">2005</h2>
+<p>📅 سنة التأسيس</p>
+</div>
+<div class="card">
+<h2 class="text-4xl font-bold text-[#1e295a]">5000+</h2>
+<p>👨‍🎓 عدد الطلاب</p>
+</div>
+<div class="card">
+<h2 class="text-4xl font-bold text-[#1e295a]">6</h2>
+<p>🎓 عدد الكليات</p>
+</div>
+</div>
+
+<!-- WHY -->
+<div class="max-w-6xl mx-auto mt-16 px-4 text-center">
+<h2 class="text-3xl font-bold mb-8">لماذا SPU؟</h2>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="card">🎓 تعليم متطور</div>
+<div class="card">💼 فرص عمل</div>
+<div class="card">🌍 بيئة عالمية</div>
+</div>
+</div>
+
+<!-- GALLERY -->
+<div class="max-w-6xl mx-auto mt-16 px-4">
+<h2 class="text-2xl text-center mb-6">📸 الحياة الجامعية</h2>
+<div class="grid md:grid-cols-3 gap-4">
+<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded">
+<img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded">
+<img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded">
 </div>
 </div>
 
@@ -134,31 +175,25 @@ body {
 
 <h3 class="mb-3">📁 الوثائق</h3>
 
-<label>📄 صورة الشهادة الثانوية</label>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview"></div>
 
-<label>🪪 صورة الهوية</label>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
 <div id="idimgPreview" class="preview"></div>
 
-<label>👤 صورة شخصية</label>
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
-<!-- 💳 الدفع -->
 <div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
 
-<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
+<p>💳 رسوم التسجيل 500$</p>
 
-<!-- 🔥 QR بالنص -->
-<div style="display:flex; justify-content:center;">
+<div style="display:flex;justify-content:center;">
 <img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px">
 </div>
 
-<input id="transfer" class="input mt-3" placeholder="رقم التحويل">
+<input id="transfer" class="input mt-2" placeholder="رقم التحويل">
 
-<label class="mt-3 block">📸 صورة إثبات الدفع</label>
 <input type="file" onchange="upload(this,'payment')" class="input mt-2">
 <div id="paymentPreview" class="preview"></div>
 
@@ -186,91 +221,69 @@ const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
 let uploaded={};
 
 function toast(msg){
-  const t=document.getElementById("toast");
-  t.innerText=msg;
-  t.style.opacity=1;
-  setTimeout(()=>t.style.opacity=0,3000);
+const t=document.getElementById("toast");
+t.innerText=msg;
+t.style.opacity=1;
+setTimeout(()=>t.style.opacity=0,3000);
 }
 
 window.upload = async(input,key)=>{
-  const file=input.files[0];
-  if(!file) return;
+const file=input.files[0];
+if(!file)return;
 
-  document.getElementById(key+"Preview").innerHTML =
-  `<img src="${URL.createObjectURL(file)}">`;
+document.getElementById(key+"Preview").innerHTML=`<img src="${URL.createObjectURL(file)}">`;
 
-  try{
-    const fd=new FormData();
-    fd.append("image",file);
+const fd=new FormData();
+fd.append("image",file);
 
-    const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
-      method:"POST",
-      body:fd
-    });
+const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
+method:"POST",
+body:fd
+});
 
-    const data=await res.json();
-
-    if(!data.success){
-      toast("❌ فشل رفع الصورة");
-      return;
-    }
-
-    uploaded[key]=data.data.url;
-
-  }catch(e){
-    console.log(e);
-    toast("❌ خطأ رفع");
-  }
+const data=await res.json();
+uploaded[key]=data.data.url;
 };
 
 window.send = async()=>{
 
-  try{
+const name=document.getElementById("name").value;
+const email=document.getElementById("email").value;
+const phone=document.getElementById("phone").value;
+const major=document.getElementById("major").value;
+const transfer=document.getElementById("transfer").value;
 
-    const name=document.getElementById("name").value.trim();
-    const email=document.getElementById("email").value.trim();
-    const phone=document.getElementById("phone").value.trim();
-    const major=document.getElementById("major").value;
-    const transfer=document.getElementById("transfer").value.trim();
+if(!name || !email || !phone || !major){
+toast("❌ عبي كل الحقول");
+return;
+}
 
-    if(!name || !email || !phone || !major){
-      toast("❌ عبي كل الحقول");
-      return;
-    }
+if(!transfer){
+toast("❌ أدخل رقم التحويل");
+return;
+}
 
-    if(!transfer){
-      toast("❌ أدخل رقم التحويل");
-      return;
-    }
+if(!uploaded.cert || !uploaded.idimg || !uploaded.personal || !uploaded.payment){
+toast("❌ ارفع كل الصور");
+return;
+}
 
-    if(!uploaded.cert || !uploaded.idimg || !uploaded.personal || !uploaded.payment){
-      toast("❌ ارفع كل الصور");
-      return;
-    }
+await addDoc(collection(db,"students"),{
+name,email,phone,major,
+transfer,
+cert:uploaded.cert,
+idimg:uploaded.idimg,
+personal:uploaded.personal,
+payment:uploaded.payment,
+status:"قيد المراجعة"
+});
 
-    toast("⏳ جاري الإرسال...");
+toast("✅ تم الإرسال");
 
-    await addDoc(collection(db,"students"),{
-      name,email,phone,major,
-      transfer,
-      cert:uploaded.cert,
-      idimg:uploaded.idimg,
-      personal:uploaded.personal,
-      payment:uploaded.payment,
-      status:"قيد المراجعة",
-      date:new Date()
-    });
+};
 
-    toast("✅ تم الإرسال");
-
-    setTimeout(()=>{
-      location.reload();
-    },1200);
-
-  }catch(e){
-    console.error(e);
-    toast("❌ فشل الإرسال");
-  }
+window.scrollToForm=()=>{
+document.getElementById("form").scrollIntoView({behavior:"smooth"});
 };
 
 </script>
