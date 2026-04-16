@@ -16,7 +16,7 @@ body {
   padding-top:80px;
 }
 
-/* NAVBAR */
+/* NAV */
 .navbar {
   background:rgba(0,0,0,0.7);
   backdrop-filter:blur(10px);
@@ -97,22 +97,8 @@ body {
 <!-- NAVBAR -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
-
-<div class="flex items-center gap-2">
-<img src="logo.png" class="w-8 h-8">
 <b>SPU</b>
-</div>
-
-<div class="hidden md:flex gap-6">
-<a href="#">الرئيسية</a>
-<a href="#form">التسجيل</a>
-<a href="track.html">تتبع</a>
-</div>
-
-<button onclick="scrollToForm()" class="bg-red-600 px-4 py-2 rounded">
-قدّم الآن
-</button>
-
+<button onclick="scrollToForm()" class="bg-red-600 px-4 py-2 rounded">قدّم الآن</button>
 </div>
 </nav>
 
@@ -120,18 +106,14 @@ body {
 <div class="hero">
 <img src="logo.png">
 <div class="overlay"></div>
-
 <div class="hero-content">
 <h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
-<p>جامعة بمستوى عالمي</p>
-<button onclick="scrollToForm()" class="mt-4 bg-red-600 px-6 py-2 rounded">
-قدّم الآن
-</button>
+<p>الجامعة السورية الخاصة</p>
 </div>
 </div>
 
 <!-- STATS -->
-<div class="max-w-6xl mx-auto mt-12 px-4 grid md:grid-cols-3 gap-6 text-center">
+<div class="max-w-6xl mx-auto mt-12 px-4 text-center grid md:grid-cols-3 gap-6">
 
 <div class="card">
 <h2 class="text-4xl font-bold text-[#1e295a]">2005</h2>
@@ -158,7 +140,6 @@ body {
 
 <input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
 <input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
-<input id="national" class="input mb-3" placeholder="الرقم الوطني">
 <input id="phone" class="input mb-3" placeholder="رقم الهاتف">
 
 <select id="major" class="input mb-5">
@@ -166,40 +147,41 @@ body {
 <option>الطب البشري</option>
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
-<option>هندسة المعلوماتية والاتصالات</option>
-<option>هندسة الذكاء الاصطناعي</option>
+<option>التمريض</option>
 <option>الهندسة المدنية</option>
 <option>الهندسة المعمارية</option>
+<option>هندسة المعلوماتية والاتصالات</option>
+<option>هندسة الذكاء الاصطناعي</option>
+<option>الهندسة الميكانيكية</option>
+<option>الهندسة الكهربائية</option>
 <option>هندسة البترول</option>
 <option>إدارة الأعمال</option>
 </select>
 
 <h3 class="mb-3">📁 الوثائق</h3>
 
-<label>📄 صورة الشهادة الثانوية</label>
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview"></div>
 
-<label>🪪 صورة الهوية</label>
 <input type="file" onchange="upload(this,'idimg')" class="input mb-2">
 <div id="idimgPreview" class="preview"></div>
 
-<label>👤 صورة شخصية</label>
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
-<!-- PAYMENT -->
+<!-- الدفع -->
 <div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
 <p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
 
-<div class="flex justify-center">
+<div style="display:flex;justify-content:center;">
 <img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px">
 </div>
 
 <input id="transfer" class="input mt-3" placeholder="رقم التحويل">
+
 </div>
 
-<button class="btn mt-5" onclick="send()">إرسال الطلب</button>
+<button id="submitBtn" class="btn mt-5" onclick="send()">إرسال الطلب</button>
 
 </div>
 </div>
@@ -207,10 +189,11 @@ body {
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp } 
+from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fIE",
 authDomain:"student-system-13431.firebaseapp.com",
 projectId:"student-system-13431"
 });
@@ -218,76 +201,119 @@ projectId:"student-system-13431"
 const db = getFirestore(app);
 const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
-let uploaded={};
+let uploaded = {};
+let sending = false;
 
 /* TOAST */
 function toast(msg){
-  const t=document.getElementById("toast");
-  t.innerText=msg;
-  t.style.opacity=1;
-  setTimeout(()=>t.style.opacity=0,3000);
+const t=document.getElementById("toast");
+t.innerText=msg;
+t.style.opacity=1;
+setTimeout(()=>t.style.opacity=0,3000);
 }
 
 /* UPLOAD */
 window.upload = async(input,key)=>{
-  const file=input.files[0];
-  if(!file)return;
+const file=input.files[0];
+if(!file)return;
 
-  document.getElementById(key+"Preview").innerHTML=
-  `<img src="${URL.createObjectURL(file)}">`;
+uploaded[key]=null;
+document.getElementById(key+"Preview").innerHTML="⏳ رفع...";
 
-  const fd=new FormData();
-  fd.append("image",file);
+const fd=new FormData();
+fd.append("image",file);
 
-  const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
-    method:"POST",
-    body:fd
-  });
+const res=await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`,{
+method:"POST",
+body:fd
+});
 
-  const data=await res.json();
-  uploaded[key]=data.data.url;
+const data=await res.json();
+
+if(!data.success){
+toast("❌ فشل رفع الصورة");
+return;
+}
+
+uploaded[key]=data.data.url;
+
+document.getElementById(key+"Preview").innerHTML=
+`<img src="${data.data.url}">`;
 };
 
 /* SEND */
 window.send = async()=>{
 
-  const name=document.getElementById("name").value;
-  const email=document.getElementById("email").value;
-  const phone=document.getElementById("phone").value;
-  const major=document.getElementById("major").value;
+if(sending) return;
+sending = true;
 
-  if(!name || !email || !phone || !major){
-    toast("❌ عبي كل الحقول");
-    return;
-  }
+const btn=document.getElementById("submitBtn");
+btn.disabled=true;
+btn.innerText="جاري الإرسال...";
 
-  if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
-    toast("❌ ارفع كل الصور");
-    return;
-  }
+try{
 
-  toast("⏳ جاري الإرسال...");
+const name=document.getElementById("name").value.trim();
+const email=document.getElementById("email").value.trim();
+const phone=document.getElementById("phone").value.trim();
+const major=document.getElementById("major").value;
+const transfer=document.getElementById("transfer").value.trim();
 
-  await addDoc(collection(db,"students"),{
-    name,email,phone,major,
-    cert:uploaded.cert,
-    id:uploaded.idimg,
-    personal:uploaded.personal,
-    status:"قيد المراجعة",
-    date:new Date()
-  });
+if(!name || !email || !phone || !major){
+toast("❌ عبي كل الحقول");
+throw new Error();
+}
 
-  toast("✅ تم الإرسال");
+if(!email.includes("@")){
+toast("❌ بريد غير صالح");
+throw new Error();
+}
 
-  setTimeout(()=>{
-    window.location.href="success.html";
-  },1200);
+if(phone.length < 8){
+toast("❌ رقم هاتف غير صالح");
+throw new Error();
+}
 
+if(!transfer){
+toast("❌ أدخل رقم التحويل");
+throw new Error();
+}
+
+if(!uploaded.cert || !uploaded.idimg || !uploaded.personal){
+toast("❌ ارفع كل الملفات");
+throw new Error();
+}
+
+toast("⏳ جاري الإرسال...");
+
+await addDoc(collection(db,"students"),{
+name,
+email,
+phone,
+major,
+transfer,
+cert:uploaded.cert,
+idimg:uploaded.idimg,
+personal:uploaded.personal,
+status:"قيد المراجعة",
+date:serverTimestamp()
+});
+
+toast("✅ تم الإرسال بنجاح");
+
+setTimeout(()=>location.reload(),1200);
+
+}catch(e){
+console.log(e);
+}finally{
+sending=false;
+btn.disabled=false;
+btn.innerText="إرسال الطلب";
+}
 };
 
-/* SCROLL */
 window.scrollToForm=()=>{
-  document.getElementById("form").scrollIntoView({behavior:"smooth"});
+document.getElementById("form").scrollIntoView({behavior:"smooth"});
 };
 
 </script>
