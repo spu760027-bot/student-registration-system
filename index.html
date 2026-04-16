@@ -21,35 +21,27 @@ body {
   backdrop-filter:blur(10px);
 }
 
+/* HERO */
 .hero {
   height:320px;
-  position:relative;
-  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#0b1a3a;
+  color:white;
+  text-align:center;
 }
 
 .hero img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  filter:brightness(.6);
+  width:120px;
+  background:white;
+  padding:10px;
+  border-radius:20px;
+  margin-bottom:15px;
 }
 
-.overlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.4);
-}
-
-.hero-content {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  color:white;
-}
-
+/* CARD */
 .card {
   background:white;
   padding:25px;
@@ -98,7 +90,7 @@ body {
 
 <div id="toast"></div>
 
-<!-- ✅ NAVBAR (الشعار الأصلي بدون قص) -->
+<!-- NAVBAR -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
 
@@ -111,15 +103,14 @@ body {
 </div>
 </nav>
 
-<!-- HERO -->
+<!-- HERO (الشعار رجع) -->
 <div class="hero">
-<img src="https://spu.edu.sy/sites/default/files/2023-10/banner.jpg">
-<div class="overlay"></div>
 
-<div class="hero-content">
+<img src="logo.png">
+
 <h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
 <p>الجامعة السورية الخاصة</p>
-</div>
+
 </div>
 
 <!-- STATS -->
@@ -138,6 +129,21 @@ body {
 <div class="card">
 <h2 class="text-4xl font-bold text-[#1e295a]">6</h2>
 <p>🎓 عدد الكليات</p>
+</div>
+
+</div>
+
+<!-- ✅ GALLERY (رجعت الصور) -->
+<div class="max-w-6xl mx-auto mt-10 px-4">
+
+<h2 class="text-center text-xl mb-6">📸 الحياة الجامعية</h2>
+
+<div class="grid md:grid-cols-3 gap-4">
+
+<img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded-xl shadow">
+<img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded-xl shadow">
+<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded-xl shadow">
+
 </div>
 
 </div>
@@ -192,6 +198,7 @@ body {
 <div id="personalPreview" class="preview"></div>
 
 <div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
+
 <p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
 
 <div class="flex justify-center">
@@ -203,6 +210,7 @@ body {
 <div id="paymentPreview" class="preview"></div>
 
 <input id="transfer" class="input mt-3" placeholder="رقم التحويل">
+
 </div>
 
 <button id="submitBtn" class="btn mt-5" onclick="send()">إرسال الطلب</button>
@@ -224,13 +232,11 @@ projectId:"student-system-13431"
 
 const db = getFirestore(app);
 
-/* 🔥 مفتاحك القديم شغال */
-const API_KEY = "bfa4cc0d29fb46535a67fd3dbe8de3bc";
+const API_KEY="bfa4cc0d29fb46535a67fd3dbe8de3bc";
 
-let uploaded = {};
-let sending = false;
+let uploaded={};
+let sending=false;
 
-/* TOAST */
 function toast(msg){
 const t=document.getElementById("toast");
 t.innerText=msg;
@@ -238,12 +244,9 @@ t.style.opacity=1;
 setTimeout(()=>t.style.opacity=0,3000);
 }
 
-/* UPLOAD */
 window.upload = async(input,key)=>{
 const file=input.files[0];
-if(!file) return;
-
-document.getElementById(key+"Preview").innerHTML="⏳ رفع...";
+if(!file)return;
 
 const fd=new FormData();
 fd.append("image",file);
@@ -254,30 +257,20 @@ body:fd
 });
 
 const data=await res.json();
-
-if(!data.success){
-toast("❌ فشل رفع الصورة");
-return;
-}
-
 uploaded[key]=data.data.url;
 
 document.getElementById(key+"Preview").innerHTML=
 `<img src="${data.data.url}">`;
 };
 
-/* ✅ SEND (مصلّح 100%) */
 window.send = async()=>{
-
-if(sending) return;
+if(sending)return;
 sending=true;
 
 const btn=document.getElementById("submitBtn");
 btn.disabled=true;
-btn.innerText="جاري الإرسال...";
 
 try{
-
 const name=document.getElementById("name").value.trim();
 const email=document.getElementById("email").value.trim();
 const national=document.getElementById("national").value.trim();
@@ -296,12 +289,7 @@ throw new Error();
 }
 
 await addDoc(collection(db,"students"),{
-name,
-email,
-national,
-phone,
-major,
-transfer,
+name,email,national,phone,major,transfer,
 cert:uploaded.cert,
 idimg:uploaded.idimg,
 personal:uploaded.personal,
@@ -311,17 +299,14 @@ date:serverTimestamp()
 });
 
 toast("✅ تم الإرسال");
-
 setTimeout(()=>location.reload(),1000);
 
 }catch(e){
-console.error(e);
 toast("❌ فشل الإرسال");
 }
 
 sending=false;
 btn.disabled=false;
-btn.innerText="إرسال الطلب";
 };
 
 window.scrollToForm=()=>{
