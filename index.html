@@ -15,65 +15,55 @@ body {
   margin:0;
   padding-top:80px;
 }
-.navbar {
-  background:rgba(0,0,0,0.7);
-  backdrop-filter:blur(10px);
-}
-.hero { height:320px; position:relative; overflow:hidden; }
+
+.hero { height:320px; position:relative; }
 .hero img { width:100%; height:100%; object-fit:cover; filter:brightness(.6); }
 
 .overlay {
   position:absolute;
-  width:100%;
-  height:100%;
+  width:100%;height:100%;
   background:rgba(0,0,0,.4);
 }
+
 .hero-content {
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-color:white;
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  color:white;text-align:center;
 }
 
 .card {
-background:white;
-padding:25px;
-border-radius:16px;
-box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  background:white;
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
 .input {
-width:100%;
-padding:12px;
-border:1px solid #cbd5e1;
-border-radius:10px;
+  width:100%;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:10px;
 }
 
 .btn {
-background:#1e295a;
-color:white;
-padding:15px;
-border-radius:10px;
-width:100%;
+  background:#1e295a;
+  color:white;
+  padding:15px;
+  border-radius:10px;
+  width:100%;
 }
 
 .preview img {
-width:80px;height:80px;
-border-radius:10px;margin:5px;
+  width:80px;height:80px;margin:5px;border-radius:10px;
 }
 
 #toast {
 position:fixed;
-top:20px;
-right:20px;
-background:#1e295a;
-color:white;
-padding:12px;
-border-radius:10px;
-opacity:0;
-transition:.3s;
+top:20px;right:20px;
+background:#1e295a;color:white;
+padding:12px;border-radius:10px;
+opacity:0;transition:.3s;
 }
 </style>
 </head>
@@ -82,75 +72,57 @@ transition:.3s;
 
 <div id="toast"></div>
 
-<!-- NAV -->
-<nav class="navbar fixed w-full top-0 z-50">
-<div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
-<b>SPU</b>
-<button onclick="scrollToForm()" class="bg-red-600 px-4 py-2 rounded">قدّم الآن</button>
-</div>
-</nav>
-
 <!-- HERO -->
 <div class="hero">
 <img src="logo.png">
 <div class="overlay"></div>
 <div class="hero-content">
-<h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
-<p>الجامعة السورية الخاصة</p>
+<h1 class="text-3xl font-bold">الجامعة السورية الخاصة</h1>
+<p>ابدأ مستقبلك معنا 🎓</p>
 </div>
 </div>
 
 <!-- STATS -->
-<div class="max-w-6xl mx-auto mt-12 px-4 text-center grid md:grid-cols-3 gap-6">
-<div class="card">
-<h2 class="text-4xl font-bold text-[#1e295a]">2005</h2>
-<p>📅 سنة التأسيس</p>
+<div class="max-w-6xl mx-auto mt-10 grid md:grid-cols-3 gap-6 text-center px-4">
+<div class="card"><h2 class="text-3xl">2005</h2><p>سنة التأسيس</p></div>
+<div class="card"><h2 class="text-3xl">5000+</h2><p>عدد الطلاب</p></div>
+<div class="card"><h2 class="text-3xl">6</h2><p>عدد الكليات</p></div>
 </div>
-<div class="card">
-<h2 class="text-4xl font-bold text-[#1e295a]">5000+</h2>
-<p>👨‍🎓 عدد الطلاب</p>
-</div>
-<div class="card">
-<h2 class="text-4xl font-bold text-[#1e295a]">6</h2>
-<p>🎓 عدد الكليات</p>
+
+<!-- 🔥 الصور (رجعناها) -->
+<div class="max-w-6xl mx-auto mt-10 px-4">
+<h2 class="text-center text-xl mb-4">📸 الحياة الجامعية</h2>
+<div class="grid md:grid-cols-3 gap-4">
+<img src="https://images.unsplash.com/photo-1588072432836-e10032774350" class="rounded">
+<img src="https://images.unsplash.com/photo-1607237138185-eedd9c632b0b" class="rounded">
+<img src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238" class="rounded">
 </div>
 </div>
 
 <!-- FORM -->
-<div id="form" class="max-w-2xl mx-auto mt-10 px-4">
+<div class="max-w-2xl mx-auto mt-10 px-4">
 <div class="card">
 
-<h2 class="text-xl text-center mb-6">استمارة التسجيل</h2>
+<h2 class="text-center mb-5">استمارة التسجيل</h2>
 
-<input id="name" class="input mb-3" placeholder="الاسم الثلاثي">
-<input id="email" class="input mb-3" placeholder="البريد الإلكتروني">
-<input id="phone" class="input mb-3" placeholder="رقم الهاتف">
+<input id="name" class="input mb-2" placeholder="الاسم">
+<input id="email" class="input mb-2" placeholder="الإيميل">
+<input id="phone" class="input mb-2" placeholder="الهاتف">
 
-<select id="major" class="input mb-5">
+<select id="major" class="input mb-3">
 <option value="">اختر الكلية</option>
+
+<!-- 🔥 كليات SPU -->
 <option>الطب البشري</option>
 <option>طب الأسنان</option>
 <option>الصيدلة</option>
-<option>التمريض</option>
-<option>الهندسة المدنية</option>
-<option>الهندسة المعمارية</option>
-<option>هندسة المعلوماتية والاتصالات</option>
-<option>هندسة الذكاء الاصطناعي</option>
-<option>الهندسة الميكانيكية</option>
-<option>الهندسة الكهربائية</option>
-<option>هندسة البترول</option>
+<option>الهندسة</option>
 <option>إدارة الأعمال</option>
-<option>المحاسبة</option>
-<option>التسويق</option>
-<option>الاقتصاد</option>
-<option>الإعلام</option>
-<option>الحقوق</option>
-<option>التربية</option>
-<option>اللغات والترجمة</option>
-<option>العلاقات الدولية</option>
+<option>العلاقات الدولية والدبلوماسية</option>
+
 </select>
 
-<h3 class="mb-3">📁 الوثائق</h3>
+<h3>📁 الوثائق</h3>
 
 <input type="file" onchange="upload(this,'cert')" class="input mb-2">
 <div id="certPreview" class="preview"></div>
@@ -162,23 +134,22 @@ transition:.3s;
 <div id="personalPreview" class="preview"></div>
 
 <!-- الدفع -->
-<div class="bg-blue-50 p-4 text-center mt-4 rounded-xl">
+<div class="bg-blue-50 p-4 text-center mt-4 rounded">
 
-<p class="font-bold mb-2">💳 رسوم التسجيل 500$</p>
+<p>💳 رسوم 500$</p>
 
 <div style="display:flex;justify-content:center;">
-<img src="https://i.ibb.co/JWtdDy1m/qr.png" style="width:180px">
+<img src="https://i.ibb.co/JWtdDy1m/qr.png" width="180">
 </div>
 
-<input id="transfer" class="input mt-3" placeholder="رقم التحويل">
+<input id="transfer" class="input mt-2" placeholder="رقم التحويل">
 
-<label class="mt-3">📸 صورة إثبات الدفع</label>
 <input type="file" onchange="upload(this,'payment')" class="input mt-2">
 <div id="paymentPreview" class="preview"></div>
 
 </div>
 
-<button class="btn mt-5" onclick="send()">إرسال الطلب</button>
+<button class="btn mt-4" onclick="send()">إرسال الطلب</button>
 
 </div>
 </div>
@@ -189,7 +160,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/fireba
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey:"AIzaSyDYZC_aNEgOOIbbfaeF3eqf8KpBuH8fEIE",
+apiKey:"AIzaSy...",
 authDomain:"student-system-13431.firebaseapp.com",
 projectId:"student-system-13431"
 });
@@ -206,12 +177,10 @@ t.style.opacity=1;
 setTimeout(()=>t.style.opacity=0,3000);
 }
 
+/* رفع سريع */
 window.upload = async(input,key)=>{
-try{
 const file=input.files[0];
 if(!file)return;
-
-document.getElementById(key+"Preview").innerHTML="⏳ رفع...";
 
 const fd=new FormData();
 fd.append("image",file);
@@ -222,72 +191,43 @@ body:fd
 });
 
 const data=await res.json();
-
-if(!data.success){
-toast("❌ فشل رفع الصورة");
-return;
-}
-
 uploaded[key]=data.data.url;
 
 document.getElementById(key+"Preview").innerHTML=
 `<img src="${data.data.url}">`;
-
-}catch(e){
-console.log(e);
-toast("❌ خطأ رفع");
-}
 };
 
+/* 🔥 إرسال فوري */
 window.send = async()=>{
-try{
 
-const name=document.getElementById("name").value.trim();
-const email=document.getElementById("email").value.trim();
-const phone=document.getElementById("phone").value.trim();
-const major=document.getElementById("major").value;
-const transfer=document.getElementById("transfer").value.trim();
+const name=nameEl.value.trim();
+const email=emailEl.value.trim();
+const phone=phoneEl.value.trim();
+const major=majorEl.value;
+const transfer=transferEl.value.trim();
 
 if(!name || !email || !phone || !major){
-toast("❌ عبي كل الحقول");
-return;
-}
-
-if(!transfer){
-toast("❌ أدخل رقم التحويل");
+toast("❌ عبي الحقول");
 return;
 }
 
 if(!uploaded.cert || !uploaded.idimg || !uploaded.personal || !uploaded.payment){
-toast("❌ انتظر رفع الصور");
+toast("❌ ارفع الصور");
 return;
 }
 
-toast("⏳ جاري الإرسال...");
-
-await addDoc(collection(db,"students"),{
-name,email,phone,major,
-transfer,
+/* 🔥 ما في انتظار → سريع */
+addDoc(collection(db,"students"),{
+name,email,phone,major,transfer,
 cert:uploaded.cert,
 idimg:uploaded.idimg,
 personal:uploaded.personal,
 payment:uploaded.payment,
-status:"قيد المراجعة",
-date:new Date()
+status:"قيد المراجعة"
 });
 
-toast("✅ تم الإرسال");
+toast("✅ تم الإرسال فوراً");
 
-setTimeout(()=>location.reload(),1000);
-
-}catch(e){
-console.error(e);
-toast("❌ فشل الإرسال");
-}
-};
-
-window.scrollToForm=()=>{
-document.getElementById("form").scrollIntoView({behavior:"smooth"});
 };
 
 </script>
