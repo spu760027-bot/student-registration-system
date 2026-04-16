@@ -21,30 +21,27 @@ body {
   backdrop-filter:blur(10px);
 }
 
-.hero { height:320px; position:relative; }
-.hero img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  filter:brightness(.6);
-}
-
-.overlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,.4);
-}
-
-.hero-content {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
+/* HERO */
+.hero {
+  height:320px;
+  background:linear-gradient(to right,#1e295a,#0f172a);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
   color:white;
-  text-align:center;
 }
 
+.hero img {
+  width:120px;
+  height:120px;
+  background:white;
+  padding:10px;
+  border-radius:20px;
+  margin-bottom:10px;
+}
+
+/* CARD */
 .card {
   background:white;
   padding:25px;
@@ -102,13 +99,9 @@ transition:.3s;
 
 <!-- HERO -->
 <div class="hero">
-<img src="https://spu.edu.sy/sites/default/files/2023-10/banner.jpg"
-onerror="this.src='https://images.unsplash.com/photo-1607237138185-eedd9c632b0b'">
-<div class="overlay"></div>
-<div class="hero-content">
+<img src="logo.png" onerror="this.src='https://i.ibb.co/4pDNDk1/avatar.png'">
 <h1 class="text-3xl font-bold">ابدأ مستقبلك مع SPU 🎓</h1>
 <p>الجامعة السورية الخاصة</p>
-</div>
 </div>
 
 <!-- STATS -->
@@ -179,7 +172,6 @@ onerror="this.src='https://images.unsplash.com/photo-1607237138185-eedd9c632b0b'
 <input type="file" onchange="upload(this,'personal')" class="input mb-2">
 <div id="personalPreview" class="preview"></div>
 
-<!-- PAYMENT -->
 <div class="bg-blue-50 p-4 text-center mt-4 rounded">
 
 <p>💳 رسوم التسجيل 500$</p>
@@ -214,11 +206,10 @@ projectId:"PUT_YOUR_PROJECT_ID"
 });
 
 const db = getFirestore(app);
-
 const API_KEY="PUT_YOUR_IMGBB_KEY";
 
-let uploaded = {};
-let sending = false;
+let uploaded={};
+let sending=false;
 
 function toast(msg){
 const t=document.getElementById("toast");
@@ -229,9 +220,7 @@ setTimeout(()=>t.style.opacity=0,3000);
 
 window.upload = async(input,key)=>{
 const file=input.files[0];
-if(!file) return;
-
-document.getElementById(key+"Preview").innerHTML="⏳";
+if(!file)return;
 
 const fd=new FormData();
 fd.append("image",file);
@@ -249,15 +238,13 @@ document.getElementById(key+"Preview").innerHTML=
 };
 
 window.send = async()=>{
-
-if(sending) return;
-sending = true;
+if(sending)return;
+sending=true;
 
 const btn=document.getElementById("submitBtn");
 btn.disabled=true;
 
 try{
-
 const name=document.getElementById("name").value.trim();
 const email=document.getElementById("email").value.trim();
 const national=document.getElementById("national").value.trim();
@@ -286,7 +273,6 @@ date:serverTimestamp()
 });
 
 toast("✅ تم الإرسال");
-
 setTimeout(()=>location.reload(),1000);
 
 }catch(e){
