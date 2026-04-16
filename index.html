@@ -21,6 +21,7 @@ body {
   backdrop-filter:blur(10px);
 }
 
+/* HERO */
 .hero {
   height:320px;
   position:relative;
@@ -50,6 +51,7 @@ body {
   color:white;
 }
 
+/* CARD */
 .card {
   background:white;
   padding:25px;
@@ -99,12 +101,19 @@ body {
 
 <div id="toast"></div>
 
-<!-- NAV -->
+<!-- NAVBAR (FIXED LOGO - SAFE VERSION) -->
 <nav class="navbar fixed w-full top-0 z-50">
 <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4 text-white">
 
+<!-- LOGO SAFE -->
 <div class="flex items-center gap-2">
-<img src="logo.png" class="w-10 h-10 rounded-full border-2 border-white shadow">
+
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
+<img src="logo.png"
+     onerror="this.style.display='none'"
+     class="w-full h-full object-cover">
+</div>
+
 <b>SPU</b>
 </div>
 
@@ -278,7 +287,6 @@ document.getElementById(key+"Preview").innerHTML=
 `<img src="${data.data.url}">`;
 
 }catch(e){
-console.log(e);
 toast("❌ خطأ في الرفع");
 uploaded[key]=null;
 }
@@ -305,21 +313,6 @@ const transfer=document.getElementById("transfer").value.trim();
 
 if(!name || !email || !national || !phone || !major){
 toast("❌ عبي كل الحقول");
-throw new Error();
-}
-
-if(!email.includes("@")){
-toast("❌ البريد غير صالح");
-throw new Error();
-}
-
-if(phone.length < 8){
-toast("❌ رقم الهاتف غير صالح");
-throw new Error();
-}
-
-if(!transfer){
-toast("❌ أدخل رقم التحويل");
 throw new Error();
 }
 
@@ -350,7 +343,6 @@ toast("✅ تم الإرسال بنجاح");
 setTimeout(()=>location.reload(),1200);
 
 }catch(e){
-console.log(e);
 toast("❌ فشل الإرسال");
 }finally{
 sending=false;
